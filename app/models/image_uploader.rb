@@ -10,7 +10,6 @@ class ImageUploader < Shrine
   plugin :validation_helpers
   plugin :versions, names: %i(original thumb)
   plugin :pretty_location
-  plugin :cached_attachment_data
 
   Attacher.validate do
     validate_max_size 2.megabytes, message: 'is too large (max is 2 MB)'

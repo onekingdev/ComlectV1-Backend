@@ -23,12 +23,3 @@ else
     store: Shrine::Storage::FileSystem.new('public', prefix: 'uploads/store')
   }
 end
-
-Shrine.plugin :activerecord
-Shrine.plugin :logging, logger: Rails.logger
-Shrine.plugin :direct_upload, presign: true
-Shrine.plugin :remove_attachment
-Shrine.plugin :validation_helpers
-Shrine.plugin :store_dimensions
-Shrine.plugin :pretty_location
-Shrine.plugin :cached_attachment_data
