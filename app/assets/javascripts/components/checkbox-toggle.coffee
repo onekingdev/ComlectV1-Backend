@@ -1,9 +1,11 @@
-$(document).on 'click', 'input[type=checkbox][data-toggle-all]', (e) ->
-  $this = $(this)
-  selector = "input[name=\"#{$this.data('toggle-all')}\"]"
-  $(selector)
-    .prop 'checked', $this.is(':checked')
-    .attr 'checked', if $this.is(':checked') then 'checked' else null
-    .change ->
-      all = $("#{selector}:checked").length == $("#{selector}").length
-      $this.prop 'checked', all
+$.onContentReady ($parent) ->
+  $.initializeOnce $parent.find('input[type=checkbox][data-toggle-all]'), 'checkbox-toggle', ($selectAll) ->
+    selector = "input[name=\"#{$selectAll.data('toggle-all')}\"]:visible"
+    $selectAll.click ->
+      $(selector)
+        .prop 'checked', $selectAll.is(':checked')
+        .attr 'checked', if $selectAll.is(':checked') then 'checked' else null
+    $(selector)
+      .change ->
+        all = $("#{selector}:checked").length == $("#{selector}").length
+        $selectAll.prop 'checked', all
