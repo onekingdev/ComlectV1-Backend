@@ -2,6 +2,8 @@
 ActiveAdmin.register ProjectIssue, as: 'Issues' do
   menu parent: 'Projects'
 
+  actions :all, except: %i(new create)
+
   filter :issue
   filter :created_at
 
