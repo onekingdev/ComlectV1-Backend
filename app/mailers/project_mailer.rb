@@ -18,6 +18,12 @@ class ProjectMailer < ApplicationMailer
     mail to: "#{name} <#{email}>", subject: "#{project.title} on Complect"
   end
 
+  def end_request(project)
+    @project = project
+    specialist = project.specialist
+    mail to: "#{specialist.full_name} <#{specialist.user.email}>", subject: "#{project.title} Ending"
+  end
+
   private
 
   def add_project_link(project, text, url, format = :html)
