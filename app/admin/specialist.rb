@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 ActiveAdmin.register Specialist do
-  actions :all, except: [:new]
+  actions :all, except: %i(show new)
   filter :user_email_cont, label: 'Email'
   filter :first_name_or_last_name_cont, as: :string, label: 'Name'
 
@@ -32,7 +32,7 @@ ActiveAdmin.register Specialist do
       input :city
       input :zipcode
       input :state
-      input :country
+      input :country, as: :select, collection: IsoCountryCodes.for_select.map(&:first)
       input :phone
       input :linkedin_link
     end
