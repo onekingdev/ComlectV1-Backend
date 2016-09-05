@@ -67,9 +67,7 @@ Rails.application.routes.draw do
     get '/' => 'dashboard#show', as: :dashboard
     resource :settings, only: :show do
       resource :password
-      resources :payment_settings, as: :payment, path: 'payment' do
-        patch :make_primary
-      end
+      resource :payment_setting, as: :payment, path: 'payment'
     end
     resources :projects, path: 'my-projects'
     concerns :favoriteable
