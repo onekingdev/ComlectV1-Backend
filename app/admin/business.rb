@@ -24,7 +24,6 @@ ActiveAdmin.register Business do
     column :employees
     column :website
     column :description
-    column :linkedin_link
     actions
   end
 
@@ -43,13 +42,35 @@ ActiveAdmin.register Business do
 
   permit_params :business_name, :employees, :website, :description, :linkedin_link, industry_ids: []
   form do |f|
-    inputs do
+    inputs name: 'Business Info' do
       input :business_name
       input :industries
       input :employees, as: :select, collection: Business::EMPLOYEE_OPTIONS
       input :website
-      input :description
       input :linkedin_link
+      input :description
+    end
+    inputs name: 'Location' do
+      input :address_1
+      input :address_2
+      input :zipcode
+      input :city
+      input :state
+      input :country
+      input :time_zone
+    end
+    inputs name: 'Jurisdiction' do
+      input :jurisdictions
+    end
+    inputs name: 'Privacy' do
+      input :anonymous
+    end
+    inputs name: 'Key Contact' do
+      input :contact_first_name, label: :first_name
+      input :contact_last_name, label: :last_name
+      input :contact_email, label: :email
+      input :contact_job_title, label: :job_title
+      input :contact_phone, label: :phone
     end
     f.actions
   end
