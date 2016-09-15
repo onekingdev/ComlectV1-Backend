@@ -369,4 +369,48 @@ body.home.index, body.home.page {
   .ol-numerals {
     list-style-type: lower-roman;
   }
+
+  .partners-list .partner {
+    .your-business {
+      display: inline-block;
+      border: 3px solid #999;
+      border-radius: 50%;
+      width: 150px;
+      height: 150px;
+      position: relative;
+
+      &:before {
+        content: "+";
+        position: absolute;
+        color: #999;
+        font-size: 110px;
+        font-family: Arial;
+        text-align: center;
+        width: 150px;
+        height: 150px;
+        line-height: 150px;
+        left: 0;
+        top: 0;
+      }
+    }
+
+    span {
+      padding: 3rem 0;
+      display: block;
+    }
+  }
+
+  .partner-callout {
+    color: $brand-primary;
+    text-transform: uppercase;
+    margin: 80px 0;
+    font-size: 40px;
+    font-weight: 700;
+    text-align: center;
+    
+    a:hover {
+      text-decoration: none;
+      color: $brand-primary;
+    }
+  }
 }
