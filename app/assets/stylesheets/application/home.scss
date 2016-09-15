@@ -6,6 +6,10 @@ body.home.index, body.home.page {
     padding: 0 90px;
   }
 
+  .double-margin-p p {
+    margin-bottom: 2rem;
+  }
+
   #nav {
     background-color: #fff;
     box-shadow: rgba(0, 0, 0, 0.3) 0 0 3px 2px;
@@ -351,5 +355,18 @@ body.home.index, body.home.page {
         font-size: 40px;
       }
     }
+  }
+
+  ol {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .ol-letters {
+    list-style-type: lower-alpha;
+  }
+
+  .ol-numerals {
+    list-style-type: lower-roman;
   }
 }
