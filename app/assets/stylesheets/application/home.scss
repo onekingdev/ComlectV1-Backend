@@ -263,6 +263,12 @@ body.home.index, body.home.page {
       text-align: center;
       font-weight: 700;
     }
+
+    @media (max-width: $screen-xs-max) {
+      h1 {
+        font-size: 40px;
+      }
+    }
   }
 
   h4 {
