@@ -27,19 +27,6 @@ ActiveAdmin.register Business do
     actions
   end
 
-  # show title: :business_name do
-  #   panel "Projects" do
-  #     table_for(business.projects) do
-  #       column :title
-  #       column :location
-  #       column :industry
-  #       column :jurisdiction
-  #       column :description
-  #       column :key_deliverables
-  #     end
-  #   end
-  # end
-
   permit_params :business_name, :employees, :website, :description, :linkedin_link, industry_ids: []
   form do |f|
     inputs name: 'Business Info' do
@@ -66,11 +53,11 @@ ActiveAdmin.register Business do
       input :anonymous
     end
     inputs name: 'Key Contact' do
-      input :contact_first_name, label: :first_name
-      input :contact_last_name, label: :last_name
-      input :contact_email, label: :email
-      input :contact_job_title, label: :job_title
-      input :contact_phone, label: :phone
+      input :contact_first_name, label: 'First Name'
+      input :contact_last_name, label: 'Last Name'
+      input :contact_email, label: 'Email'
+      input :contact_job_title, label: 'Job Title'
+      input :contact_phone, label: 'Phone'
     end
     f.actions
   end
