@@ -284,7 +284,7 @@ body.home.index, body.home.page {
     padding: 0;
     list-style: none;
 
-    li {
+    > li {
       cursor: pointer;
       font-weight: 700;
       font-size: 16px;
@@ -306,6 +306,14 @@ body.home.index, body.home.page {
       .collapse, .collapsing {
         font-weight: normal;
         font-size: 14px;
+      }
+    }
+
+    li.section {
+      cursor: default;
+
+      &:before {
+        display: none;
       }
     }
 
