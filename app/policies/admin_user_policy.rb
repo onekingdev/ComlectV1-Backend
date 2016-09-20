@@ -32,11 +32,15 @@ class AdminUserPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.super_admin?
+    user.super_admin? && user != record
   end
 
   def destroy_all?
     user.super_admin?
+  end
+
+  def toggle_suspend?
+    destroy?
   end
 
   def scope
