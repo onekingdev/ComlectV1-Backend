@@ -17,6 +17,11 @@ ActiveAdmin.register Project do
     end
   end
 
+  member_action :end, method: :post do
+    ProjectEnd::Request.process! resource
+    redirect_to collection_path, notice: 'Project end requested'
+  end
+
   index do
     column :title
     column :location
@@ -33,11 +38,16 @@ ActiveAdmin.register Project do
       link_to 'Issues', admin_issues_path(q: { project_id_eq: project.id }) if project.escalated?
     end
     actions do |project|
-      if project.ratings.count > 0
-        link_to 'Ratings', admin_ratings_path(q: { project_id_eq: project.id })
-      else
-        'No Ratings yet'
+      actions = []
+      if project.specialist && !project.complete?
+        actions << link_to('End Project', end_admin_project_path(project), method: :post, class: 'member_link')
       end
+      if project.ratings.count > 0
+        actions << link_to('Ratings', admin_ratings_path(q: { project_id_eq: project.id }), class: 'member_link')
+      else
+        actions << '<span class="member_span">No Ratings yet</span>'.html_safe
+      end
+      actions.join('').html_safe
     end
   end
 
@@ -62,6 +72,7 @@ ActiveAdmin.register Project do
     f.inputs do
       f.input :title
       f.input :location
+      f.input :type, as: :readonly
       f.input :industries
       f.input :jurisdictions
       f.input :description, as: :text
