@@ -323,13 +323,16 @@ body.home.index, body.home.page {
       }
 
       .position {
-        font-size: 17px;
+        font-size: 16px;
         margin: 0.3rem 0;
       }
 
       .linkedin {
-        color: #0070b3;
-        font-size: 40px;
+        background-color: #0070b3;
+        color: #fff;
+        font-size: 28px;
+        padding: 0 8px 0 7px;
+        display: inline-block;
       }
     }
   }
@@ -382,6 +385,10 @@ body.home.index, body.home.page {
 body.home.index .home-content, body.home.page .home-content {
   font-family: "Glacial Indifference", Arial, sans-serif;
   font-size: 16px;
+
+  .small {
+    font-size: 14px;
+  }
 
   h2 {
     text-transform: uppercase;
