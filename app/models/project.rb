@@ -113,6 +113,14 @@ class Project < ActiveRecord::Base
     '15+' => (15..Float::INFINITY)
   }.freeze
 
+  def self.ending
+    one_off.active.joins(:business).select('projects.*, businesses.time_zone').find_each.find_all do |project|
+      # Set to midnight
+      tz = ActiveSupport::TimeZone[project[:time_zone]]
+      project.ends_on.in_time_zone(tz) + 1.day <= 5.minutes.from_now
+    end
+  end
+
   def self.cards_for_user(user, filter:, page:, per:)
     user.business.projects.recent
         .includes(:industries, :jurisdictions, :skills)
