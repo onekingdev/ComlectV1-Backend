@@ -122,7 +122,7 @@ ALTER SEQUENCE admin_users_id_seq OWNED BY admin_users.id;
 
 
 --
--- Name: answers; Type: TABLE; Schema: public; Owner: -
+-- Name: answers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE answers (
@@ -400,7 +400,7 @@ ALTER SEQUENCE favorites_id_seq OWNED BY favorites.id;
 
 
 --
--- Name: flags; Type: TABLE; Schema: public; Owner: -
+-- Name: flags; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE flags (
@@ -1540,7 +1540,7 @@ CREATE TABLE projects_skills (
 
 
 --
--- Name: questions; Type: TABLE; Schema: public; Owner: -
+-- Name: questions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE questions (
@@ -2008,11 +2008,6 @@ ALTER TABLE ONLY answers ALTER COLUMN id SET DEFAULT nextval('answers_id_seq'::r
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY businesses ALTER COLUMN id SET DEFAULT nextval('businesses_id_seq'::regclass);
 
 
@@ -2228,7 +2223,7 @@ ALTER TABLE ONLY admin_users
 
 
 --
--- Name: answers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: answers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY answers
@@ -2284,7 +2279,7 @@ ALTER TABLE ONLY favorites
 
 
 --
--- Name: flags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: flags_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY flags
@@ -2388,7 +2383,7 @@ ALTER TABLE ONLY projects
 
 
 --
--- Name: questions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: questions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY questions
@@ -2497,7 +2492,7 @@ CREATE UNIQUE INDEX index_admin_users_on_reset_password_token ON admin_users USI
 
 
 --
--- Name: index_answers_on_question_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_answers_on_question_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_answers_on_question_id ON answers USING btree (question_id);
@@ -2623,14 +2618,14 @@ CREATE INDEX index_favorites_on_owner_type_and_owner_id ON favorites USING btree
 
 
 --
--- Name: index_flags_on_flagged_content_type_and_flagged_content_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_flags_on_flagged_content_type_and_flagged_content_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_flags_on_flagged_content_type_and_flagged_content_id ON flags USING btree (flagged_content_type, flagged_content_id);
 
 
 --
--- Name: index_flags_on_flagger_type_and_flagger_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_flags_on_flagger_type_and_flagger_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_flags_on_flagger_type_and_flagger_id ON flags USING btree (flagger_type, flagger_id);
@@ -2987,15 +2982,10 @@ CREATE UNIQUE INDEX index_projects_skills_on_project_id_and_skill_id ON projects
 
 
 --
--- Name: index_questions_on_project_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_questions_on_project_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_questions_on_project_id ON questions USING btree (project_id);
-
-
---
--- Name: index_ratings_on_project_id; Type: INDEX; Schema: public; Owner: -
---
 
 
 --
@@ -3439,3 +3429,4 @@ INSERT INTO schema_migrations (version) VALUES ('20161014194840');
 INSERT INTO schema_migrations (version) VALUES ('20161014195149');
 
 INSERT INTO schema_migrations (version) VALUES ('20161014231410');
+
