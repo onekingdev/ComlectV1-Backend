@@ -1482,7 +1482,8 @@ CREATE TABLE questions (
     project_id integer NOT NULL,
     text text,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    specialist_id integer
 );
 
 
@@ -3370,6 +3371,8 @@ INSERT INTO schema_migrations (version) VALUES ('20161014194840');
 INSERT INTO schema_migrations (version) VALUES ('20161014195149');
 
 INSERT INTO schema_migrations (version) VALUES ('20161014231410');
+
+INSERT INTO schema_migrations (version) VALUES ('20161018182637');
 
 INSERT INTO schema_migrations (version) VALUES ('20161018200158');
 
