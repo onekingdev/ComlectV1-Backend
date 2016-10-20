@@ -135,6 +135,11 @@ class Project < ActiveRecord::Base
     %i(by_specialist_first_name by_specialist_last_name)
   end
 
+  def complete!
+    super
+    update_attribute :completed_at, Time.zone.now
+  end
+
   def requires_business_rating?
     one_off? && complete? && ratings.by(business).empty?
   end
