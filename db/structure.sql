@@ -241,7 +241,11 @@ CREATE TABLE charges (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     date timestamp without time zone NOT NULL,
-    transaction_id integer
+    transaction_id integer,
+    fee_in_cents integer,
+    total_with_fee_in_cents integer,
+    running_balance_in_cents integer,
+    specialist_amount_in_cents integer DEFAULT 0 NOT NULL
 );
 
 
@@ -2536,8 +2540,7 @@ CREATE TABLE transactions (
     updated_at timestamp without time zone NOT NULL,
     project_id integer,
     parent_transaction_id integer,
-    status_detail character varying,
-    fee_in_cents integer
+    status_detail character varying
 );
 
 
@@ -3764,13 +3767,6 @@ CREATE INDEX index_transactions_on_charge_source_id ON transactions USING btree 
 
 
 --
--- Name: index_transactions_on_fee_in_cents; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_transactions_on_fee_in_cents ON transactions USING btree (fee_in_cents);
-
-
---
 -- Name: index_transactions_on_parent_transaction_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -4136,4 +4132,6 @@ INSERT INTO schema_migrations (version) VALUES ('20161026162641');
 INSERT INTO schema_migrations (version) VALUES ('20161026171857');
 
 INSERT INTO schema_migrations (version) VALUES ('20161027163457');
+
+INSERT INTO schema_migrations (version) VALUES ('20161104010221');
 
