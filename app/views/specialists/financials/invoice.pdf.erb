@@ -219,7 +219,13 @@
     <tr class="even-row total">
       <td class="left-column"></td>
       <th class="middle-column bolded-text">TOTAL</th>
-      <td class="right-column bolded-text"><%= number_to_currency(transaction.amount) %></td>
+      <td class="right-column bolded-text">
+        <% if specialist %>
+          <%= number_to_currency(transaction.subtotal - transaction.fee) %>
+        <% else %>
+          <%= number_to_currency(transaction.amount) %>
+        <% end %>
+      </td>
     </tr>
     </tbody>
   </table>
