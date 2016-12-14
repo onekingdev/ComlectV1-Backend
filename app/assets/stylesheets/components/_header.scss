@@ -60,6 +60,12 @@
     }
   }
 
+  @media (max-width: $screen-xs-max) {
+    .image-container {
+      margin-bottom: 20px;
+    }
+  }
+
   h1 {
     font-size: 42px;
     margin: 0;
@@ -142,6 +148,26 @@
       .tools {
         margin-top: 2em;
       }
+    }
+  }
+
+  .pseudo-table {
+    .tools {
+      .btn-primary {
+        padding: 4px 32px;
+      }
+    }
+    .has-logo {
+      h1 {
+        font-size: 30px;
+        font-weight: $bold-weight;
+      }
+      @media (max-width: $screen-xs-max) {
+        background-color: #ffffff;
+      }
+    }
+    .stars {
+      line-height: 20px;
     }
   }
 }

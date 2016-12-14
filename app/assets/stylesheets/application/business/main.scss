@@ -1,8 +1,12 @@
 body.businesses.show {
   #header {
     background-image: asset_url("header-profile.jpg");
-    background-position-y: -100px;
-
+    //background-position-y: -120px;
+    background-size: cover;
+    @media (min-width: $screen-xs-max) {
+      height: 381px;
+      margin-bottom: 120px;      
+    }
     @media (max-width: 689px) {
       background-size: auto 300px + 150px;
     }
