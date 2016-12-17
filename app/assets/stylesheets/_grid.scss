@@ -10,6 +10,6 @@
 
 .row.bordered-cells {
   [class*=col-] + [class*=col-] {
-    border-left: 1px solid $gray-dark;
+    border-left: 2px solid $gray-dark;
   }
 }

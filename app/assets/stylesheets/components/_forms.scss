@@ -145,7 +145,7 @@ form .well {
       font-weight: $medium-weight;
       font-size: 14px;
       letter-spacing: 2px;
-      background-color: #f3f3f3;
+      background-color: #ffffff;
       border-radius: 0px;
       padding-top: 8px;
       padding-bottom: 8px;
@@ -163,6 +163,12 @@ form .well {
     .btn.active:active, .btn.active.active {
       background-color: $btn-primary-bg;
       border-color: transparent;
+    }
+
+    .btn-sm {
+      padding: 4px 0px;
+      font-weight: $light-weight;
+      font-size: 12px;
     }
   }  
 }
@@ -239,5 +245,5 @@ select.js-select.input-lg {
 // We place this button first in the source so it becomes the default on <enter>, and then move it off screen
 .default-submit-offscreen {
   position: absolute;
-  left: -100%;
+  left: -1000px;
 }

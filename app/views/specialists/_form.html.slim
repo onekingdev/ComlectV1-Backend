@@ -38,13 +38,13 @@
         }
     .col-sm-6= f.input :address_2, required: false, input_html: { class: 'input-lg' }
     .col-sm-6
-      = f.input :city, readonly: true, as: :string, input_html: { class: 'input-lg' }
+      = f.input :city, as: :string, input_html: { class: 'input-lg' }
       = f.hidden_field :lat
       = f.hidden_field :lng
-    .col-sm-6= f.input :state, readonly: true, as: :string, input_html: { class: 'input-lg' }
+    .col-sm-6= f.input :state, as: :string, input_html: { class: 'input-lg' }
     .col-sm-6
       = f.input :zipcode, input_html: { class: 'input-lg' }
-    .col-sm-6= f.input :country, readonly: true, as: :string, input_html: { class: 'input-lg' }
+    .col-sm-6= f.input :country, as: :string, input_html: { class: 'input-lg' }
     .col-sm-6
       = f.input :time_zone, include_blank: t('simple_form.placeholders.specialist.time_zone'), input_html: { class: 'input-lg js-select' }
 
@@ -86,7 +86,7 @@
     .col-xs-12.col-sm-12
       = f.object.skills_input(f)
       button.info-tooltip type="button" data-toggle="tooltip" title="It's important to hashtag your top 10 skills as businesses use them to search for you and set their project prerequisites. Hashtag things like specific regulation knowledge (e.g. #doddfrank) and specific jurisdictions (e.g. #NY)." i
-      .form-group.m-y-0
+      .form-group.m-t-1.m-b-0
         ul.skills-required.m-b-0
           - f.object.skill_names.each do |skill|
             li

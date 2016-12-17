@@ -6,6 +6,12 @@
   padding: 10px 20px;
 }
 
+.btn-sm {
+  padding: 4px 0px;
+  font-weight: $light-weight;
+  font-size: 12px;
+}
+
 .btn .icon ~ span, .btn .fa ~ span {
   margin-left: 0.4rem;
 }

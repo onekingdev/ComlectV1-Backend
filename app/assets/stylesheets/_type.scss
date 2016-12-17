@@ -72,3 +72,7 @@ a.no-link {
 ul.list-flush {
   padding-left: 15px;
 }
+
+a:focus, div:focus {
+  outline: none;
+}

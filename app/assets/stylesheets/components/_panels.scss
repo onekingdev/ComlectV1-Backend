@@ -10,7 +10,9 @@
   box-shadow: 0px 13px 32px 3px rgba(0,0,0,0.2);
 
   a.panel-heading {
-    color: #fff !important;
+    //color: #fff !important;
+    font-weight: $black-weight;
+    font-size: 13px;
 
     &:hover {
       text-decoration: none;
@@ -50,10 +52,6 @@
           text-decoration: underline;
         }
       }
-    }
-
-    a.no-link {
-      color: #fff;
     }
 
     .icon {
@@ -167,17 +165,12 @@
   .btn {
     height: 100%;
     font-family: Muller;
-    font-size: 18px;
-    font-weight: bold;
-    font-style: italic;
-    color: #fff;
+    //font-size: 18px;
+    //font-weight: bold;
+    //font-style: italic;
+    //color: #fff;
     background-color: transparent;
     border-radius: 0;
-
-    &:hover, &:focus {
-      background-color: #383838;
-      color: #fff;
-    }
   }
 
   .dropdown-menu li.active {
@@ -189,10 +182,11 @@
 
 .panel-heading .nav-pills {
   float: right;
-  margin-top: -(nth($panel-heading-padding, 1));
+  //margin-top: -(nth($panel-heading-padding, 1));
+  margin-top: -1px;
   margin-right: -(nth($panel-heading-padding, 2));
   overflow: hidden;
-  height: calc(100% + #{nth($panel-heading-padding, 1) * 2});
+  //height: calc(100% + #{nth($panel-heading-padding, 1) * 2});
 
   li + li {
     margin-left: 0;
@@ -201,21 +195,26 @@
 
   a {
     font-family: Muller;
-    font-size: 18px;
-    font-weight: bold;
-    font-style: italic;
-    color: #fff;
+    font-size: 13px;
+    font-weight: $light-weight;
+    color: #000;
     background-color: transparent;
     border-radius: 0;
-    padding: 10px 15px 9px 15px;
+    padding: 0px 15px;
 
     .icon {
       color: #fff;
     }
+    text-transform: uppercase;
   }
 
   a:hover, li.active a, a:focus {
-    background-color: #383838;
+    background-color: #fff;
+    color: #ffcc00;
+  }
+
+  li.active a {
+    font-weight: $bold-weight;
   }
 
   li:last-child a {
@@ -298,7 +297,7 @@
 
   .panel-heading {
     @include clearfix;
-    background-color: #5a5a5a;
+    //background-color: #5a5a5a;
     padding: 24px 20px;
 
     h4 {
@@ -309,7 +308,7 @@
   }
 
   &.active .panel-heading {
-    background-color: rgba(0, 0, 0, 0.77);
+    //background-color: rgba(0, 0, 0, 0.77);
   }
 
   .panel-body {
@@ -374,3 +373,16 @@
   }
 }
 
+
+.tab-pane .card-container {
+  padding: 0px 10px;
+
+  .project, .specialist {
+    border: 2px solid #ffcc00;
+
+    .panel-heading {
+      border-bottom: 2px solid #ffcc00;
+      display: block;
+    }
+  }
+}

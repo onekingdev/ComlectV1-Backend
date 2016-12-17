@@ -13,7 +13,7 @@ body.businesses.show {
   }
 }
 
-#business-dashboard {
+#business-dashboard, #specialist-dashboard {
   @media (max-width: $screen-sm-max) {
     display: block;
 
@@ -23,7 +23,13 @@ body.businesses.show {
   }
 }
 
-body.businesses.new {
+body.business_dashboard.show, body.dashboard.show {
+  background-image: asset_url('bg.png');
+  background-position: center top;
+  background-repeat: repeat-y;  
+}
+
+body.businesses.new, body.businesses.edit, body.projects.new {
   background-image: asset_url('bg.png');
   background-position: center top;
   background-repeat: repeat-y;
@@ -37,7 +43,7 @@ body.businesses.new {
     margin-bottom: 100px;
   }
 
-  .btn-primary {
+  .btn-lg {
     text-transform: uppercase;
     font-weight: $medium-weight;
     font-size: 14px;
