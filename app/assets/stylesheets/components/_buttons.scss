@@ -1,5 +1,15 @@
 .btn {
   text-transform: uppercase;
+  //font-weight: ;
+  font-size: 14px;
+  letter-spacing: 2px;
+  padding: 10px 20px;
+}
+
+.btn-sm {
+  padding: 4px 0px;
+  font-weight: $light-weight;
+  font-size: 12px;
 }
 
 .btn .icon ~ span, .btn .fa ~ span {
@@ -19,7 +29,7 @@
 }
 
 .btn-social-linkedin {
-  $bg: #4f72b8;
+  $bg: #ffcc00;
   background-color: $bg;
   border-color: $bg;
 
@@ -36,6 +46,12 @@
 
 .btn-primary {
   @include button-variant-light($btn-primary-bg);
+
+  &:hover {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+  }
 }
 
 .btn-muted {
@@ -44,7 +60,9 @@
   color: #000;
 
   &:hover {
-    background-color: darken(#f3f3f3, 5%);
+    background-color: #ffcc00;
+    border-color: #ffcc00;
+    color: #000;
   }
 }
 
