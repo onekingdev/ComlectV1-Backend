@@ -84,29 +84,6 @@
       margin-top: 10px;
     }
     margin-top: 0;
-
-    .tool-icon {
-      font-size: 24px;
-      color: #000;
-      border: 0px;
-      background: transparent;
-
-      i {
-        //font-weight: bold;
-      }
-
-      &:hover {
-        text-decoration: none;
-      }
-
-      &:focus {
-        outline: none;
-      }
-    }
-
-    .favorite.active {
-      color: #ffcc00;
-    }
   }
 
   .small-header {

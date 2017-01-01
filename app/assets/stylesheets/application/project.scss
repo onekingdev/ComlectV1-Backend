@@ -205,6 +205,23 @@ body.projects.show {
 }
 
 .project.panel {
+  .applications-count {
+    border: 0px;
+    background: transparent;
+    position: absolute;
+    right: 17px;
+    top: 8px;
+    z-index: 5;
+    padding: 0px;
+    font-weight: $medium-weight;
+    color: #d2d2d2;
+
+    .icon-user {
+      font-weight: bold;
+      margin-left: 5px;
+    }
+  }
+
   .panel-heading {
     h4 {
       //height: 2.4em;
