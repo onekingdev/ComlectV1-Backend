@@ -67,8 +67,8 @@ class Timesheet < ActiveRecord::Base
   end
 
   def remove_empty_logs
-    self.time_logs.each do |tl|
-      tl.delete if (tl.description.blank? && tl.hours.blank? && tl.date.blank?)
+    time_logs.each do |tl|
+      tl.delete if tl.description.blank? && tl.hours.blank? && tl.date.blank?
     end
   end
 end
