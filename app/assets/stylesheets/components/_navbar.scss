@@ -1,7 +1,7 @@
 #nav {
   $spacing: 35px;
 
-  background-color: #fff;
+  background-color: transparent;
   padding: 30px 70px;
   @media (max-width: $screen-md-max) {
     padding: 30px 50px;
@@ -257,4 +257,8 @@
       margin-left: 0;
     }
   }
+}
+
+.home.index #nav {
+  background-color: #fff;
 }

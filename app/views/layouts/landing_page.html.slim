@@ -34,6 +34,7 @@ body.home.index
         a.btn.btn-primary.p-h-3 href=new_business_project_path Post a Project
         a.btn.btn-default.p-h-3 href=new_specialist_path Become a Specialist
   .container.landing-stats.m-b-3.p-b-2
+    #our-talent.anchor
     h1.m-t-3.m-b-2 ACCESS TOP COMPLIANCE SPECIALISTS & BOUTIQUE FIRMS IN ONE PLACE
     .col-md-3
       h2 = Specialist.count-2
@@ -48,6 +49,7 @@ body.home.index
       h2 = Business.count-1
       p businesses serviced
   .landing-cards
+    #types-of-services.anchor
     .col-md-3.card_1
       = image_tag "landing/pencil.png"
       h1 Registrations
@@ -66,16 +68,17 @@ body.home.index
       p Can't get it all done alone? Don't want to add another full time position? Create an agile compliance workforce with our on demand specialists.
 
 
-  .overflow-wrap.relative-wrap
+  .clearfix.relative-wrap
     .container
-      #how-it-works.clearfix
+      #how-it-works-cont.clearfix
+        #how-it-works.anchor
         #figure_a data-angle="31.863128522485226" data-display-mode="fit" data-preserve-viewbox="ignore" data-strokewidth="0" data-svg-id="svgshape.v2.Svg_2199b45a569247d49c22b958a59eacc8" data-svg-type="shape" data-viewbox=("0 0 60 60") style=("left: 180px; width: 1349px; position: absolute; transform: rotate(31.8631deg) translateZ(0px); margin-left: calc((100% - 980px) * 0.5); top: -161px; height: 668px; z-index: -1;") 
           #figure_a_svg style="fill-opacity: 1; stroke-width: 0; stroke: rgb(237, 21, 102); stroke-opacity: 1; fill: rgb(237, 237, 237);"
             svg preserveaspectratio=("xMidYMid meet") role="img" style=("stroke-width: 0px;") viewbox=("0.699999988079071 15.5 58.599998474121094 29") xmlns="http://www.w3.org/2000/svg" 
               g
                 path d=("M30 15.5L.7 30 30 44.5 59.3 30 30 15.5z") 
 
-        #figure_b data-angle="49.68953921324038" data-display-mode="fit" data-preserve-viewbox="ignore" data-strokewidth="0" data-svg-id="svgshape.v1.svg_6b1da864ef84b466c566b1aac7ed2e1e.Triangle" data-svg-type="shape" data-viewbox=("-20.924 -26.943 377 377") style=("left: -340px; width: 1133px; position: absolute; transform: rotate(49.6895deg) translateZ(0px); margin-left: calc((100% - 980px) * 0.5); top: -255px; height: 982px; z-index: -1;") 
+        #figure_b data-angle="49.68953921324038" data-display-mode="fit" data-preserve-viewbox="ignore" data-strokewidth="0" data-svg-id="svgshape.v1.svg_6b1da864ef84b466c566b1aac7ed2e1e.Triangle" data-svg-type="shape" data-viewbox=("-20.924 -26.943 377 377") style=("left: -340px; width: 1133px; position: absolute; transform: rotate(49.6895deg) translateZ(0px); margin-left: calc((100% - 980px) * 0.5); top: -255px; height: 982px; z-index: -151;") 
           #figure_b_svg style="fill-opacity: 1; stroke-width: 0; stroke: rgb(237, 21, 102); stroke-opacity: 1; fill: rgb(255, 195, 0);" 
             svg preserveaspectratio=("xMidYMid meet") role="img" style=("stroke-width: 0px;") viewbox=("0 0 334.80499267578125 289.9490051269531") xmlns="http://www.w3.org/2000/svg" 
               g
@@ -95,7 +98,7 @@ body.home.index
           h1 GET WORK DONE
           p It's free to post a project. You can post a one off project, hourly engagement, or a full time role. Set the price, time, and prerequisites, and immediately start receiving applications form our pool of top specialists. 
 
-  #types-of-services.parallax-window data-image-src=asset_path("landing/breather.jpg") data-parallax="scroll"
+  #clint-story.parallax-window data-image-src=asset_path("landing/breather.jpg") data-parallax="scroll"
     .container.clearfix
       .col-md-4.pull-left.m-t-3.p-t-2
         .clint_photo= link_to (image_tag "landing/clint.jpg"), "https://www.nextgen-wealth.com/", :target => "_blank"

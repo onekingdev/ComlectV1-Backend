@@ -12,11 +12,22 @@ $black-weight: 800;
 $heavy-weight: 900;
 
 @font-face {
-    font-family: 'Avenir Light';
+    font-family: 'Avenir';
     src: url('/fonts/avenir.eot');
     src: url('/fonts/avenir.eot?#iefix') format('embedded-opentype'),
+         url('/fonts/avenir.woff2') format('woff2'),
          url('/fonts/avenir.woff') format('woff'),
          url('/fonts/avenir.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Avenir Light';
+    src: url('/fonts/avenirlight.eot');
+    src: url('/fonts/avenirlight.eot?#iefix') format('embedded-opentype'),
+         url('/fonts/avenirlight.woff') format('woff'),
+         url('/fonts/avenirlight.ttf') format('truetype');
     font-weight: $bold-weight;
     font-style: normal;
 }
