@@ -36,10 +36,11 @@ body.home.partnerships {
     .entry {
       img {
         margin-bottom: 15px;
+        text-align: center;
       }
       overflow: hidden;
-      width: 218px;
-      height: 312px;
+      width: 255px;
+      height: 431px;
       padding: 17px;
       padding-bottom: 0px;
       background: #ffffff;
@@ -48,6 +49,7 @@ body.home.partnerships {
       float: left;
       font-size: 12px;
       font-family: "Avenir Light";
+      letter-spacing: 0px;
       p {
         font-size: 14px;
         font-weight: bold;
@@ -59,6 +61,7 @@ body.home.partnerships {
         font-family: "Nimbus Sans";
         color: #FFC304;
         padding: 17px;
+        text-align: center;
         margin-bottom: 0px;
       }
     }

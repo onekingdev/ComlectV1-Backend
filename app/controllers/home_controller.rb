@@ -4,11 +4,12 @@ class HomeController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   PAGES = %w[
-    how-it-works
+    faqs
     terms-of-use
     privacy-policy
     partner-network
     member-partner-network
+    about-us
   ].freeze
 
   def page
@@ -18,7 +19,6 @@ class HomeController < ApplicationController
 
   def partnerships
     s = {}; Partnership.all.order(:id).each { |p| c = p.category.to_sym; s[c] = [] if !s.keys.include? c; s[c].push(p) }
-    s["Become a partner"]
     @partnerships = s
   end
 

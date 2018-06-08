@@ -22,7 +22,8 @@
           - v.each do |partnership|
             = link_to partnership.href, target: "_blank" do
               .entry
-                = image_tag partnership.logo_url(:original), width: '184px'
+                center
+                  = image_tag partnership.logo_url(:original), width: '184px'
                 = partnership.description
                 p
                   - if current_user || partnership.discount_pub.blank?

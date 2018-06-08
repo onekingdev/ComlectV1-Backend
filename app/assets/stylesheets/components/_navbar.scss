@@ -1,10 +1,10 @@
 #nav {
   $spacing: 35px;
 
-  background-color: transparent;
-  padding: 30px 70px;
+  background-color: #fff;
+  padding: 0px 70px;
   @media (max-width: $screen-md-max) {
-    padding: 30px 50px;
+    padding: 0px 50px;
   }
   text-transform: uppercase;
   width: 100%;
