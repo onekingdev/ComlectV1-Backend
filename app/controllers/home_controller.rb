@@ -30,7 +30,7 @@ class HomeController < ApplicationController
   end
 
   def press
-    @articles = Article.order(published_at: :desc).paginate(page: params[:page])
+    @articles = Article.order(published_at: :desc)
   end
 
   def app_config
