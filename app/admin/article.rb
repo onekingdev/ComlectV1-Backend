@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
-ActiveAdmin.register Partnership do
+ActiveAdmin.register Article do
   menu parent: 'Data'
 
   config.filters = false
 
   index do
     selectable_column
-    column :company do |record|
+    column :title do |record|
       link_to record, [:admin, record]
     end
     actions
   end
 
-  permit_params :company, :category, :description, :discount, :discount_pub, :href, :logo, :logo_data
+  permit_params :title, :src_title, :published_at, :image_data, :image, :src_href
 
   controller do
     def create
@@ -23,13 +23,11 @@ ActiveAdmin.register Partnership do
 
   form html: { enctype: 'multipart/form-data' } do |f|
     inputs name: 'Partnership' do
-      input :company
-      input :description
-      input :discount
-      input :discount_pub
-      input :href
-      input :category
-      input :logo, as: :file, label: 'Logo'
+      input :title
+      input :src_title
+      input :published_at
+      input :image, as: :file, label: 'preview'
+      input :src_href
     end
     f.actions
   end

@@ -264,6 +264,41 @@ ALTER SEQUENCE answers_id_seq OWNED BY answers.id;
 
 
 --
+-- Name: articles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE articles (
+    id integer NOT NULL,
+    src_title character varying,
+    published_at date,
+    title character varying,
+    image_data jsonb,
+    src_href character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: articles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE articles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: articles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE articles_id_seq OWNED BY articles.id;
+
+
+--
 -- Name: bank_accounts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3448,6 +3483,13 @@ ALTER TABLE ONLY answers ALTER COLUMN id SET DEFAULT nextval('answers_id_seq'::r
 
 
 --
+-- Name: articles id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY articles ALTER COLUMN id SET DEFAULT nextval('articles_id_seq'::regclass);
+
+
+--
 -- Name: bank_accounts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3699,6 +3741,14 @@ ALTER TABLE ONLY admin_users
 
 ALTER TABLE ONLY answers
     ADD CONSTRAINT answers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: articles articles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY articles
+    ADD CONSTRAINT articles_pkey PRIMARY KEY (id);
 
 
 --
@@ -5203,4 +5253,6 @@ INSERT INTO schema_migrations (version) VALUES ('20180323075021');
 INSERT INTO schema_migrations (version) VALUES ('20180531123213');
 
 INSERT INTO schema_migrations (version) VALUES ('20180531132555');
+
+INSERT INTO schema_migrations (version) VALUES ('20180609010335');
 
