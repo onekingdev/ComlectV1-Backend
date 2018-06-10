@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.2
--- Dumped by pg_dump version 9.6.2
+-- Dumped from database version 9.6.9
+-- Dumped by pg_dump version 9.6.9
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -47,48 +47,6 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
--- Name: address_standardizer; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS address_standardizer WITH SCHEMA public;
-
-
---
--- Name: EXTENSION address_standardizer; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION address_standardizer IS 'Used to parse an address into constituent elements. Generally used to support geocoding address normalization step.';
-
-
---
--- Name: address_standardizer_data_us; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS address_standardizer_data_us WITH SCHEMA public;
-
-
---
--- Name: EXTENSION address_standardizer_data_us; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION address_standardizer_data_us IS 'Address Standardizer US dataset example';
-
-
---
--- Name: fuzzystrmatch; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS fuzzystrmatch WITH SCHEMA public;
-
-
---
--- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance between strings';
 
 
 --
@@ -332,7 +290,8 @@ CREATE TABLE businesses (
     ratings_total integer DEFAULT 0 NOT NULL,
     ratings_average double precision,
     discourse_username character varying,
-    discourse_user_id integer
+    discourse_user_id integer,
+    fee_free boolean DEFAULT false
 );
 
 
@@ -5200,7 +5159,4 @@ INSERT INTO schema_migrations (version) VALUES ('20170919200413');
 
 INSERT INTO schema_migrations (version) VALUES ('20180323075021');
 
-INSERT INTO schema_migrations (version) VALUES ('20180531123213');
-
-INSERT INTO schema_migrations (version) VALUES ('20180531132555');
-
+INSERT INTO schema_migrations (version) VALUES ('20180605145214');
