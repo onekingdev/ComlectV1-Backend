@@ -10,7 +10,7 @@ end
 
 # Rails
 gem 'rails', '4.2.10'
-gem 'webpacker', '~> 3.2'
+gem 'webpacker'
 
 # ActiveRecord
 gem 'auto_strip_attributes'
@@ -103,7 +103,7 @@ group :development, :test do
   gem 'byebug'
 
   # Testing
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'rspec-rails'
 
   # Code Quality
