@@ -3,7 +3,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../config/environment', __dir__)
 require 'rails/test_help'
-require 'mocha/test_unit'
+require 'mocha/minitest'
 require 'webmock/minitest'
 require 'capybara/rails'
 require 'capybara/poltergeist'
@@ -51,7 +51,7 @@ class ActionDispatch::IntegrationTest
 end
 
 class ActiveSupport::TestCase
-  include FactoryGirl::Syntax::Methods
+  include FactoryBot::Syntax::Methods
 
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
