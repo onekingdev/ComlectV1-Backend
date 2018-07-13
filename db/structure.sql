@@ -529,7 +529,7 @@ CREATE TABLE public.projects (
     expires_at timestamp without time zone,
     solicited_business_rating boolean DEFAULT false,
     solicited_specialist_rating boolean DEFAULT false,
-    duration_type character varying DEFAULT 'asap'::character varying NOT NULL,
+    duration_type character varying DEFAULT 'asap'::character varying,
     estimated_days integer
 );
 
