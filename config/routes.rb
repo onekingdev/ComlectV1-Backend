@@ -80,7 +80,7 @@ Rails.application.routes.draw do
       resources :project_extensions, path: 'extension'
       resource :project_rating, path: 'rating'
       resource :project_overview, path: 'overview(/:specialist_id)', only: :show
-      #get 'overview(/:specialist_id)' => 'project_overviews#show', as: :project_overview
+      # get 'overview(/:specialist_id)' => 'project_overviews#show', as: :project_overview
     end
 
     resources :projects do
