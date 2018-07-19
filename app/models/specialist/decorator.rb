@@ -4,7 +4,7 @@ class Specialist::Decorator < ApplicationDecorator
   decorates Specialist
   delegate_all
 
-  def value_of_completed_projects
+  def completed_projects_amount
     projects.complete.sum(:calculated_budget)
   end
 
