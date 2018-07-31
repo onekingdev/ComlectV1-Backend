@@ -1,4 +1,27 @@
+body.turnkeys.page {
+  .app_container {
+    width: 100% !important;
+  }
+  .page-parallax {
+    height: 280px;
+    background-size: cover;
+    width: 100%;
+  }
+  .page-parallax-footer {
+    height: 460px;
+    background-size: cover;
+    width: 100%;
+  }
+  #header {
+    margin-bottom: 0px;
+  }
+}
+
 body.turnkeys.index {
+  .modal-content{
+    box-shadow: none !important;
+    border: 0px !important;
+  }
   .black-line {
     background-color: #000;
     height: 15px;

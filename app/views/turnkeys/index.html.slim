@@ -44,7 +44,7 @@
   .row
     h1.brand-color Turnkey Solutions
     - for category in @categories do
-      .col-md-4 ontouchstart="this.classList.toggle('hover');"
+      .col-md-4.col-sm-6 ontouchstart="this.classList.toggle('hover');"
         .turnkey-index-entity
           .turnkey-index-entity-front
             .turnkey-index-entity-front-bg
@@ -66,12 +66,12 @@
           = f.input :budget, placeholder: "Budget (USD)"
         .col-md-4.col-md-push-2
           = f.input :description, placeholder: "Project description *"
-        .col-md-8.col-md-push-2.m-b-3.p-b-1 = f.submit "Submit", class: "btn btn-primary btn-xs pull-right m-t-1"
+        .col-md-8.col-md-push-2.p-b-1 = f.submit "Submit", class: "btn btn-primary btn-xs pull-right m-t-1 m-b-3"
 .row.black-line
 .container.p-b-2
   .row.p-b-3
-    .col-md-10.col-md-push-1.find-out-more.p-b-3.m-b-3
-      h1.text-center.m-t-3.m-b-2 Ready to find out more?
+    .col-md-10.col-md-push-1.find-out-more.p-b-3.m-b-3.p-t-3
+      h1.text-center.m-t-0.m-b-2 Ready to find out more?
       .col-md-4.text-center
         .line.m-t-2.m-b-3
         = link_to "FREE EVALUATION", new_feedback_request_path, "data-dismiss" => "modal", "data-remote" => true, class: "btn btn-primary p-h-3 m-t-1"
