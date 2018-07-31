@@ -44,7 +44,7 @@ Rails.application.routes.draw do
     resources :ima, only: %i[index create]
   end
 
-  resources :feedback_requests, only: :create
+  resources :feedback_requests, only: %i[create new]
   resources :businesses, only: %i[new create show]
   resource :business, only: %i[edit] do
     patch '/' => 'businesses#update', as: :update
