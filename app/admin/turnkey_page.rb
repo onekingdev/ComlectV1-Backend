@@ -13,7 +13,7 @@ ActiveAdmin.register TurnkeyPage do
     actions
   end
 
-  permit_params :title, :url, :description, :cost
+  permit_params :title, :url, :description, :cost, :header_text
 
   controller do
     def create
@@ -24,6 +24,7 @@ ActiveAdmin.register TurnkeyPage do
   form html: { enctype: 'multipart/form-data' } do |f|
     inputs name: 'Turnkey Category' do
       input :title
+      input :header_text
       input :url
       input :description
       input :cost

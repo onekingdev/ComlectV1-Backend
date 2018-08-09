@@ -1200,16 +1200,6 @@ CREATE TABLE industries_specialists (
 
 
 --
--- Name: industries_turnkey_solutions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE industries_turnkey_solutions (
-    turnkey_solution_id integer NOT NULL,
-    industry_id integer NOT NULL
-);
-
-
---
 -- Name: job_applications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1291,16 +1281,6 @@ CREATE TABLE jurisdictions_projects (
 CREATE TABLE jurisdictions_specialists (
     jurisdiction_id integer NOT NULL,
     specialist_id integer NOT NULL
-);
-
-
---
--- Name: jurisdictions_turnkey_solutions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE jurisdictions_turnkey_solutions (
-    turnkey_solution_id integer NOT NULL,
-    jurisdiction_id integer NOT NULL
 );
 
 
@@ -3041,6 +3021,54 @@ ALTER SEQUENCE project_issues_id_seq OWNED BY project_issues.id;
 
 
 --
+-- Name: project_templates; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE project_templates (
+    id integer NOT NULL,
+    title character varying,
+    type character varying,
+    location_type character varying,
+    description character varying,
+    payment_schedule character varying,
+    fixed_budget numeric,
+    hourly_rate numeric,
+    estimated_hours integer,
+    only_regulators boolean,
+    annual_salary integer,
+    fee_type character varying,
+    minimum_experience integer,
+    duration_type character varying,
+    estimated_days integer,
+    turnkey_solution_id integer,
+    flavor character varying,
+    key_deliverables character varying,
+    pricing_type character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: project_templates_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE project_templates_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: project_templates_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE project_templates_id_seq OWNED BY project_templates.id;
+
+
+--
 -- Name: projects_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -3514,65 +3542,6 @@ ALTER SEQUENCE turnkey_pages_id_seq OWNED BY turnkey_pages.id;
 
 
 --
--- Name: turnkey_solutions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE turnkey_solutions (
-    id integer NOT NULL,
-    title character varying,
-    range character varying,
-    era boolean,
-    sma boolean,
-    fund boolean,
-    industries_enabled boolean,
-    jurisdictions_enabled boolean,
-    description text,
-    features text,
-    project_title character varying,
-    project_type character varying,
-    project_location_type character varying,
-    project_description character varying,
-    project_payment_schedule character varying,
-    project_fixed_budget numeric,
-    project_hourly_rate numeric,
-    project_estimated_hours integer,
-    project_only_regulators boolean,
-    project_annual_salary integer,
-    project_fee_type character varying,
-    project_minimum_experience integer,
-    project_duration_type character varying,
-    project_estimated_days integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    turnkey_page_id integer,
-    principal_office boolean DEFAULT false,
-    project_key_deliverables character varying,
-    project_pricing_type character varying,
-    aum boolean,
-    hours boolean DEFAULT false
-);
-
-
---
--- Name: turnkey_solutions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE turnkey_solutions_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: turnkey_solutions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE turnkey_solutions_id_seq OWNED BY turnkey_solutions.id;
-
-
---
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -3799,6 +3768,13 @@ ALTER TABLE ONLY project_issues ALTER COLUMN id SET DEFAULT nextval('project_iss
 
 
 --
+-- Name: project_templates id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY project_templates ALTER COLUMN id SET DEFAULT nextval('project_templates_id_seq'::regclass);
+
+
+--
 -- Name: projects id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3887,13 +3863,6 @@ ALTER TABLE ONLY transactions ALTER COLUMN id SET DEFAULT nextval('transactions_
 --
 
 ALTER TABLE ONLY turnkey_pages ALTER COLUMN id SET DEFAULT nextval('turnkey_pages_id_seq'::regclass);
-
-
---
--- Name: turnkey_solutions id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY turnkey_solutions ALTER COLUMN id SET DEFAULT nextval('turnkey_solutions_id_seq'::regclass);
 
 
 --
@@ -4103,6 +4072,14 @@ ALTER TABLE ONLY project_issues
 
 
 --
+-- Name: project_templates project_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY project_templates
+    ADD CONSTRAINT project_templates_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4204,14 +4181,6 @@ ALTER TABLE ONLY transactions
 
 ALTER TABLE ONLY turnkey_pages
     ADD CONSTRAINT turnkey_pages_pkey PRIMARY KEY (id);
-
-
---
--- Name: turnkey_solutions turnkey_solutions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY turnkey_solutions
-    ADD CONSTRAINT turnkey_solutions_pkey PRIMARY KEY (id);
 
 
 --
@@ -5480,20 +5449,4 @@ INSERT INTO schema_migrations (version) VALUES ('20180728213813');
 INSERT INTO schema_migrations (version) VALUES ('20180729032945');
 
 INSERT INTO schema_migrations (version) VALUES ('20180729172500');
-
-INSERT INTO schema_migrations (version) VALUES ('20180807032531');
-
-INSERT INTO schema_migrations (version) VALUES ('20180807035221');
-
-INSERT INTO schema_migrations (version) VALUES ('20180807042109');
-
-INSERT INTO schema_migrations (version) VALUES ('20180807043238');
-
-INSERT INTO schema_migrations (version) VALUES ('20180807045237');
-
-INSERT INTO schema_migrations (version) VALUES ('20180807045920');
-
-INSERT INTO schema_migrations (version) VALUES ('20180807052054');
-
-INSERT INTO schema_migrations (version) VALUES ('20180808000204');
 

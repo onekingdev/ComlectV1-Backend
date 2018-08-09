@@ -78,7 +78,7 @@
   }
 }
 
-body.turnkeys.page {
+body.turnkey_pages.show {
   .app_container {
     width: 100% !important;
     padding: 0px;
@@ -93,12 +93,56 @@ body.turnkeys.page {
     background-size: cover;
     width: 100%;
   }
+  .turnkey-footer-top {
+//    margin-right: -1%;
+    @media (min-width: $screen-sm-max) and (max-width: $screen-md-max) {
+      margin-right: -50px;
+    }
+    h1 {
+      margin-top: 70px;
+      font-size: 60px;
+      font-family: 'Nimbus Sans';
+      font-weight: bold;
+      color: #000;
+      text-shadow: -2px -2px 0px rgba(253, 215, 83, 1);
+      @media (min-width: $screen-sm-max) {
+        margin-right: 80px;
+      }
+    }
+    .btn-primary {
+      margin-left: auto;
+      margin-left: auto;
+      display: inline-block;
+      background-color: #000;
+      border: 3px solid #000;
+      color: #fff;
+      &:hover {
+        background-color: #fff !important;
+        color: #000 !important;
+        border: 3px solid #fff !important;
+      }
+    }
+    .arrow-down {
+      transform: rotate(270deg) scale(0.10);
+      @media (min-width: $screen-sm-max) {
+        margin-top: -50px;
+        margin-bottom: -40px;
+        transform: rotate(270deg) scale(0.06);
+      }
+      svg {
+        fill: #fff;
+        @media (min-width: $screen-sm-max) {
+          fill: #000;
+        }
+      }
+    }
+  }
   #header {
     margin-bottom: 0px;
   }
 }
 
-body.turnkeys.index {
+body.turnkey_pages.index {
   .app_container {
     padding: 0px;
   }
@@ -168,13 +212,6 @@ body.turnkeys.index {
       height: 280px;
       margin-bottom: 85px;
       position: relative;
-      a {
-        color: #000;
-        font-size: 30px;
-        text-transform: uppercase;
-        text-align: center;
-        display: block;
-      }
       &-front, &-back {
         position: absolute;
         top: 0px;
@@ -190,6 +227,16 @@ body.turnkeys.index {
         cursor: pointer;
       }
       &-front {
+        a {
+          color: #000;
+          font-size: 30px;
+          text-transform: uppercase;
+          text-align: center;
+          display: block;
+          &:hover {
+            text-decoration: none;
+          }
+        }
         transform: rotateY(0deg);
         .cost {
           position: absolute;
@@ -211,6 +258,12 @@ body.turnkeys.index {
         transform: rotateY(180deg);
         background-color: #fff;
         color: #000;
+        a {
+          color: #000;
+          &:hover {
+            text-decoration: none;
+          }
+        }
       }
     }
   }
