@@ -102,7 +102,7 @@ class Specialist < ApplicationRecord
   delegate :suspended?, to: :user
 
   def self.dates_between_query
-    'SUM(DISTINCT ROUND((COALESCE("to", NOW())::date - "from"::date)::float / 365.0)::numeric::int)'
+    'SUM(ROUND((COALESCE("to", NOW())::date - "from"::date)::float / 365.0)::numeric::int)'
   end
   private_class_method :dates_between_query
 
