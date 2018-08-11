@@ -11,8 +11,8 @@ ActiveAdmin.register_page 'Transaction::OneOff' do
     specialist = project.specialist
 
     amount_in_cents = (BigDecimal(params['amount']) * 100).to_i
-    business_fee_in_cents = amount_in_cents * Business::Rewards.fee_percentage(business)
-    specialist_fee_in_cents = amount_in_cents * Specialist::Rewards.fee_percentage(specialist)
+    business_fee_in_cents = amount_in_cents * business.rewards_tier.fee_percentage
+    specialist_fee_in_cents = amount_in_cents * specialist.rewards_tier.fee_percentage
     total_fees_in_cents = business_fee_in_cents + specialist_fee_in_cents
     total_with_fee_in_cents = amount_in_cents + business_fee_in_cents
 

@@ -3,6 +3,7 @@
 class Specialist < ApplicationRecord
   belongs_to :user, autosave: true
   belongs_to :team, foreign_key: :specialist_team_id
+  belongs_to :rewards_tier
   has_and_belongs_to_many :industries
   has_and_belongs_to_many :jurisdictions
   has_and_belongs_to_many :skills
@@ -97,7 +98,6 @@ class Specialist < ApplicationRecord
   include PdfUploader[:resume]
 
   enum visibility: { is_public: 'public', is_private: 'private' }
-  enum rewards_tier: { gold: 0, platinum: 1, platinum_honors: 2 }
 
   delegate :suspended?, to: :user
 
@@ -160,5 +160,10 @@ class Specialist < ApplicationRecord
 
   def completed_projects_amount
     projects.complete.sum(:calculated_budget)
+  end
+
+  def set_tier!
+    tier = RewardsTier.all.find { |t| t.amount.include? completed_projects_amount }
+    update(rewards_tier: tier)
   end
 end
