@@ -8,9 +8,6 @@ class Charge < ApplicationRecord
   has_one :specialist, through: :project
 
   COMPLECT_FEE_PCT = 0.10
-  COMPLECT_FEE_PCT_GOLD_TIER = COMPLECT_FEE_PCT - 0.02
-  COMPLECT_FEE_PCT_PLATINUM_TIER = COMPLECT_FEE_PCT - 0.03
-  COMPLECT_FEE_PCT_PLATINUM_HONORS_TIER = COMPLECT_FEE_PCT - 0.04
 
   scope :for_one_off_projects, -> { joins(:project).where(project: Project.one_off) }
   scope :real, -> { where(status: [Charge.statuses[:scheduled], Charge.statuses[:processed], Charge.statuses[:error]]) }
@@ -116,17 +113,10 @@ class Charge < ApplicationRecord
 
   def calculate_business_fee
     return self.business_fee_in_cents = 0 if business.fee_free
-    self.business_fee_in_cents ||= fee_in_cents_with_rewards(business)
+    self.business_fee_in_cents ||= amount_in_cents * business.rewards_tier.fee_percentage
   end
 
   def calculate_specialist_fee
-    self.specialist_fee_in_cents ||= fee_in_cents_with_rewards(specialist)
-  end
-
-  def fee_in_cents_with_rewards(record)
-    return amount_in_cents * COMPLECT_FEE_PCT_GOLD_TIER if record.gold?
-    return amount_in_cents * COMPLECT_FEE_PCT_PLATINUM_TIER if record.platinum?
-    return amount_in_cents * COMPLECT_FEE_PCT_PLATINUM_HONORS_TIER if record.platinum_honors?
-    amount_in_cents * COMPLECT_FEE_PCT
+    self.specialist_fee_in_cents ||= amount_in_cents * specialist.rewards_tier.fee_percentage
   end
 end

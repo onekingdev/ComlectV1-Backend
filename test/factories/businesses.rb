@@ -3,6 +3,7 @@
 FactoryBot.define do
   factory :business do
     association :user, email_prefix: 'business'
+    association :rewards_tier
     contact_first_name { Faker::Name.first_name }
     contact_last_name { Faker::Name.last_name }
     contact_email { Faker::Internet.email }
@@ -26,15 +27,27 @@ FactoryBot.define do
     end
 
     trait :gold_rewards do
-      rewards_tier 'gold'
+      association :rewards_tier, factory: %i[rewards_tier gold]
     end
 
     trait :platinum_rewards do
-      rewards_tier 'platinum'
+      association :rewards_tier, factory: %i[rewards_tier platinum]
     end
 
     trait :platinum_honors_rewards do
-      rewards_tier 'platinum_honors'
+      association :rewards_tier, factory: %i[rewards_tier platinum_honors]
+    end
+
+    trait :gold_rewards_override do
+      association :rewards_tier_override, factory: %i[rewards_tier gold]
+    end
+
+    trait :platinum_rewards_override do
+      association :rewards_tier_override, factory: %i[rewards_tier platinum]
+    end
+
+    trait :platinum_honors_rewards_override do
+      association :rewards_tier_override, factory: %i[rewards_tier platinum_honors]
     end
   end
 end

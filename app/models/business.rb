@@ -4,6 +4,10 @@ require 'validators/url_validator'
 
 class Business < ApplicationRecord
   belongs_to :user
+
+  belongs_to :rewards_tier
+  belongs_to :rewards_tier_override, class_name: 'RewardsTier'
+
   has_and_belongs_to_many :jurisdictions
   has_and_belongs_to_many :industries
   has_many :projects, dependent: :destroy
@@ -52,8 +56,6 @@ class Business < ApplicationRecord
 
   accepts_nested_attributes_for :user
 
-  enum rewards_tier: { gold: 0, platinum: 1, platinum_honors: 2 }
-
   delegate :suspended?, to: :user
 
   def self.for_signup(attributes = {})
@@ -94,5 +96,21 @@ class Business < ApplicationRecord
 
   def completed_projects_amount
     projects.complete.sum(:calculated_budget)
+  end
+
+  alias original_rewards_tier rewards_tier
+  def rewards_tier
+    return rewards_tier_override if rewards_tier_override_precedence?
+    original_rewards_tier
+  end
+
+  def rewards_tier_override_precedence?
+    return false unless rewards_tier_override
+    rewards_tier_override.fee_percentage < original_rewards_tier.fee_percentage
+  end
+
+  def set_tier!
+    tier = RewardsTier.all.find { |t| t.amount.include? completed_projects_amount }
+    update(rewards_tier: tier)
   end
 end

@@ -7,8 +7,8 @@ class Project::Ending < Project
     PaymentCycle.for(project).create_charges_and_reschedule!
     Notification::Deliver.project_ended!(project)
 
-    Business::Rewards.calculate_tier!(project.business)
-    Specialist::Rewards.calculate_tier!(project.specialist)
+    project.business.set_tier!
+    project.specialist.set_tier!
   end
 
   def self.ends_in_24!(project)
