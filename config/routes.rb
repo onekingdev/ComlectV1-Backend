@@ -45,6 +45,7 @@ Rails.application.routes.draw do
   resources :turnkey_pages, only: %i[index show create], path: 'turnkey'
   resources :turnkey_solutions # , only: :create
   post '/turnkey/:id' => 'turnkey_pages#create'
+  patch '/turnkey/:id' => 'turnkey_pages#update'
 
   resources :feedback_requests, only: %i[create new]
   resources :businesses, only: %i[new create show]

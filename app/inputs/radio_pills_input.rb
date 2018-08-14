@@ -22,10 +22,11 @@ class RadioPillsInput < SimpleForm::Inputs::CollectionRadioButtonsInput
   private
 
   def each_input(label, value)
+    tgt_value = object ? value : label
     checked = object ? object.public_send(attribute_name) == value : value
     active_class = checked ? 'active' : nil
     template.content_tag :label, class: "btn #{btn_class} #{active_class}" do
-      @builder.radio_button(attribute_name, value, input_html_options) + label.to_s
+      @builder.radio_button(attribute_name, tgt_value, input_html_options) + label.to_s
     end
   end
 end
