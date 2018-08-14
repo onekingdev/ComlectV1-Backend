@@ -371,7 +371,8 @@ CREATE TABLE businesses (
     discourse_username character varying,
     discourse_user_id integer,
     fee_free boolean DEFAULT false,
-    rewards_tier integer
+    rewards_tier_id integer,
+    rewards_tier_override_id integer
 );
 
 
@@ -1357,7 +1358,8 @@ CREATE TABLE specialists (
     discourse_username character varying,
     discourse_user_id integer,
     specialist_team_id integer,
-    rewards_tier integer
+    rewards_tier_id integer,
+    rewards_tier_override_id integer
 );
 
 
@@ -3166,6 +3168,39 @@ ALTER SEQUENCE ratings_id_seq OWNED BY ratings.id;
 
 
 --
+-- Name: rewards_tiers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.rewards_tiers (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    fee_percentage numeric(2,2) NOT NULL,
+    amount int4range NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: rewards_tiers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.rewards_tiers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rewards_tiers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.rewards_tiers_id_seq OWNED BY public.rewards_tiers.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3796,6 +3831,13 @@ ALTER TABLE ONLY ratings ALTER COLUMN id SET DEFAULT nextval('ratings_id_seq'::r
 
 
 --
+-- Name: rewards_tiers id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rewards_tiers ALTER COLUMN id SET DEFAULT nextval('public.rewards_tiers_id_seq'::regclass);
+
+
+--
 -- Name: settings id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4101,6 +4143,14 @@ ALTER TABLE ONLY questions
 
 ALTER TABLE ONLY ratings
     ADD CONSTRAINT ratings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rewards_tiers rewards_tiers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rewards_tiers
+    ADD CONSTRAINT rewards_tiers_pkey PRIMARY KEY (id);
 
 
 --
@@ -5449,4 +5499,12 @@ INSERT INTO schema_migrations (version) VALUES ('20180728213813');
 INSERT INTO schema_migrations (version) VALUES ('20180729032945');
 
 INSERT INTO schema_migrations (version) VALUES ('20180729172500');
+
+INSERT INTO schema_migrations (version) VALUES ('20180811003234');
+
+INSERT INTO schema_migrations (version) VALUES ('20180811025719');
+
+INSERT INTO schema_migrations (version) VALUES ('20180811063154');
+
+INSERT INTO schema_migrations (version) VALUES ('20180811063955');
 
