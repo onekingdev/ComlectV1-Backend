@@ -20,6 +20,7 @@ class TurnkeyPagesController < ApplicationController
                'South Carolina', 'South Dakota',\
                'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia',\
                'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
+
     @bds = [['EMC', 0], ['BIA', 1], ['MFU', 2], ['MSD', 1], ['TAS', 1], ['SSL', 1],\
             ['EMF', 0], ['NEX', 1], ['MFR', 2], ['MSB', 1], ['PLA', 1], ['IAD', 1],\
             ['IDM', 0], ['BDD', 1], ['VLA', 1], ['OGI', 1], ['PCB', 2], ['MRI', 1],\
@@ -31,24 +32,35 @@ class TurnkeyPagesController < ApplicationController
 
   def create
     @solution = TurnkeySolution.find(params[:solution][:id])
+    @missing = @solution.validate_params(params[:solution])
     render layout: false
   end
 
   def update
     if current_business && current_user.payment_info?
-      if params.include? :solution
-        params_solution = params[:solution]
-        solution = TurnkeySolution.find(params_solution[:id])
-        template = if solution.flavored? && params_solution.include?(:flavor)
-                     solution.project_templates.where(flavor: params_solution[:flavor]).first
-                   else
-                     solution.project_templates.first
-                   end
-        @project = Project.new.build_from_template(current_business.id, template, params_solution)
-        @project.save!
-      end
+      project_from_params(params[:solution]).save! if params.include? :solution
     end
     render layout: false
-    # render text: params.inspect
+  end
+
+  def new
+    @project = Project::Form.copy(project_from_params(params[:solution]))
+    render 'business/projects/new'
+  end
+
+  private
+
+  def project_from_params(params_solution)
+    solution = TurnkeySolution.find(params_solution[:id])
+    if solution.validate_params(params_solution)
+      template = if solution.flavored? && params_solution.include?(:flavor)
+                   solution.project_templates.where(flavor: params_solution[:flavor]).first
+                 else
+                   solution.project_templates.first
+                 end
+      Project.new.build_from_template(current_business.id, template, params_solution)
+    else
+      Project.new
+    end
   end
 end

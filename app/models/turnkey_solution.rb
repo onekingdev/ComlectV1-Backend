@@ -17,6 +17,22 @@ class TurnkeySolution < ActiveRecord::Base
     project_templates.where(flavor: 'bd').count.positive?
   end
 
+  def validate_params(params)
+    missing = []
+    [[:aum, aum_enabled], [:state, principal_office], [:estimated_hours, hours_enabled],\
+     [:industries, industries_enabled], [:jurisdictions, jurisdictions_enabled]].each do |v|
+      if v[1]
+        if params.include?(v[0])
+          missing.push(v[0]) if params[v[0]].is_a?(Array) && params[v[0]].reject(&:empty?).empty?
+          missing.push(v[0]) if params[v[0]].is_a?(String) && params[v[0]].empty?
+        else
+          missing.push(v[0])
+        end
+      end
+    end
+    missing
+  end
+
   def features_array
     new_arr = []
     bag_arr = []

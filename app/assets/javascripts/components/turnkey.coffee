@@ -12,6 +12,7 @@ $.onContentReady ($parent) ->
   window.fix_turnkeys()
   $(".turnkey_pages.show").on 'click', '.btn-purchase', ->
     form = $("[data-solution-id="+$(this).attr("data-solution")+"]").closest("form")
+
     $.ajax
       type: 'PATCH'
       url: form.attr("action")
@@ -19,6 +20,11 @@ $.onContentReady ($parent) ->
       success: (data) ->
         _Modal.showPlain(data)
 
+  $(".turnkey_pages.show").on 'click', '.btn-customize', ->
+    form = $("[data-solution-id="+$(this).attr("data-solution")+"]").closest("form")
+    form.attr "method", "get"
+    form.attr "action", "/turnkey/new"
+    form.submit()
   #$(".solution_flavor").on 'change', ->
   #  window.sss = this
   #  if $(this).find(".active input").val() == "era"
