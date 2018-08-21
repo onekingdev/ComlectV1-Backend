@@ -38,7 +38,8 @@ class TurnkeyPagesController < ApplicationController
 
   def update
     if current_business && current_user.payment_info?
-      project_from_params(params[:solution]).save! if params.include? :solution
+      @project = project_from_params(params[:solution])
+      @project.save! if params.include? :solution
     end
     render layout: false
   end

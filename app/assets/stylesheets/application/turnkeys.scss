@@ -1,6 +1,10 @@
 .turnkey-entry {
   text-align: center;
   margin-bottom: 40px;
+  .info-tooltip {
+    right: 20px;
+    margin-top: -40px;
+  }
   .check_boxes.turnkey_flavor {
     text-align: left;
   }
@@ -314,7 +318,7 @@ body.turnkey_pages.index {
       letter-spacing: 0.1em;
       margin-top: 30px;
       @media (min-width: $screen-sm-max) {
-        margin-top: 70px;
+        margin-top: 40px;
       }
     }
     .btn {
@@ -323,7 +327,9 @@ body.turnkey_pages.index {
       font-weight: 600;
     }
     .arrow-down {
-      transform: rotate(270deg) scale(0.15);
+      transform: rotate(270deg) scale(0.1);
+      margin-top: -20px;
+      margin-bottom: -20px;
     }
   }
   .right-story {

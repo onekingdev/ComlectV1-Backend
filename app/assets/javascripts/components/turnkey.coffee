@@ -25,6 +25,12 @@ $.onContentReady ($parent) ->
     form.attr "method", "get"
     form.attr "action", "/turnkey/new"
     form.submit()
+  $(".solution_flavor").on 'change', ->
+    order = []
+    $(this).find("label.btn").each ->
+      order.push($(this).hasClass("active"))
+    price = $(this).closest("form").attr("data-budgets").split(' ')[order.indexOf(true)]
+    $($(this).closest("form").find("h1 span")[0]).html("$"+parseInt(price).toLocaleString())
   #$(".solution_flavor").on 'change', ->
   #  window.sss = this
   #  if $(this).find(".active input").val() == "era"

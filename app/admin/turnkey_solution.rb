@@ -18,6 +18,7 @@ ActiveAdmin.register TurnkeySolution do
 
   permit_params(
     :title,
+    :info_dot,
     :principal_office,
     :industries_enabled,
     :jurisdictions_enabled,
@@ -64,6 +65,7 @@ ActiveAdmin.register TurnkeySolution do
   form html: { enctype: 'multipart/form-data' } do |f|
     f.inputs name: 'Turnkey Solution' do
       f.input :title
+      f.input :info_dot
       f.input :turnkey_page_id, label: 'Category', as: :select, collection: TurnkeyPage.all.map { |u| [u.title, u.id] }
       f.input :range, label: 'Price range'
       f.input :aum_enabled

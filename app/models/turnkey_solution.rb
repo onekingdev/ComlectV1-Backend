@@ -13,6 +13,17 @@ class TurnkeySolution < ActiveRecord::Base
     project_templates.where(flavor: %w[era sma fund]).collect(&:flavor)
   end
 
+  def budgets
+    project_templates.where(flavor: %w[era sma fund]).collect(&:fixed_budget).map(&:to_i)
+  end
+
+  def budget_range
+    return nil if budgets.blank?
+    min_max = budgets.minmax
+    out = min_max.map(&proc { |s| s.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse })
+    min_max[0] == min_max[1] ? "$#{out[0]}" : "$#{out[0]}-$#{out[1]}"
+  end
+
   def bd?
     project_templates.where(flavor: 'bd').count.positive?
   end
