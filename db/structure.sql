@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.9
--- Dumped by pg_dump version 9.6.9
+-- Dumped from database version 9.6.10
+-- Dumped by pg_dump version 9.6.10
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -266,7 +266,9 @@ CREATE TABLE public.businesses (
     discourse_user_id integer,
     fee_free boolean DEFAULT false,
     rewards_tier_id integer,
-    rewards_tier_override_id integer
+    rewards_tier_override_id integer,
+    hubspot_company_id character varying,
+    hubspot_contact_id character varying
 );
 
 
@@ -1214,7 +1216,8 @@ CREATE TABLE public.specialists (
     discourse_user_id integer,
     specialist_team_id integer,
     rewards_tier_id integer,
-    rewards_tier_override_id integer
+    rewards_tier_override_id integer,
+    hubspot_contact_id character varying
 );
 
 
@@ -5231,4 +5234,8 @@ INSERT INTO schema_migrations (version) VALUES ('20180811025719');
 INSERT INTO schema_migrations (version) VALUES ('20180811063154');
 
 INSERT INTO schema_migrations (version) VALUES ('20180811063955');
+
+INSERT INTO schema_migrations (version) VALUES ('20180827045947');
+
+INSERT INTO schema_migrations (version) VALUES ('20180827051141');
 
