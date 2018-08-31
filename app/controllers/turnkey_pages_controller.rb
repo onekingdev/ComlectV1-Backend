@@ -21,11 +21,7 @@ class TurnkeyPagesController < ApplicationController
                'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia',\
                'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
 
-    @bds = [['EMC', 0], ['BIA', 1], ['MFU', 2], ['MSD', 1], ['TAS', 1], ['SSL', 1],\
-            ['EMF', 0], ['NEX', 1], ['MFR', 2], ['MSB', 1], ['PLA', 1], ['IAD', 1],\
-            ['IDM', 0], ['BDD', 1], ['VLA', 1], ['OGI', 1], ['PCB', 2], ['MRI', 1],\
-            ['TRA', 0], ['USG', 2], ['GSD', 1], ['NPB', 2], ['BNA', 2], ['OTH', 2],\
-            ['BDR', 2], ['RES', 1], ['GSB', 1], ['TAP', 1], ['INA', 2], ['LP', 3]]
+    @bds = Project.all_bds
 
     @turnkey_page = TurnkeyPage.find_by(url: params[:id])
   end
