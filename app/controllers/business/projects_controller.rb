@@ -36,7 +36,7 @@ class Business::ProjectsController < ApplicationController
   def create
     respond_to do |format|
       if @project.save
-        redirect_path = @project.review? ? business_project_path(@project) : business_dashboard_path
+        redirect_path = @project.review? ? business_project_path(@project) : business_dashboard_path(anchor: 'projects-pending')
         format.html { redirect_to redirect_path }
         format.js { js_redirect url_for(redirect_path) }
       else
@@ -49,7 +49,7 @@ class Business::ProjectsController < ApplicationController
   def update
     respond_to do |format|
       if @project.update(project_params)
-        Project::Starting.fix_starting!(@project)
+        Project::Starting.fix_starting!(@project) unless @project.asap_duration?
         redirect_path = @project.review? ? business_project_path(@project) : business_dashboard_path
         format.html { redirect_to redirect_path }
         format.js { js_redirect url_for(redirect_path) }
