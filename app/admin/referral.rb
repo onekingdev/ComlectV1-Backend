@@ -6,7 +6,7 @@ ActiveAdmin.register Referral do
   index do
     column :id
     column :referrer do |referral|
-      link_to referral.referral_token.referrer.full_name, [:admin, referral.referral_token.referrer]
+      link_to referral.referral_token.referrer.to_s, [:admin, referral.referral_token.referrer]
     end
     column :referred do |referral|
       link_to referral.referrable.full_name, [:admin, referral.referrable]

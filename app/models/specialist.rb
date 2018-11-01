@@ -142,7 +142,7 @@ class Specialist < ApplicationRecord
   end
 
   def to_s
-    first_name
+    full_name
   end
 
   def full_name
