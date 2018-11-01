@@ -61,29 +61,6 @@ RSpec.describe Specialist do
     end
   end
 
-  describe '#years_of_compilant_experience' do
-    let!(:specialist) { create(:specialist, work_experiences: []) }
-
-    let!(:experience) {
-      create(
-        :work_experience,
-        :compliance,
-        specialist: specialist,
-        from: Date.new(2012, 11, 7),
-        to: Date.new(2014, 6, 7)
-      )
-    }
-
-    it 'should return compliance working experience rounded' do
-      from_date = specialist.reload.work_experiences.first.from
-      to_date = specialist.reload.work_experiences.first.to
-
-      compliance_years = ((to_date - from_date) / 365).round
-
-      expect(specialist.reload.years_of_compilant_experience).to eq(compliance_years)
-    end
-  end
-
   describe '#rewards_tier' do
     context 'with no rewards tier set' do
       let!(:default_tier) { create(:rewards_tier) }
