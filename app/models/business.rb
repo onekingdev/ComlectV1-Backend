@@ -58,8 +58,6 @@ class Business < ApplicationRecord
 
   after_commit :sync_with_hubspot, on: %i[create update]
 
-  after_create :sync_with_mailchimp
-
   def self.for_signup(attributes = {})
     new(attributes).tap do |business|
       business.build_user unless business.user
@@ -105,21 +103,15 @@ class Business < ApplicationRecord
   def rewards_tier
     return RewardsTier.default unless original_rewards_tier
     return rewards_tier_override if rewards_tier_override_precedence?
-
     original_rewards_tier
   end
 
   def rewards_tier_override_precedence?
     return false unless rewards_tier_override
-
     rewards_tier_override.fee_percentage < original_rewards_tier.fee_percentage
   end
 
   def sync_with_hubspot
     SyncHubspotContactJob.perform_later(self)
-  end
-
-  def sync_with_mailchimp
-    SyncBusinesstWithMailChimpJob.perform_later(self)
   end
 end
