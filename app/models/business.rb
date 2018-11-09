@@ -62,6 +62,8 @@ class Business < ApplicationRecord
   after_commit :sync_with_hubspot, on: %i[create update]
   after_commit :generate_referral_token, on: :create
 
+  after_create :sync_with_mailchimp
+
   def self.for_signup(attributes = {}, token = nil)
     new(attributes).tap do |business|
       business.build_user unless business.user
@@ -127,5 +129,9 @@ class Business < ApplicationRecord
 
   def generate_referral_token
     GenerateReferralTokensJob.perform_later(self)
+  end
+
+  def sync_with_mailchimp
+    SyncBusinessUsersToMailchimpJob.perform_later(self)
   end
 end
