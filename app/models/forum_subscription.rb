@@ -24,24 +24,24 @@ class ForumSubscription < ActiveRecord::Base
   end
 
   def create_subscription
-    self.update_attributes(:stripe_customer_id => self.business.payment_profile.stripe_customer_id)
+    update(stripe_customer_id: business.payment_profile.stripe_customer_id)
     begin
-      sub = Stripe::Subscription.create({
-        customer: self.stripe_customer_id,
-        items: [{plan: self.get_plan_id}],
-      })
-    rescue => e
-      puts e
+      Stripe::Subscription.create(
+        customer: stripe_customer_id,
+        items: [{ plan: return_plan_id }]
+      )
+    rescue StandardError => e
+      Rails.logger.info e
     end
   end
 
-  def upgrade(lvl, billing_type)
-    self.billing_type = billing_type == 0 ? "annual" : "monthly"
-    self.pro!
-    stripe_sub = Stripe::Subscription.retrieve(self.stripe_subscription_id)
+  def upgrade(_lvl, billing_type)
+    billing_type.zero? ? annual! : monthly!
+    pro!
+    stripe_sub = Stripe::Subscription.retrieve(stripe_subscription_id)
     stripe_sub.items = [{
-        id: stripe_sub.items.data[0].id,
-        plan: self.get_plan_id,
+      id: stripe_sub.items.data[0].id,
+      plan: return_plan_id
     }]
     stripe_sub.save
   end

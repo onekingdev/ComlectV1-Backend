@@ -1,5 +1,5 @@
-class StripeEvent::InvoiceFinalized < StripeEvent
-  def handle
+# frozen_string_literal: true
 
-  end
+class StripeEvent::InvoiceFinalized < StripeEvent
+  def handle; end
 end

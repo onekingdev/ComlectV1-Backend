@@ -7,7 +7,7 @@ class StripeEvent
     'invoice.created' => StripeEvent::InvoiceCreated,
     'invoice.finalized' => StripeEvent::InvoiceFinalized,
     'invoice.payment_succeeded' => StripeEvent::InvoiceSucceeded,
-    'customer.subscription.created' => StripeEvent::SubscriptionCreated, 
+    'customer.subscription.created' => StripeEvent::SubscriptionCreated,
     'account.updated' => StripeEvent::AccountUpdated,
     'charge.failed' => StripeEvent::ChargeFailed,
     'payout.failed' => StripeEvent::PayoutFailed,
