@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Schema
 # t.belongs_to :business, index: true
 # t.integer :billing_type, default: 0
@@ -12,13 +14,13 @@ class ForumSubscription < ActiveRecord::Base
   belongs_to :business
   has_many :subscription_charges
 
-  enum billing_type: [ :annual, :monthly ]
-  enum level: [ :free, :basic, :pro ]
+  enum billing_type: %i[annual monthly]
+  enum level: %i[free basic pro]
 
   after_create :create_subscription
 
-  def get_plan_id
-    "#{Rails.env == "production" ? "production" : "staging"}_#{self.level}_#{self.billing_type}"
+  def return_plan_id
+    "#{Rails.env.production? ? 'production' : 'staging'}_#{level}_#{billing_type}"
   end
 
   def create_subscription
