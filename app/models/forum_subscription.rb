@@ -20,7 +20,9 @@ class ForumSubscription < ActiveRecord::Base
   after_create :create_subscription
 
   def return_plan_id
-    "#{Rails.env.production? ? 'production' : 'staging'}_#{level}_#{billing_type}"
+    environment = ENV['STRIPE_PUBLISHABLE_KEY'].start_with?('pk_test') ? 'staging' : 'production'
+    environment = 'staging' if Rails.env.development?
+    "#{environment}_#{level}_#{billing_type}"
   end
 
   def create_subscription
