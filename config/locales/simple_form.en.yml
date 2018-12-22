@@ -121,6 +121,12 @@ en:
         message: Write your message here.
       job_application:
         message: You can provide a short introductory message here.
+        hourly_rate: "* Hourly Rate"
+        estimated_hours: "* Estimated Hours"
+        fixed_budget: "* Fixed Budget"
+        starts_on: "* Start Date"
+        ends_on: "* End Date"
+        estimated_days: "* Estimated No. of Days"
       rating:
         review: "* Write a review"
       stripe_account:

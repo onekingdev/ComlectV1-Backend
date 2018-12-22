@@ -545,7 +545,7 @@ CREATE TABLE public.projects (
     type character varying DEFAULT 'rfp'::character varying NOT NULL,
     status character varying DEFAULT 'draft'::character varying NOT NULL,
     title character varying NOT NULL,
-    location_kind character varying,
+    location_type character varying,
     location character varying,
     description character varying NOT NULL,
     key_deliverables character varying,
@@ -1283,7 +1283,17 @@ CREATE TABLE public.job_applications (
     message character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    visibility character varying
+    visibility character varying,
+    key_deliverables character varying,
+    pricing_type character varying DEFAULT 'hourly'::character varying,
+    payment_schedule character varying,
+    fixed_budget numeric,
+    hourly_rate numeric,
+    estimated_hours integer,
+    starts_on date,
+    ends_on date,
+    estimated_days integer,
+    status character varying
 );
 
 
@@ -5974,5 +5984,9 @@ INSERT INTO schema_migrations (version) VALUES ('20181217113715');
 
 INSERT INTO schema_migrations (version) VALUES ('20181217114759');
 
-INSERT INTO schema_migrations (version) VALUES ('20181217203220');
+INSERT INTO schema_migrations (version) VALUES ('20181219174332');
+
+INSERT INTO schema_migrations (version) VALUES ('20181221144557');
+
+INSERT INTO schema_migrations (version) VALUES ('20181221165209');
 
