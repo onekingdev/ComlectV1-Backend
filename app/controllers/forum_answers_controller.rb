@@ -7,6 +7,7 @@ class ForumAnswersController < ApplicationController
     @forum_answer = ForumAnswer.new(forum_answer_params)
     @forum_answer.user_id = current_user.id
     if @forum_answer.save
+      @question = @forum_answer.forum_question
       render partial: 'answer', locals: { answer: @forum_answer }
     else
       redirect_to @forum_answer.forum_question

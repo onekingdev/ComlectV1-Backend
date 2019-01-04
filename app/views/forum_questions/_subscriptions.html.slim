@@ -11,7 +11,7 @@
       br
       | month from the forum
     - if !current_business
-      = link_to "Sign Up", new_user_registration_path, "data-dismiss" => "modal", "data-remote" => true, class: "btn btn-primary m-t-1"
+      = link_to "Sign Up", new_user_session_path, "data-dismiss" => "modal", "data-remote" => true, class: "btn btn-primary m-t-1"
 .col-md-4.sub_block
   .entry
     h1 Basic
@@ -23,12 +23,12 @@
     span
       | Unlimited viewing access
       br
-      | of the forum
+      | on the forum
     - if current_business
       = link_to "Buy Annual", forum_subscriptions_create_path(:lvl =>1, :billing_type => 0), class: "btn btn-primary m-t-1" if current_business.qna_lvl < 1
       = link_to "Buy Monthly", forum_subscriptions_create_path(:lvl =>1, :billing_type => 1), class: "btn btn-primary m-t-1" if current_business.qna_lvl < 1
     - else
-      = link_to "Sign Up", new_user_registration_path, "data-dismiss" => "modal", "data-remote" => true, class: "btn btn-primary m-t-1"
+      = link_to "Sign Up", new_user_session_path, "data-dismiss" => "modal", "data-remote" => true, class: "btn btn-primary m-t-1"
 .col-md-4.sub_block
   .entry
     h1 Pro
@@ -48,4 +48,4 @@
       = link_to "Buy Annual", forum_subscriptions_create_path(:lvl =>2, :billing_type => 0), class: "btn btn-primary m-t-1" if current_business.qna_lvl < 2
       = link_to "Buy Monthly", forum_subscriptions_create_path(:lvl =>2, :billing_type => 1), class: "btn btn-primary m-t-1" if current_business.qna_lvl < 2
     - else
-      = link_to "Sign Up", new_user_registration_path, "data-dismiss" => "modal", "data-remote" => true, class: "btn btn-primary m-t-1"
+      = link_to "Sign Up", new_user_session_path, "data-dismiss" => "modal", "data-remote" => true, class: "btn btn-primary m-t-1"

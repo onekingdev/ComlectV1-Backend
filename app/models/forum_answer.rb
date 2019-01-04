@@ -4,7 +4,7 @@ class ForumAnswer < ActiveRecord::Base
   belongs_to :forum_question
   belongs_to :user
   validates :forum_question, presence: true
-  has_many :replies, class_name: 'ForumAnswer', foreign_key: :reply_to, dependent: :destroy
+  has_many :replies, -> { order(upvotes_cnt: :desc) }, class_name: 'ForumAnswer', foreign_key: :reply_to, dependent: :destroy
   has_many :forum_votes
 
   scope :direct, -> { where(reply_to: nil).order(upvotes_cnt: :desc) }

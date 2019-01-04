@@ -5,9 +5,12 @@ class ForumQuestionsController < ApplicationController
     @forum_question = ForumQuestion.new
   end
 
+  # rubocop:disable Metrics/AbcSize
   def show
     cb = current_business
     @question = ForumQuestion.find(params[:id])
+    keys = @question.keywords
+    @related_questions = ForumQuestion.where((['body LIKE ?'] * keys.size).join(' OR '), *keys.map { |key| "%#{key}%" })
     @forum_answers = @question.forum_answers.direct
     if cb
       if (cb.qna_lvl.zero? && cb.qna_views_left.positive?) || ([1, 2].include? cb.qna_lvl)
@@ -25,6 +28,7 @@ class ForumQuestionsController < ApplicationController
       end
     end
   end
+  # rubocop:enable Metrics/AbcSize
 
   def new; end
 

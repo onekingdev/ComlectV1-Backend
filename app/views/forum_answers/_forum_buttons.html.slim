@@ -1,10 +1,12 @@
-.forum_upvote.p-t-1 data-toggle="tooltip" title="upvote" class=("active" if current_user.forum_votes.where(forum_answer_id: answer.id, upvote: true).count > 0)
+.pull-left.m-l-0.forum_upvote.p-t-1 class=("active" if current_user.forum_votes.where(forum_answer_id: answer.id, upvote: true).count > 0)
   = link_to "/ask-a-specialist/upvote/#{answer.id}" do
-    i.icon-like
+    i.fa.arrows-alt.fa-arrow-up
+    | &nbsp;Upvote
   span = answer.upvotes
-.forum_downvote.p-t-1 data-toggle="tooltip" title="downvote" class=("active" if current_user.forum_votes.where(forum_answer_id: answer.id, upvote: false).count > 0)
-  = link_to "/ask-a-specialist/downvote/#{answer.id}" do
-    i.icon-dislike
-  span = answer.downvotes
-.forum_reply_btn.p-t-1 data-answer-id="#{answer.reply_to.present? ? answer.reply_to : answer.id}" data-toggle="tooltip" title="reply"
-  i.fa.fa-reply
+.pull-right
+  .forum_downvote.p-t-1 data-toggle="tooltip" title="downvote" class=("active" if current_user.forum_votes.where(forum_answer_id: answer.id, upvote: false).count > 0)
+    = link_to "/ask-a-specialist/downvote/#{answer.id}" do
+      i.fa.arrows-alt.fa-arrow-down
+    span = answer.downvotes
+  .forum_flag_btn.p-t-1 data-answer-id="#{answer.reply_to.present? ? answer.reply_to : answer.id}" data-toggle="tooltip" title="report"
+    i.fa.fa-flag

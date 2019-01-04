@@ -27,11 +27,27 @@ class User < ApplicationRecord
 
   default_scope -> { where(deleted: false) }
 
+  def photo(*args, &block)
+    business ? business.logo(*args, &block) : specialist.photo(*args, &block)
+  end
+
+  def photo_url(*args, &block)
+    business ? business.logo_url(*args, &block) : specialist.photo_url(*args, &block)
+  end
+
   def full_name
     if specialist
       [specialist.first_name, specialist.last_name].join(' ')
     else
       [business.contact_first_name, business.contact_last_name].join(' ')
+    end
+  end
+
+  def short_name
+    if specialist
+      [specialist.first_name.capitalize, specialist.last_name.capitalize.first].join(' ') + '.'
+    else
+      [business.contact_first_name.capitalize, business.contact_last_name.capitalize.first].join(' ') + '.'
     end
   end
 

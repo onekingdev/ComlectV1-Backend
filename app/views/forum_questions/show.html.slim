@@ -12,25 +12,36 @@
     p = @question.body
 .row
   .container
-    h3.m-b-1
-      b.small
-        = @forum_answers.count
-        = " Answer#{'s' if @question.forum_answers.count > 1}"
+    .col-sm-8.col-no-padding
+      .answer_form_wrapper
+        .col-md-12.p-x-0.forum_answer_form.p-x-1.p-y-2.m-t-3
+          .profile-image.m-r-1.m-b-1.pull-left
+            - if current_user.photo
+              = image_tag current_user.photo_url(:thumb), size: '48x48', class: 'img-circle'
+            - else
+              = image_tag 'icon-specialist.png', size: '48x48', class: 'img-circle'
+          .metadata.pull-left
+            = current_user.short_name
+            br
+            = current_user.specialist ? decorate(current_specialist).city_state_country : decorate(current_business).city_state_country
+          .clearfix
+          = simple_form_for ForumAnswer.new do |f|
+            = f.input :body, placeholder: "Add an answer", input_html: { rows: 4 }
+            = f.input :reply_to, as: :hidden
+            = f.input :forum_question_id, as: :hidden, input_html: { value: @question.id }
+            = f.button :button, "Reply", type: :button, class: 'btn btn-primary btn-sm btn-black p-x-3 pull-right clearfix remote-submit-answer'
+    .col-sm-3.col-sm-push-1
+      h3 Related questions
+      - for q in @related_questions do
+        = link_to q.title, q
   .container
-    - @forum_answers.each_with_index do |answer, i|
-      = render partial: "forum_answers/answer", locals: { answer: answer, best: (answer.upvotes_cnt > 0 && i == 0) }
-      .thread.col-md-11.col-md-push-1.p-x-0
-        - answer.replies.each do |reply|
-          - reply.body = "Please sign up to view this content" if @please_sign_up
-          - reply.body = "Please subscribe to view this content" if @please_subscribe
-          = render partial: "forum_answers/answer", locals: { answer: reply }
-    .answer_form_wrapper
-      .col-md-12.p-x-0.forum_answer_form
-        = simple_form_for ForumAnswer.new do |f|
-          = f.input :body, placeholder: "Type your reply here.", input_html: { rows: 4 }
-          = f.input :reply_to, as: :hidden
-          = f.input :forum_question_id, as: :hidden, input_html: { value: @question.id }
-          = f.button :button, "Submit", type: :button, class: 'btn btn-primary pull-right clearfix m-b-2 remote-submit-answer'
+    .col-sm-8.col-no-padding.answers_container.p-b-3.m-b-3
+      h3.m-b-1.answers_count
+        b.small
+          = @forum_answers.count
+          = " Answer#{'s' if @question.forum_answers.count > 1}"
+      - @forum_answers.each_with_index do |answer, i|
+        = render partial: "forum_answers/answer", locals: { answer: answer, best: (answer.upvotes_cnt > 0 && i == 0) }
 - if @please_subscribe
   .modal.fade#subscribe-modal
     .modal-dialog style="width: 100%;"

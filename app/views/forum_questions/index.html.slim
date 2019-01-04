@@ -5,12 +5,12 @@
       h1.text-center.m-t-3.m-b-3.p-b-2 Ask a question
       = simple_form_for @forum_question do |f|
         .col-md-push-2.col-md-4
-          = f.input :jurisdiction_ids, collection: Jurisdiction.sorted, placeholder: t('simple_form.placeholders.specialist.jurisdictions'), input_html: { class: 'input-lg js-select', multiple: true }
+          = f.input :jurisdiction_ids, collection: Jurisdiction.sorted.reverse, placeholder: t('simple_form.placeholders.specialist.jurisdictions'), input_html: { class: 'input-lg js-select', multiple: true }
         .col-md-push-2.col-md-4
           = f.input :industry_ids, collection: Industry.sorted, placeholder: t('simple_form.placeholders.specialist.industries'), input_html: { class: 'input-lg js-select', multiple: true }
         .col-md-push-2.col-md-8
           = f.input :title, placeholder: '*  Type your question in here. Keep this short and concise. Consider starting with "how," "why," "what," "when," "can I..." or "do I..."', input_html: { rows: '3' }, as: :text
-          = f.input :body, placeholder: '*  This is where you can provide a bit of background information and all of the key details relating to your question. You will have the ability to follow-up clarifications after posting. ', input_html: { rows: '8' }
+          = f.input :body, placeholder: '*  This is where you can provide a bit of background information and all of the key details relating to your question. You will have the ability to follow-up with clarifications after posting. ', input_html: { rows: '8' }
         .col-md-12
         .col-md-3.col-md-push-2.m-b-2
           = f.input :state, collection: State.fetch_all, placeholder: "State", input_html: { class: 'input-lg js-select', multiple: false }
