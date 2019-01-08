@@ -2,6 +2,7 @@
 
 class ForumQuestionsController < ApplicationController
   def index
+    set_biz_sub if current_business
     @forum_question = ForumQuestion.new
   end
 
@@ -55,5 +56,11 @@ class ForumQuestionsController < ApplicationController
 
   def forum_question_params
     params.require(:forum_question).permit(:title, :body, :state, jurisdiction_ids: [], industry_ids: [])
+  end
+
+  def set_biz_sub
+    @business = current_business
+    @forum_sub = current_business.forum_subscription
+    @forum_sub = OpenStruct.new(billing_type: 'annual') if @forum_sub.nil?
   end
 end

@@ -8,7 +8,11 @@ class ForumAnswersController < ApplicationController
     @forum_answer.user_id = current_user.id
     if @forum_answer.save
       @question = @forum_answer.forum_question
-      render partial: 'answer', locals: { answer: @forum_answer }
+      if request.xhr?
+        render partial: 'answer', locals: { answer: @forum_answer }
+      else
+        redirect_to @forum_answer.forum_question
+      end
     else
       redirect_to @forum_answer.forum_question
     end
@@ -17,6 +21,6 @@ class ForumAnswersController < ApplicationController
   private
 
   def forum_answer_params
-    params.require(:forum_answer).permit(:body, :reply_to, :forum_question_id)
+    params.require(:forum_answer).permit(:body, :reply_to, :forum_question_id, :file)
   end
 end

@@ -20,6 +20,11 @@
 
     .col-md-12.col-no-padding.answer_body
       = answer.body
+      - if answer.file
+        .file= link_to answer.file_url, target: '_blank' do
+          .fa.fa-paperclip
+          '&nbsp;
+          span= answer.file.metadata['filename']
     .forum_btns data-answer-id="#{answer.reply_to.present? ? answer.reply_to : answer.id}"
       = render partial: "forum_answers/forum_buttons", locals: { answer: answer } if current_user
   .clearfix

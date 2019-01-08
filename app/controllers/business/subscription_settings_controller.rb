@@ -15,5 +15,6 @@ class Business::SubscriptionSettingsController < ApplicationController
   def set_biz_sub
     @business = current_business
     @forum_sub = current_business.forum_subscription
+    @forum_sub = OpenStruct.new(billing_type: 'annual') if @forum_sub.nil?
   end
 end

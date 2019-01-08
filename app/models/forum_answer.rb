@@ -8,6 +8,7 @@ class ForumAnswer < ActiveRecord::Base
   has_many :forum_votes
 
   scope :direct, -> { where(reply_to: nil).order(upvotes_cnt: :desc) }
+  include FileUploader[:file]
 
   def photo(*args, &block)
     user.business ? user.business.logo(*args, &block) : user.specialist.photo(*args, &block)
@@ -41,6 +42,10 @@ class ForumAnswer < ActiveRecord::Base
 
   def downvotes
     forum_votes.where(upvote: false).count
+  end
+
+  def file_name
+    file.metadata['filename']
   end
 
   def update_upvotes_cnt

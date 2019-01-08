@@ -1,22 +1,17 @@
 .panel-heading
-  h3 Q&A Forum
+  h3 Subscription packages
 
-.panel-body.p-t-0.m-b-1
+.panel-body.p-t-0.m-b-1.subscriptions-table
+  .col-xs-2.text-left Q&A Forum
+  .col-xs-3.text-center
+    = "FOREVER FREE" if current_business.qna_lvl == 0
+    = "BASIC PACKAGE" if current_business.qna_lvl == 1
+    = "PRO PACKAGE" if current_business.qna_lvl == 2
+  .col-xs-3.text-center
+    = "EXP. NEVER" if current_business.qna_lvl == 0
+    = "EXP. MM/DD/YY" if current_business.qna_lvl > 0
+  .col-xs-2.text-center 
+    button.btn.btn-sm.p-x-2.p-y-0.btn-primary(data-toggle="modal" data-target="#subscription_modal" style="margin-top: -5px;") Modify
+  .col-xs-2.text-right= link_to "CANCEL", "#", "data-confirm": "<h1 class='p-t-3'>CANCELLATION CONFIRMATION</h3>Please confirm you wish to end your paid subscription to the Q&A forum. If this is incorrect, you may close this pop-up by pressing cancel.", "data-confirm-label": "Submit" if current_business.qna_lvl > 0
 
-  = simple_form_for :subscription do |f|
-    table.table.table-plain.notification-preferences.m-b-2
-      tr
-        td Enable Q&A Subscription
-        td.text-right
-          input.button-switch.hidden[
-            type="checkbox"
-            data-size="small"
-            data-on-color="primary"
-            data-remote=true
-            data-url=business_settings_subscription_path("qna_sub")
-            checked=(current_business.qna_lvl > 0)
-        ]
-    = f.input :plan, as: :radio_pills, collection: [['basic', current_business.qna_lvl == 1], ['pro', current_business.qna_lvl == 2]], btn_class: 'btn-lg btn-default', hint: false, label: "Plan", input_html: { "data-remote": true, "data-url": business_settings_subscriptions_path }
-    .clearfix.m-b-2
-    - if @forum_sub
-      = f.input :charge, as: :radio_pills, collection: [['monthly', @forum_sub.billing_type == "monthly"], ['annual', @forum_sub.billing_type == "annual"]], btn_class: 'btn-lg btn-default', hint: false, label: "Charge", input_html: { "data-remote": true, "data-url": business_settings_subscriptions_path }
+= render partial: "subscription_modal"
