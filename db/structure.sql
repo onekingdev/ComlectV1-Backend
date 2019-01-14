@@ -576,7 +576,8 @@ CREATE TABLE public.projects (
     solicited_business_rating boolean DEFAULT false,
     solicited_specialist_rating boolean DEFAULT false,
     duration_type character varying DEFAULT 'custom'::character varying,
-    estimated_days integer
+    estimated_days integer,
+    applicant_selection character varying DEFAULT 'auto_match'::character varying
 );
 
 
@@ -5640,4 +5641,6 @@ INSERT INTO schema_migrations (version) VALUES ('20181028010350');
 INSERT INTO schema_migrations (version) VALUES ('20181028023519');
 
 INSERT INTO schema_migrations (version) VALUES ('20181028102912');
+
+INSERT INTO schema_migrations (version) VALUES ('20190113223605');
 
