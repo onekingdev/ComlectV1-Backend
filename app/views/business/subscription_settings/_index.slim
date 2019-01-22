@@ -8,7 +8,7 @@
     = "BASIC PACKAGE" if current_business.subscription? == 1
     = "PRO PACKAGE" if current_business.subscription? == 2
     / Prints out cancelled here, because between the date of cancellation and the end of the pay period they should still have access.
-    = "(cancelled)" if current_business.forum_subscription.cancelled
+    = "(cancelled)" if current_business.forum_subscription&.cancelled
   .col-xs-3.text-center
     = "EXP. NEVER" if current_business.subscription? == 0
     = "pending" if current_business.subscription? > 0 && current_business.forum_subscription.renewal_date.nil?
