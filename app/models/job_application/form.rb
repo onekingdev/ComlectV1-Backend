@@ -47,11 +47,13 @@ class JobApplication::Form < JobApplication
 
   def self.apply!(specialist, project, params)
     application = create params.merge(specialist: specialist, project: project)
+
     unless application.draft?
       Favorite.remove! specialist, project
-      Notification::Deliver.project_application!(application) unless project.asap_duration?
-      JobApplication::Accept.(application) if project.asap_duration?
+      Notification::Deliver.project_application!(application) if project.interview?
+      JobApplication::Accept.(application) if project.auto_match?
     end
+
     application
   end
 
