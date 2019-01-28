@@ -1,8 +1,9 @@
-.panel-heading
+.panel-heading.p-l-0
   h3 Subscription packages
 
 .panel-body.p-t-0.m-b-1.subscriptions-table
-  .col-xs-2.text-left Q&A Forum
+  .col-xs-2.text-left
+    b Q&A Forum
   .col-xs-3.text-center
     = "FOREVER FREE" if current_business.subscription? == 0
     = "BASIC PACKAGE" if current_business.subscription? == 1

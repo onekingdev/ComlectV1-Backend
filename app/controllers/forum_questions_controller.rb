@@ -36,6 +36,7 @@ class ForumQuestionsController < ApplicationController
   def create
     @forum_question = ForumQuestion.new(forum_question_params)
     if @forum_question.save
+      @forum_question.generate_url
       Notification::Deliver.industry_forum_question! @forum_question
       redirect_to @forum_question
     else
