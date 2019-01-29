@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 9.5.3
--- Dumped by pg_dump version 10.5
+-- Dumped by pg_dump version 11.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -14,20 +14,6 @@ SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
 
 --
 -- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
@@ -1099,7 +1085,8 @@ CREATE TABLE public.forum_questions (
     business_id integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    last_activity timestamp without time zone
+    last_activity timestamp without time zone,
+    url character varying
 );
 
 
@@ -1156,7 +1143,9 @@ CREATE TABLE public.forum_subscriptions (
     updated_at timestamp without time zone NOT NULL,
     fee integer DEFAULT 0,
     stripe_customer_id character varying,
-    stripe_subscription_id character varying
+    stripe_subscription_id character varying,
+    renewal_date timestamp without time zone,
+    cancelled boolean DEFAULT false
 );
 
 
@@ -6002,4 +5991,10 @@ INSERT INTO schema_migrations (version) VALUES ('20190111052406');
 INSERT INTO schema_migrations (version) VALUES ('20190111081217');
 
 INSERT INTO schema_migrations (version) VALUES ('20190113223605');
+
+INSERT INTO schema_migrations (version) VALUES ('20190117163709');
+
+INSERT INTO schema_migrations (version) VALUES ('20190117194225');
+
+INSERT INTO schema_migrations (version) VALUES ('20190127161134');
 
