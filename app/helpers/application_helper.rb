@@ -4,9 +4,7 @@ module ApplicationHelper
   include SimpleForm::ActionViewExtensions::FormHelper
 
   def accept_cookies
-    if current_user && current_user.cookie_agreement.present? && cookies[:accept_cookies].nil?
-      cookies[:accept_cookies] = true
-    end
+    cookies[:accept_cookies] = true if current_user && current_user.cookie_agreement.present? && cookies[:accept_cookies].nil?
     cookies[:accept_cookies]
   end
 
