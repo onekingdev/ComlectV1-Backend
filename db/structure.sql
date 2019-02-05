@@ -348,6 +348,41 @@ ALTER SEQUENCE public.charges_id_seq OWNED BY public.charges.id;
 
 
 --
+-- Name: cookie_agreements; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cookie_agreements (
+    id integer NOT NULL,
+    agreement_date timestamp without time zone,
+    cookie_description character varying,
+    status boolean,
+    ip_address character varying,
+    user_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: cookie_agreements_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cookie_agreements_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cookie_agreements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cookie_agreements_id_seq OWNED BY public.cookie_agreements.id;
+
+
+--
 -- Name: documents; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3695,6 +3730,41 @@ ALTER SEQUENCE public.timesheets_id_seq OWNED BY public.timesheets.id;
 
 
 --
+-- Name: tos_agreements; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tos_agreements (
+    id integer NOT NULL,
+    agreement_date timestamp without time zone,
+    tos_description character varying,
+    status boolean,
+    ip_address character varying,
+    user_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: tos_agreements_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.tos_agreements_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tos_agreements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.tos_agreements_id_seq OWNED BY public.tos_agreements.id;
+
+
+--
 -- Name: transactions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3913,6 +3983,13 @@ ALTER TABLE ONLY public.businesses ALTER COLUMN id SET DEFAULT nextval('public.b
 --
 
 ALTER TABLE ONLY public.charges ALTER COLUMN id SET DEFAULT nextval('public.charges_id_seq'::regclass);
+
+
+--
+-- Name: cookie_agreements id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cookie_agreements ALTER COLUMN id SET DEFAULT nextval('public.cookie_agreements_id_seq'::regclass);
 
 
 --
@@ -4182,6 +4259,13 @@ ALTER TABLE ONLY public.timesheets ALTER COLUMN id SET DEFAULT nextval('public.t
 
 
 --
+-- Name: tos_agreements id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tos_agreements ALTER COLUMN id SET DEFAULT nextval('public.tos_agreements_id_seq'::regclass);
+
+
+--
 -- Name: transactions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4262,6 +4346,14 @@ ALTER TABLE ONLY public.businesses
 
 ALTER TABLE ONLY public.charges
     ADD CONSTRAINT charges_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cookie_agreements cookie_agreements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cookie_agreements
+    ADD CONSTRAINT cookie_agreements_pkey PRIMARY KEY (id);
 
 
 --
@@ -4569,6 +4661,14 @@ ALTER TABLE ONLY public.timesheets
 
 
 --
+-- Name: tos_agreements tos_agreements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tos_agreements
+    ADD CONSTRAINT tos_agreements_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: transactions transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4711,6 +4811,13 @@ CREATE INDEX index_charges_on_status ON public.charges USING btree (status);
 --
 
 CREATE INDEX index_charges_on_transaction_id ON public.charges USING btree (transaction_id);
+
+
+--
+-- Name: index_cookie_agreements_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_cookie_agreements_on_user_id ON public.cookie_agreements USING btree (user_id);
 
 
 --
@@ -5379,6 +5486,13 @@ CREATE INDEX index_timesheets_on_status_changed_at ON public.timesheets USING bt
 
 
 --
+-- Name: index_tos_agreements_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_tos_agreements_on_user_id ON public.tos_agreements USING btree (user_id);
+
+
+--
 -- Name: index_transactions_on_charge_source_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5572,6 +5686,22 @@ CREATE TRIGGER trigger_specialists_on_lat_lng BEFORE INSERT OR UPDATE OF lat, ln
 --
 
 CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON public.projects FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger('tsv', 'pg_catalog.english', 'title', 'description');
+
+
+--
+-- Name: cookie_agreements fk_rails_1a26beb8cc; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cookie_agreements
+    ADD CONSTRAINT fk_rails_1a26beb8cc FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: tos_agreements fk_rails_6e25fd106a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tos_agreements
+    ADD CONSTRAINT fk_rails_6e25fd106a FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -5972,11 +6102,19 @@ INSERT INTO schema_migrations (version) VALUES ('20181206201151');
 
 INSERT INTO schema_migrations (version) VALUES ('20181207154323');
 
+INSERT INTO schema_migrations (version) VALUES ('20181213163257');
+
+INSERT INTO schema_migrations (version) VALUES ('20181213180722');
+
 INSERT INTO schema_migrations (version) VALUES ('20181217094718');
 
 INSERT INTO schema_migrations (version) VALUES ('20181217113715');
 
 INSERT INTO schema_migrations (version) VALUES ('20181217114759');
+
+INSERT INTO schema_migrations (version) VALUES ('20181218181633');
+
+INSERT INTO schema_migrations (version) VALUES ('20181218185020');
 
 INSERT INTO schema_migrations (version) VALUES ('20181219174332');
 
