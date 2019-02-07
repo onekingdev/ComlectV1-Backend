@@ -62,10 +62,6 @@ class JobApplication::Form < JobApplication
      This can't be undone and this proposal will no longer appear in your dashboard, even as a draft.".html_safe
   end
 
-  def draft?
-    status == 'draft'
-  end
-
   private
 
   def fixed_pricing?
