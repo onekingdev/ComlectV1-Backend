@@ -16,20 +16,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
 -- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -356,6 +342,41 @@ CREATE SEQUENCE public.charges_id_seq
 --
 
 ALTER SEQUENCE public.charges_id_seq OWNED BY public.charges.id;
+
+
+--
+-- Name: cookie_agreements; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cookie_agreements (
+    id integer NOT NULL,
+    agreement_date timestamp without time zone,
+    cookie_description character varying,
+    status boolean,
+    ip_address character varying,
+    user_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: cookie_agreements_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cookie_agreements_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cookie_agreements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cookie_agreements_id_seq OWNED BY public.cookie_agreements.id;
 
 
 --
@@ -1046,6 +1067,170 @@ CREATE SEQUENCE public.flags_id_seq
 --
 
 ALTER SEQUENCE public.flags_id_seq OWNED BY public.flags.id;
+
+
+--
+-- Name: forum_answers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.forum_answers (
+    id integer NOT NULL,
+    user_id integer,
+    body text,
+    forum_question_id integer,
+    reply_to integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    upvotes_cnt integer DEFAULT 0,
+    file_data jsonb
+);
+
+
+--
+-- Name: forum_answers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.forum_answers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: forum_answers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.forum_answers_id_seq OWNED BY public.forum_answers.id;
+
+
+--
+-- Name: forum_questions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.forum_questions (
+    id integer NOT NULL,
+    title character varying,
+    body text,
+    state character varying,
+    business_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    last_activity timestamp without time zone,
+    url character varying
+);
+
+
+--
+-- Name: forum_questions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.forum_questions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: forum_questions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.forum_questions_id_seq OWNED BY public.forum_questions.id;
+
+
+--
+-- Name: forum_questions_industries; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.forum_questions_industries (
+    forum_question_id integer NOT NULL,
+    industry_id integer NOT NULL
+);
+
+
+--
+-- Name: forum_questions_jurisdictions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.forum_questions_jurisdictions (
+    forum_question_id integer NOT NULL,
+    jurisdiction_id integer NOT NULL
+);
+
+
+--
+-- Name: forum_subscriptions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.forum_subscriptions (
+    id integer NOT NULL,
+    business_id integer,
+    billing_type integer DEFAULT 0,
+    level integer DEFAULT 0,
+    suspended boolean DEFAULT false,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    fee integer DEFAULT 0,
+    stripe_customer_id character varying,
+    stripe_subscription_id character varying,
+    renewal_date timestamp without time zone,
+    cancelled boolean DEFAULT false
+);
+
+
+--
+-- Name: forum_subscriptions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.forum_subscriptions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: forum_subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.forum_subscriptions_id_seq OWNED BY public.forum_subscriptions.id;
+
+
+--
+-- Name: forum_votes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.forum_votes (
+    id integer NOT NULL,
+    user_id integer,
+    forum_answer_id integer,
+    upvote boolean DEFAULT true,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: forum_votes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.forum_votes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: forum_votes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.forum_votes_id_seq OWNED BY public.forum_votes.id;
 
 
 --
@@ -3502,6 +3687,41 @@ ALTER SEQUENCE public.timesheets_id_seq OWNED BY public.timesheets.id;
 
 
 --
+-- Name: tos_agreements; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tos_agreements (
+    id integer NOT NULL,
+    agreement_date timestamp without time zone,
+    tos_description character varying,
+    status boolean,
+    ip_address character varying,
+    user_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: tos_agreements_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.tos_agreements_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tos_agreements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.tos_agreements_id_seq OWNED BY public.tos_agreements.id;
+
+
+--
 -- Name: transactions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3720,6 +3940,13 @@ ALTER TABLE ONLY public.businesses ALTER COLUMN id SET DEFAULT nextval('public.b
 --
 
 ALTER TABLE ONLY public.charges ALTER COLUMN id SET DEFAULT nextval('public.charges_id_seq'::regclass);
+
+
+--
+-- Name: cookie_agreements id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cookie_agreements ALTER COLUMN id SET DEFAULT nextval('public.cookie_agreements_id_seq'::regclass);
 
 
 --
@@ -3954,6 +4181,13 @@ ALTER TABLE ONLY public.timesheets ALTER COLUMN id SET DEFAULT nextval('public.t
 
 
 --
+-- Name: tos_agreements id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tos_agreements ALTER COLUMN id SET DEFAULT nextval('public.tos_agreements_id_seq'::regclass);
+
+
+--
 -- Name: transactions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4034,6 +4268,14 @@ ALTER TABLE ONLY public.businesses
 
 ALTER TABLE ONLY public.charges
     ADD CONSTRAINT charges_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cookie_agreements cookie_agreements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cookie_agreements
+    ADD CONSTRAINT cookie_agreements_pkey PRIMARY KEY (id);
 
 
 --
@@ -4301,6 +4543,14 @@ ALTER TABLE ONLY public.timesheets
 
 
 --
+-- Name: tos_agreements tos_agreements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tos_agreements
+    ADD CONSTRAINT tos_agreements_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: transactions transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4443,6 +4693,13 @@ CREATE INDEX index_charges_on_status ON public.charges USING btree (status);
 --
 
 CREATE INDEX index_charges_on_transaction_id ON public.charges USING btree (transaction_id);
+
+
+--
+-- Name: index_cookie_agreements_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_cookie_agreements_on_user_id ON public.cookie_agreements USING btree (user_id);
 
 
 --
@@ -5097,6 +5354,13 @@ CREATE INDEX index_timesheets_on_status_changed_at ON public.timesheets USING bt
 
 
 --
+-- Name: index_tos_agreements_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_tos_agreements_on_user_id ON public.tos_agreements USING btree (user_id);
+
+
+--
 -- Name: index_transactions_on_charge_source_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5290,6 +5554,22 @@ CREATE TRIGGER trigger_specialists_on_lat_lng BEFORE INSERT OR UPDATE OF lat, ln
 --
 
 CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON public.projects FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger('tsv', 'pg_catalog.english', 'title', 'description');
+
+
+--
+-- Name: cookie_agreements fk_rails_1a26beb8cc; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cookie_agreements
+    ADD CONSTRAINT fk_rails_1a26beb8cc FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: tos_agreements fk_rails_6e25fd106a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tos_agreements
+    ADD CONSTRAINT fk_rails_6e25fd106a FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -5654,11 +5934,55 @@ INSERT INTO schema_migrations (version) VALUES ('20181028023519');
 
 INSERT INTO schema_migrations (version) VALUES ('20181028102912');
 
+INSERT INTO schema_migrations (version) VALUES ('20181102164606');
+
+INSERT INTO schema_migrations (version) VALUES ('20181110001445');
+
+INSERT INTO schema_migrations (version) VALUES ('20181111001648');
+
+INSERT INTO schema_migrations (version) VALUES ('20181112100355');
+
+INSERT INTO schema_migrations (version) VALUES ('20181118233812');
+
+INSERT INTO schema_migrations (version) VALUES ('20181123042811');
+
+INSERT INTO schema_migrations (version) VALUES ('20181124133815');
+
+INSERT INTO schema_migrations (version) VALUES ('20181124135819');
+
+INSERT INTO schema_migrations (version) VALUES ('20181204204949');
+
+INSERT INTO schema_migrations (version) VALUES ('20181204223503');
+
+INSERT INTO schema_migrations (version) VALUES ('20181204224111');
+
+INSERT INTO schema_migrations (version) VALUES ('20181205190733');
+
+INSERT INTO schema_migrations (version) VALUES ('20181206190337');
+
+INSERT INTO schema_migrations (version) VALUES ('20181206193340');
+
+INSERT INTO schema_migrations (version) VALUES ('20181206194641');
+
+INSERT INTO schema_migrations (version) VALUES ('20181206194651');
+
+INSERT INTO schema_migrations (version) VALUES ('20181206201151');
+
+INSERT INTO schema_migrations (version) VALUES ('20181207154323');
+
+INSERT INTO schema_migrations (version) VALUES ('20181213163257');
+
+INSERT INTO schema_migrations (version) VALUES ('20181213180722');
+
 INSERT INTO schema_migrations (version) VALUES ('20181217094718');
 
 INSERT INTO schema_migrations (version) VALUES ('20181217113715');
 
 INSERT INTO schema_migrations (version) VALUES ('20181217114759');
+
+INSERT INTO schema_migrations (version) VALUES ('20181218181633');
+
+INSERT INTO schema_migrations (version) VALUES ('20181218185020');
 
 INSERT INTO schema_migrations (version) VALUES ('20181219174332');
 
@@ -5668,3 +5992,8 @@ INSERT INTO schema_migrations (version) VALUES ('20181221165209');
 
 INSERT INTO schema_migrations (version) VALUES ('20190113223605');
 
+INSERT INTO schema_migrations (version) VALUES ('20190117163709');
+
+INSERT INTO schema_migrations (version) VALUES ('20190117194225');
+
+INSERT INTO schema_migrations (version) VALUES ('20190127161134');
