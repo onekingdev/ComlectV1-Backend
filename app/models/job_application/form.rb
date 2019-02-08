@@ -13,13 +13,8 @@ class JobApplication::Form < JobApplication
   validate -> { errors.add :prerequisites, :no_regulator }, unless: :regulator?
   validate -> { errors.add :prerequisites, :no_payment_info }, unless: :payment_info?
 
-  ASAP_DURATION_FIELDS = %i[estimated_days].freeze
-  CUSTOM_DURATION_FIELDS = %i[starts_on ends_on].freeze
   RFP_FIELDS = %i[message key_deliverables pricing_type].freeze
-
   validates(*RFP_FIELDS, presence: true, if: :rfp?)
-  validates(*ASAP_DURATION_FIELDS, presence: true, if: :asap?)
-  validates(*CUSTOM_DURATION_FIELDS, presence: true, if: :custom?)
 
   validates :hourly_rate, presence: true, if: :hourly_pricing?
   validates :estimated_hours, presence: true, if: :hourly_pricing?
@@ -28,13 +23,6 @@ class JobApplication::Form < JobApplication
             presence: true, if: -> { hourly_pricing? && payment_schedule.blank? }
   validates :fixed_payment_schedule, :fixed_budget,
             presence: true, if: -> { fixed_pricing? && payment_schedule.blank? }
-  validate if: -> { asap? } do
-    errors.add :starts_on, :duration if starts_on.present?
-    errors.add :ends_on, :duration if ends_on.present?
-  end
-  validate if: -> { !asap? } do
-    errors.add :estimated_days, :duration if estimated_days.present?
-  end
   validate if: -> { starts_on.present? } do
     errors.add :starts_on, :past if starts_on.in_time_zone(project.business.tz).to_date < project.business.tz.today
   end
@@ -65,19 +53,11 @@ class JobApplication::Form < JobApplication
   private
 
   def fixed_pricing?
-    pricing_type == 'fixed'
+    rfp? && pricing_type == 'fixed'
   end
 
   def hourly_pricing?
-    pricing_type == 'hourly'
-  end
-
-  def asap?
-    project.rfp_timing == 'asap'
-  end
-
-  def custom?
-    !asap? && (Project::RFP_TIMING.collect(&:second).include? project.rfp_timing)
+    rfp? && pricing_type == 'hourly'
   end
 
   def jurisdiction?

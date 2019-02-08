@@ -1332,7 +1332,6 @@ CREATE TABLE public.job_applications (
     estimated_hours integer,
     starts_on date,
     ends_on date,
-    estimated_days integer,
     status character varying
 );
 
