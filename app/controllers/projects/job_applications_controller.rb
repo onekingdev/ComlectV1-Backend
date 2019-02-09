@@ -83,7 +83,6 @@ class Projects::JobApplicationsController < ApplicationController
       :hourly_rate,
       :fixed_budget,
       :estimated_hours,
-      :estimated_days,
       :status,
       :fixed_budget
     )
