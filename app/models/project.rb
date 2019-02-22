@@ -163,6 +163,26 @@ class Project < ApplicationRecord
     %w[starts_on ends_on key_deliverables payment_schedule pricing_type fixed_budget hourly_rate estimated_hours].each do |m|
       public_send("#{m}=", job_application.public_send(m))
     end
+    self.type = 'one_off'
+    self
+  end
+
+  def populate_rfp_specialist(rfp_specialist)
+    ja = job_applications.where(specialist_id: rfp_specialist.id)
+    if ja.present?
+      populate_rfp(ja.first)
+    else
+      self
+    end
+  end
+
+  def job_application
+    # rubocop:disable Style/GuardClause
+    if active? && rfp?
+      ja = job_applications.where(specialist_id: specialist_id)
+      ja.present? ? ja.first : nil
+    end
+    # rubocop:enable Style/GuardClause
   end
 
   def self.ending

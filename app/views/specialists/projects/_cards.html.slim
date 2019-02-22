@@ -26,11 +26,11 @@
               i.icon-trophy
               span= project.dollars
             .item
-              - if project.full_time?
-                span &nbsp;
-              - else
+              - if project.payment_schedule_humanized
                 i.icon-tag
                 span= project.payment_schedule_humanized
+              - else
+                span &nbsp;
 
         .panel-footer
           .btn-group
@@ -55,7 +55,6 @@
             - else
               = link_to project.specialist_project_href(current_specialist), class: 'btn btn-sm btn-primary btn-single'
                 span View
-
 - if projects.count > 3
   .slick-nav
     a.prev-slide href="#" Q

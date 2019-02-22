@@ -41,12 +41,13 @@
           .item
             i.icon-trophy
             span= project.dollars
-          .item
-            - if project.full_time?
-              span &nbsp;
-            - else
-              i.icon-tag
-              span= project.payment_schedule_humanized
+          - if !project.payment_schedule_humanized.nil?
+            .item
+              - if project.full_time?
+                span &nbsp;
+              - else
+                i.icon-tag
+                span= project.payment_schedule_humanized
           .item
             i.icon-user
             span= pluralize project.job_applications_count, 'Applicant', 'Applicants'

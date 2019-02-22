@@ -16,6 +16,9 @@ class Business::ProjectsController < ApplicationController
   def index
     @filter   = FILTERS[params[:filter]] || :none
     @projects = Project.cards_for_user(current_user, filter: @filter)
+    @projects.each do |project|
+      project.populate_rfp(project.job_application) if project.rfp? && project.active?
+    end
 
     respond_to do |format|
       format.html do

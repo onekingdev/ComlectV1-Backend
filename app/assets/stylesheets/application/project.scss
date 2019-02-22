@@ -3,6 +3,11 @@ form.project_form {
     .btn {
       width: 130px;
       border-right: none;
+      &:hover {
+        border-right-color: #ffcc00;
+        border-right: 1px solid #ffcc00;
+        //border-left: 3px solid #ffcc00;
+      }
       &:last-child {
         border-right: 3px solid #ffcc00;
       }
