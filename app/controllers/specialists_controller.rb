@@ -20,7 +20,7 @@ class SpecialistsController < ApplicationController
   end
 
   def show
-    @specialist = Specialist.preload_associations.find(params[:id])
+    @specialist = Specialist.preload_associations.find_by(username: params[:id])
   end
 
   def new
@@ -38,7 +38,7 @@ class SpecialistsController < ApplicationController
       specialist_params.merge(invitation: @invitation),
       cookies[:referral]
     )
-
+    @specialist.username = @specialist.generate_username
     if @specialist.save(context: :signup)
       @invitation&.accepted!(@specialist)
       sign_in @specialist.user

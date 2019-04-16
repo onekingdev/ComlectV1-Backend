@@ -9,7 +9,7 @@ class BusinessesController < ApplicationController
   before_action :require_business!, only: %i[edit update]
 
   def show
-    @business = Business.includes(:industries).find(params[:id])
+    @business = Business.includes(:industries).find_by(username: params[:id])
   end
 
   def new
@@ -18,6 +18,7 @@ class BusinessesController < ApplicationController
 
   def create
     @business = Business.for_signup(business_params, cookies[:referral])
+    @business.username = @business.generate_username
     if @business.save
       sign_in @business.user
       @business.user.update_privacy_agreement(request.remote_ip)
