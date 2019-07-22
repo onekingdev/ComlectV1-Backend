@@ -1,4 +1,4 @@
-if (window.location.pathname == "/businesses/new") {
+if ((window.location.pathname == "/businesses/new") || ($("body").hasClass("businesses") && $("body").hasClass("create"))) {
   var step_one = {
     'Banking': ['Investment Banking', 'Retail/Commercial Banking'],
     'Commodities': ['Commodities Pool Operator/Commodities Trading Adviser (exempt and non-exempt)', 'Futures Commission Merchant', 'Retail Foreign Exchange Dealer', 'Introducing Broker', 'Swap Dealer'],
@@ -44,6 +44,9 @@ if (window.location.pathname == "/businesses/new") {
           var choice = $($(".business_"+name+" .btn-block")[parseInt(num)]);
           choice.addClass("active");
           choice.find("input[type=checkbox]").prop("checked", true);
+        }
+        if (name == "step1") {
+          render_step11();
         }
       }
     }
