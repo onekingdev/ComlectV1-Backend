@@ -1,18 +1,18 @@
 bs_collapse = false
 
 $(document).ready ->
-  #update_navbar()
+  update_navbar()
 
 $(document).on 'scroll', ->
-  #update_navbar()
+  update_navbar()
 
 $(window).on 'resize', ->
-  #update_navbar()
+  update_navbar()
 
 update_navbar = ->
   x = window.scrollY
-  y = (60-x)/2
-  z = x/60
+  y = (43-x)/2
+  z = x/43
   y = 0 if (y < 0) || ($('#header').hasClass 'short')
   z = 1 if (z > 1) || ($('#header').hasClass 'short')
     
