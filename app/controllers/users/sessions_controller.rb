@@ -40,7 +40,7 @@ class Users::SessionsController < Devise::SessionsController
 
   def squarespace
     headers['Access-Control-Allow-Credentials'] = 'true'
-    headers['Access-Control-Allow-Origin'] = 'https://complect.squarespace.com'
+    headers['Access-Control-Allow-Origin'] = 'https://www.complect.com'
     headers['Access-Control-Allow-Methods'] = 'GET'
     headers['Access-Control-Request-Method'] = '*'
     headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
@@ -63,7 +63,7 @@ class Users::SessionsController < Devise::SessionsController
   def squarespace_destroy
     # for some reason with DELETE method doesn't work on devise's destroy
     headers['Access-Control-Allow-Credentials'] = 'true'
-    headers['Access-Control-Allow-Origin'] = 'https://complect.squarespace.com'
+    headers['Access-Control-Allow-Origin'] = 'https://www.complect.com'
     headers['Access-Control-Allow-Methods'] = 'GET'
     headers['Access-Control-Request-Method'] = '*'
     headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
