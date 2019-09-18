@@ -23,7 +23,8 @@
       border-radius: 50%;
       margin-bottom: 30px;
     }
-    font-family: "Avenir Light";
+    font-family: "Open Sans";
+    font-weight: 300;
     font-size: 14px;
     span {
       font-size: 12px;
@@ -37,7 +38,7 @@
     h1 {
       margin: 0px;
       margin-bottom: 5px;
-      font-family: "Nimbus Sans";
+      font-family: "Open Sans";
       font-size: 16px;
       font-weight: $bold-weight;
     }
@@ -63,7 +64,7 @@
 
   .pitch {
     margin-top: 147px;
-    font-family: "Nimbus Sans";
+    font-family: "Open Sans";
     font-weight: $bold-weight;
     font-size: 40px;
     font-style: italic;
@@ -75,18 +76,19 @@
     margin-bottom: 38px;
     h1 {
       margin: 0px;
-      font-family: "Muller";
+      font-family: "Canela";
       font-weight: $black-weight;
       font-size: 50px;
       color: #FFC300;
       text-transform: uppercase;
     }
     p {
-      font-family: "Avenir Light";
+      font-family: "Open Sans";
+      font-weight: 300;
       font-size: 15px;
       line-height: 17px;
       b {
-        font-family: "Avenir";
+        font-family: "Open Sans";
       }
     }
   }
@@ -95,7 +97,7 @@
     color: #ffc300;
     text-transform: uppercase;
     text-align: center;
-    font-family: "Nimbus Sans";
+    font-family: "Open Sans";
     font-weight: $bold-weight;
     font-size: 14px;
     width: 60%;
@@ -111,7 +113,8 @@
       margin-bottom: 30px;
     }
     .headline {
-      font-family: 'Avenir Light';
+      font-family: 'Open Sans';
+      font-weight: 300;
       font-size: 16px;
       background-color: #ffc300;
       height: 100px;
@@ -128,7 +131,8 @@
     }
     .about-us-list {
       .entry {
-        font-family: 'Avenir Light';
+        font-family: 'Open Sans';
+        font-weight: 300;
         font-size: 14px;
         background-color: #fff;
         border: 3px solid #ffc300;

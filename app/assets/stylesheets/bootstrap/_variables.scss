@@ -12,7 +12,7 @@ $brand-danger: #c9240e;
 
 //== Typography
 
-$font-family-base: Avenir Light, sans-serif;
+$font-family-base: "Open Sans", sans-serif;
 
 $font-size-base: 14px;
 $font-size-large: ceil(($font-size-base * 1.25));
@@ -22,7 +22,7 @@ $line-height-large: 1.3333333;
 $line-height-md: 1.4;
 $line-height-lg: $line-height-large;
 
-$headings-font-family: Nimbus Sans;
+$headings-font-family: Open Sans;
 
 //== Grid system
 
@@ -34,7 +34,7 @@ $container-large-desktop: (980px + $grid-gutter-width);
 
 //== Navbar
 
-$navbar-height: 68px; // 71px effective
+$navbar-height: 66px; // 71px effective
 $navbar-height-full: 71px;
 $navbar-border-radius: 0;
 $navbar-inverse-link-color: #fff;

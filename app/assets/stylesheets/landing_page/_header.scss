@@ -78,7 +78,7 @@
       text-transform: uppercase;
       font-size: 19px;
       font-weight: $bold-weight;
-      font-family: "Nimbus Sans";
+      font-family: "Open Sans";
       color: #000000;
       width: 520px;
       text-align: center;
@@ -126,9 +126,11 @@
 
 #cookie-modal {
   position: fixed;
-  bottom: 0px;
+  bottom: 20px;
   z-index: 200;
-  width: 100%;
+  width: 250px;
+  right: 20px;
+  font-size: 12px;
   .modal-dialog {
     margin: 0px;
     width: 100%;
