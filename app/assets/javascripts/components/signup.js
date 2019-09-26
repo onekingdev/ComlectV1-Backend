@@ -144,11 +144,11 @@ if ((window.location.pathname == "/businesses/new") || ($("body").hasClass("busi
   $(".btn_step_jump").on('click', function() {
     $(".business_step").hide();
     var shown = false;
-    for (var i = step_names.length; i > 0; i--) {
+    for (var i = 1; i < step_names.length; i++) {
       var name = step_names[i];
       console.log(name);
       console.log(step_cookies[name]);
-      if ((step_cookies[name] != undefined) && (step_cookies[name].length > 0)) {
+      if (step_cookies[name] == undefined) {
         if (name == "step11") {
           $(".business_step1").show();
           shown = true;
@@ -173,10 +173,13 @@ if ((window.location.pathname == "/businesses/new") || ($("body").hasClass("busi
   $(".btn_step11").on('click', function(e) {
     $(".business_step").hide();
     var skip = true;
-    var step1_c = Cookies.get("complect_step1").split("-");
-    for (kookie of step1_c) {
-      if (sub_inds.indexOf(parseInt(kookie)) > -1) {
-        skip = false;
+    var step1_cc = Cookies.get("complect_step1");
+    if (step1_cc != undefined) {
+      var step1_c = step1_cc.split("-");
+      for (kookie of step1_c) {
+        if (sub_inds.indexOf(parseInt(kookie)) > -1) {
+          skip = false;
+        }
       }
     }
     if (skip == true)  {

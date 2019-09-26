@@ -119,17 +119,21 @@ if ((window.location.pathname == "/specialists/new") || ($("body").hasClass("spe
   $(".btn_step_jump").on('click', function() {
     $(".specialist_step").hide();
     var shown = false;
-    for (var i = step_names.length; i > 0; i--) {
+    for (var i = 1; i < step_names.length; i++) {
       var name = step_names[i];
       console.log(name);
       console.log(step_cookies[name]);
-      if ((step_cookies[name] != undefined) && (step_cookies[name].length > 0) && (name != "step7")) {
+      if (step_cookies[name] == undefined) {
         if (name == "step11") {
           $(".specialist_step1").show();
           shown = true;
           break;
         } else if (name == "step3") {
           $(".specialist_step2").show();
+          shown = true;
+          break;
+        } else if (name == "step7") {
+          $(".specialist_step32").show();
           shown = true;
           break;
         } else {
@@ -140,18 +144,23 @@ if ((window.location.pathname == "/specialists/new") || ($("body").hasClass("spe
       }
     }
     if (shown == false) {
-      $(".specialist_step1").show();
+      $(".specialist_step32").show();
     }
   });
+
+
   $(".btn_step0").on('click', function() { $(".specialist_step").hide(); $(".specialist_step0").show(); window.scrollTo(0,0); });
   $(".btn_step1").on('click', function() { $(".specialist_step").hide(); $(".specialist_step1").show(); window.scrollTo(0,0); });
   $(".btn_step11").on('click', function(e) {
     $(".specialist_step").hide();
     var skip = true;
-    var step1_c = Cookies.get("complect_s_step1").split("-");
-    for (kookie of step1_c) {
-      if (sub_inds.indexOf(parseInt(kookie)) > -1) {
-        skip = false;
+    var step1_cc = Cookies.get("complect_s_step1");
+    if (step1_cc != undefined) {
+      var step1_c = step1_cc.split("-");
+      for (kookie of step1_c) {
+        if (sub_inds.indexOf(parseInt(kookie)) > -1) {
+          skip = false;
+        }
       }
     }
     if (skip == true)  {
