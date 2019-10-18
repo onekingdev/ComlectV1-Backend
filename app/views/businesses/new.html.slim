@@ -221,7 +221,7 @@
           .text-danger= f.object.errors[:logo].to_sentence
 
 
-    .row.p-b-1.col-md-push-2.col-md-9
+    .row.p-b-1.col-md-push-2.col-md-8
       - if f.object.errors[:tos_agree].any?
       .text-danger= f.object.errors[:tos_agree].first
       - if f.object.errors[:cookie_agree].any?
@@ -236,7 +236,7 @@
           = link_to "Privacy Policy", "/info/privacy-policy", target: "_blank"
           | .
       div
-        input#cookie-checkbox type="checkbox" name="business[user_attributes][cookie_agreement_attributes][status]" checked=false 
+        input#cookie-checkbox type="checkbox" name="business[user_attributes][cookie_agreement_attributes][status]" checked=false style="vertical-align: top;" 
         | &nbsp;&nbsp;
         label for="cookie-checkbox" This site uses cookies. By creating an account, you agree to the use of cookies on this site.
       input type="hidden" name="business[user_attributes][cookie_agreement_attributes][cookie_description]" value="This site uses cookies. By creating an account you agree to the use of cookies on this site."

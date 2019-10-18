@@ -275,7 +275,8 @@ CREATE TABLE public.businesses (
     already_covered character varying,
     review_plan character varying,
     annual_compliance boolean,
-    already_covered_other character varying
+    already_covered_other character varying,
+    tutorial_complete boolean DEFAULT false
 );
 
 
@@ -6185,4 +6186,6 @@ INSERT INTO schema_migrations (version) VALUES ('20190827194645');
 INSERT INTO schema_migrations (version) VALUES ('20190912145221');
 
 INSERT INTO schema_migrations (version) VALUES ('20190929215310');
+
+INSERT INTO schema_migrations (version) VALUES ('20191013070720');
 
