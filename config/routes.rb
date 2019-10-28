@@ -75,6 +75,7 @@ Rails.application.routes.draw do
   namespace :business do
     get '/personalize' => 'personalize#quiz'
     post '/personalize' => 'personalize#quiz'
+    resources :compliance_policies, only: %i[new update create edit show]
     resource :settings, only: :show do
       resource :password
       resource :key_contact

@@ -28,6 +28,7 @@ class Business < ApplicationRecord
     where(rater_type: Specialist.name).order(created_at: :desc)
   }, through: :projects, source: :ratings
   has_many :email_threads, dependent: :destroy
+  has_many :compliance_policies
 
   has_one :forum_subscription
   has_one :tos_agreement, through: :user
