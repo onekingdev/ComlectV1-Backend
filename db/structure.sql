@@ -406,7 +406,8 @@ CREATE TABLE public.compliance_policy_docs (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     compliance_policy_id integer,
-    doc_data jsonb
+    doc_data jsonb,
+    pdf_data jsonb
 );
 
 
@@ -6292,4 +6293,6 @@ INSERT INTO schema_migrations (version) VALUES ('20191028035845');
 INSERT INTO schema_migrations (version) VALUES ('20191028040525');
 
 INSERT INTO schema_migrations (version) VALUES ('20191028054616');
+
+INSERT INTO schema_migrations (version) VALUES ('20191101200437');
 

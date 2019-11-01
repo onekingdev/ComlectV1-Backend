@@ -15,7 +15,12 @@ class Business::CompliancePoliciesController < ApplicationController
   end
 
   def update
-    redirect_to business_compliance_policy_path(@compliance_policy) if @compliance_policy.update(compliance_policy_params)
+    # rubocop:disable Style/GuardClause
+    if @compliance_policy.update(compliance_policy_params)
+      PdfWorker.perform_async(@compliance_policy.compliance_policy_docs.order(:id).first)
+      redirect_to business_compliance_policy_path(@compliance_policy)
+    end
+    # rubocop:enable Style/GuardClause
   end
 
   def edit; end
