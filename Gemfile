@@ -10,6 +10,7 @@ end
 
 # doc to pdf
 gem 'libreconv'
+gem 'pdfjs_viewer-rails'
 
 # captcha
 gem 'bcrypt'
