@@ -23,19 +23,17 @@
                 .coloring style=("background-color: rgba(255, 204, 0, #{0.2*reminders.count})") class=("real_today" if date == Date.today)
                   = link_to date.day, new_business_reminder_path(date: date), "data-target": "#modal", "data-toggle": "modal", "data-remote": true
           - if @reminders_today.any?
-            .panel-heading
+            .panel-heading.m-b-05
               h3 Today
             .panel-body style="padding-top: 0px; padding-bottom: 0px;"
-              ul
-                - @reminders_today.each do |reminder|
-                  li = link_to reminder.body, new_business_reminder_path(date: reminder.remind_at), "data-target": "#modal", "data-toggle": "modal", "data-remote": true
+              - @reminders_today.each do |reminder|
+                = link_to reminder.body, new_business_reminder_path(date: reminder.remind_at), "data-target": "#modal", "data-toggle": "modal", "data-remote": true, class: "upcoming_task"
           - if @reminders_week.any?
-            .panel-heading
+            .panel-heading.m-b-05
               h3 This week
-            .panel-body style="padding-top: 0px; padding-bottom: 0px;"
-              ul
-                - @reminders_week.each do |reminder|
-                  li = link_to reminder.body, new_business_reminder_path(date: reminder.remind_at), "data-target": "#modal", "data-toggle": "modal", "data-remote": true
+            .panel-body style="padding-top: 0px;"
+              - @reminders_week.each do |reminder|
+                = link_to reminder.body, new_business_reminder_path(date: reminder.remind_at), "data-target": "#modal", "data-toggle": "modal", "data-remote": true, class: "upcoming_task"
             / That will work for specialist
             /- if projects.count > 0
             /  - projects.each do |project|
@@ -45,36 +43,39 @@
         .panel.panel-default.profile-info
           .panel-heading
             h3 Annual review
-          .panel-body
-            = link_to "DIY", business_annual_reviews_path(kind: "diy"), class: "btn btn-primary", "data-target": "#modal", "data-toggle": "modal", "data-remote": true
-            = link_to "HIRE", business_annual_reviews_path, class: "btn btn-primary", "data-target": "#modal", "data-toggle": "modal", "data-remote": true
+          .panel-body.p-t-0.m-t-0
+            .pull-left
+              = link_to "DIY", business_annual_reviews_path(kind: "diy"), class: "btn btn-default", "data-target": "#modal", "data-toggle": "modal", "data-remote": true
+            .pull-right
+              = link_to "HIRE", business_annual_reviews_path, class: "btn btn-primary", "data-target": "#modal", "data-toggle": "modal", "data-remote": true
+            .clearfix
             - if current_business.review_declined
-              - ((Date.today.year-4)..Date.today.year).to_a.reverse.each do |y|
-                - years_avail = current_business.annual_reviews.collect(&:year)
-                = y
-                | &nbsp;
-                - if years_avail.include? y
-                  - annual_review = current_business.annual_reviews.where(year: y).first
-                  = link_to "Edit", edit_business_annual_review_path(annual_review), class: "btn btn-sm btn-primary", "data-target": "#modal", "data-toggle": "modal", "data-remote": true
+              table.annual_review_table
+                - ((Date.today.year-4)..Date.today.year).to_a.reverse.each do |y|
+                  - years_avail = current_business.annual_reviews.collect(&:year)
                   | &nbsp;
-                  = link_to "View", business_annual_review_path(annual_review)
-                  | &nbsp;
-                  = link_to "Save", annual_review.file_url
-                - else
-                  | No file 
-                  = link_to "Upload", new_business_annual_review_path(year: y), class: "btn btn-sm btn-primary", "data-target": "#modal", "data-toggle": "modal", "data-remote": true
-                br/
+                  tr 
+                    td = y
+                    - if years_avail.include? y
+                      - annual_review = current_business.annual_reviews.where(year: y).first
+                      td = link_to "Edit", edit_business_annual_review_path(annual_review), class: "tblbtn", "data-target": "#modal", "data-toggle": "modal", "data-remote": true
+                      td = link_to "View", business_annual_review_path(annual_review)
+                      td = link_to "Save", annual_review.file_url
+                    - else
+                      td colspan=2
+                        i No file 
+                      td = link_to "Upload", new_business_annual_review_path(year: y), class: "tblbtn", "data-target": "#modal", "data-toggle": "modal", "data-remote": true
+                  
                 /= simple_form_for business_annual_reviews_path(AnnualReview.new(year: y)) do |f|
                   = f.file_field :file, accept: "application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         .panel.panel-default.profile-info
           .panel-heading
             h3 Compliance manual
-          .panel-body
-            a.btn.btn-link.btn-plain.add-bank-account data-target="#modal" data-toggle="modal" data-remote=true href=new_business_compliance_policy_path
+          .panel-body.p-t-0
+            a.btn.btn-link.btn-plain.add-compliance-policy.m-b-1 data-target="#modal" data-toggle="modal" data-remote=true href=new_business_compliance_policy_path
               span Add policy
-            ul
-              - current_business.compliance_policies.each do |policy|
-                li = link_to policy.title, business_compliance_policy_path(policy), target: "_blank"
+            - current_business.compliance_policies.each do |policy|
+              = link_to policy.title, business_compliance_policy_path(policy), target: "_blank", class: "policy_list_item"
 
         .panel.panel-default.profile-info
           .panel-heading

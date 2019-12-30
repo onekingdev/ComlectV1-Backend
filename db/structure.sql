@@ -3997,10 +3997,10 @@ CREATE TABLE public.team_members (
     id integer NOT NULL,
     team_id integer,
     name character varying,
-    department character varying,
     email character varying,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    title character varying
 );
 
 
@@ -6772,4 +6772,8 @@ INSERT INTO schema_migrations (version) VALUES ('20191209010949');
 INSERT INTO schema_migrations (version) VALUES ('20191219200231');
 
 INSERT INTO schema_migrations (version) VALUES ('20191219201057');
+
+INSERT INTO schema_migrations (version) VALUES ('20191221035118');
+
+INSERT INTO schema_migrations (version) VALUES ('20191221040705');
 

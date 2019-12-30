@@ -6,11 +6,16 @@ class Business::TeamsController < ApplicationController
 
   def index
     @teams = current_business.teams
+    @active_specialists = current_business.active_specialists
   end
 
   def new
     @team = Team.new
     @team.team_members.build
+  end
+
+  def edit
+    render 'new'
   end
 
   def create
@@ -30,6 +35,6 @@ class Business::TeamsController < ApplicationController
   end
 
   def team_params
-    params.require(:team).permit(:name, team_members_attributes: %i[name department email])
+    params.require(:team).permit(:name, team_members_attributes: %i[name title email])
   end
 end

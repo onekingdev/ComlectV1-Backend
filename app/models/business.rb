@@ -31,6 +31,8 @@ class Business < ApplicationRecord
   has_many :compliance_policies
   has_many :annual_reviews
   has_many :teams
+  has_many :active_projects, -> { where(status: statuses[:published]).where.not(specialist_id: nil) }, class_name: 'Project'
+  has_many :active_specialists, through: :active_projects, class_name: 'Specialist', source: :specialist
 
   has_one :forum_subscription
   has_one :tos_agreement, through: :user
