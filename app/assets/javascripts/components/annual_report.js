@@ -1,4 +1,4 @@
-if (annual_report_loop) {
+if (typeof(annual_report_loop) != "undefined") {
   $(document).ready(function() {
     setTimeout(function() {
       $(".apply_changes").on("click", function() {
@@ -67,3 +67,20 @@ if (annual_report_loop) {
     });
   });
 }
+
+$(document).ready(function() {
+  if (typeof(annual_review_render_id) != "undefined") {
+    var requestloop = setInterval(function() {
+      $.ajax({
+        type: 'GET',
+        url: "/business/annual_reviews/"+annual_review_render_id+"json",
+        success: function(data) {
+          if (data.preview != false) {
+            $(".pdf_preview_area").html("<iframe height='500px' src='/pdfjs/minimal?file="+encodeURIComponent(data.preview)+"' width='100%'></iframe>");
+            clearInterval(requestloop);
+          }
+        }
+      });
+    }, 3000)
+  }
+})

@@ -124,6 +124,19 @@ class Business < ApplicationRecord
     end
   end
 
+  def compliance_manual_percentage
+    (completed_compliance_policies.length * 100 / I18n.translate('compliance_manual_sections').keys.length).to_i
+  end
+
+  def completed_compliance_policies
+    compliance_policies.where.not(section: nil).collect(&:section).uniq.map(&:to_sym)
+  end
+
+  def remaining_compliance_policies(protection)
+    completed_arr = protection.nil? ? completed_compliance_policies : completed_compliance_policies - [protection]
+    I18n.translate('compliance_manual_sections').except(*completed_arr)
+  end
+
   def ria?
     industry = Industry.find_by(name: 'Investment Adviser')
     industries.collect(&:id).include? industry.id

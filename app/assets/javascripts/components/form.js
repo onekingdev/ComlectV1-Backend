@@ -10,7 +10,6 @@ $(document).ready(function() {
     return e.preventDefault();
   });
   var shadow_containers = $('.shadow_container');
-  console.log(shadow_containers);
   for (sc of shadow_containers) {
     $(sc).find('.remove_fields').first().removeClass('remove_fields').click(function(e) {
       return e.preventDefault();

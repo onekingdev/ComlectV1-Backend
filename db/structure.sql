@@ -196,7 +196,8 @@ CREATE TABLE public.annual_reviews (
     year integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    pdf_data jsonb
+    pdf_data jsonb,
+    processed boolean DEFAULT false
 );
 
 
@@ -514,7 +515,8 @@ CREATE TABLE public.compliance_policies (
     title character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    business_id integer
+    business_id integer,
+    section character varying
 );
 
 
@@ -6783,4 +6785,8 @@ INSERT INTO schema_migrations (version) VALUES ('20200114210331');
 INSERT INTO schema_migrations (version) VALUES ('20200117080343');
 
 INSERT INTO schema_migrations (version) VALUES ('20200117095549');
+
+INSERT INTO schema_migrations (version) VALUES ('20200118000622');
+
+INSERT INTO schema_migrations (version) VALUES ('20200118201501');
 

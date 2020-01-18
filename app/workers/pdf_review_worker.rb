@@ -15,6 +15,6 @@ class PdfReviewWorker
     uploader = PdfUploader.new(:store)
     file = File.new(tmp_fd)
     uploaded_file = uploader.upload(file)
-    policy_doc.update(pdf_data: uploaded_file.to_json)
+    policy_doc.update(pdf_data: uploaded_file.to_json, processed: true)
   end
 end

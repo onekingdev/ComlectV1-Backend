@@ -3,5 +3,5 @@ if ((typeof(show_business_personalize) != "undefined") && (show_business_persona
 }
 
 if ((typeof(show_business_tutorial) != "undefined") && (show_business_tutorial == true)) {
-  console.log("showin tutorial");
+  //console.log("showin tutorial");
 }

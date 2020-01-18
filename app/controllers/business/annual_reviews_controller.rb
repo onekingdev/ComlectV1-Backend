@@ -11,8 +11,6 @@ class Business::AnnualReviewsController < ApplicationController
 
   def new
     @annual_review = AnnualReview.new
-    #  @compliance_policy = CompliancePolicy.new
-    #  @compliance_policy.compliance_policy_docs.build
   end
 
   def create
@@ -28,30 +26,35 @@ class Business::AnnualReviewsController < ApplicationController
 
   def update
     if @annual_review.update(annual_review_params)
-      PdfReviewWorker.perform_async(@annual_review.id)
+      if annual_review_params['file'].present?
+        @annual_review.update(processed: false)
+        PdfReviewWorker.perform_async(@annual_review.id)
+      end
       redirect_to business_annual_review_path(@annual_review)
     else
       render 'new'
     end
-    #  if @compliance_policy.update(compliance_policy_params)
-    #    PdfWorker.perform_async(@compliance_policy.compliance_policy_docs.order(:id).first.id)
-    #    redirect_to business_compliance_policy_path(@compliance_policy)
-    #  end
   end
 
   def edit
-    # @annual_review = AnnualReview.find(params[:id])
     render 'new'
   end
 
   def show
-    # @annual_review = AnnualReview.find(params[:id])
-    #  @preview_doc = @compliance_policy.compliance_policy_docs.where(id: params[:docid]) if params[:docid]
-    #  @preview_doc = if !@preview_doc.nil?
-    #                   @preview_doc.first
-    #                 else
-    #                   @compliance_policy.compliance_policy_docs.first
-    #                 end
+    if current_business == @annual_review.business
+      @business = @annual_review.business
+      respond_to do |format|
+        format.json do
+          preview_out = @annual_review.pdf && @annual_review.processed ? @annual_review.pdf_url : false
+          render json: { "preview": preview_out }
+        end
+        format.html do
+          # poof
+        end
+      end
+    else
+      redirect_to '/business'
+    end
   end
 
   private

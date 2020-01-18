@@ -1,7 +1,7 @@
 .col-md-4
   .pull-left
     .p-t-1
-      b = @compliance_policy.title
+      b = @compliance_policy.section_or_title
   .pull-right
     = link_to "Edit", edit_business_compliance_policy_path(@compliance_policy), "data-target": "#modal", "data-remote": true, "data-toggle": "modal", class: "btn btn-primary m-l-1"
   .clearfix
@@ -27,8 +27,10 @@
         td
           = link_to "mailto:?body=Document name: #{@compliance_policy.title}%0D%0A%0D%0ADownload: #{Rails.env == 'production' ? url_for(doc.doc_url) : root_url.delete_suffix("/")+url_for(doc.doc_url)}&subject=Check this file!" do
             i.icon-share data-toggle="tooltip" title="Share"
-.col-md-8.m-b-3
+.col-md-8.m-b-3.pdf_preview_area
   - if @preview_doc.pdf
     iframe src=(pdfjs.minimal_path(file: @preview_doc.pdf_url)) width="100%" height="500px"
   - else
     | Preview will be available in a few seconds
+    javascript:
+      var compliance_policy_render_id = #{@compliance_policy.id}

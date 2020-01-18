@@ -41,6 +41,15 @@ class Business::CompliancePoliciesController < ApplicationController
                      else
                        @compliance_policy.compliance_policy_docs.first
                      end
+      respond_to do |format|
+        format.json do
+          preview_out = @preview_doc.pdf ? @preview_doc.pdf_url : false
+          render json: { "preview": preview_out }
+        end
+        format.html do
+          # poof
+        end
+      end
     else
       redirect_to '/business'
     end
@@ -53,6 +62,6 @@ class Business::CompliancePoliciesController < ApplicationController
   end
 
   def compliance_policy_params
-    params.require(:compliance_policy).permit(:title, compliance_policy_docs_attributes: [:doc])
+    params.require(:compliance_policy).permit(:title, :section, compliance_policy_docs_attributes: [:doc])
   end
 end
