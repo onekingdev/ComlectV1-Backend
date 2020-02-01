@@ -55,6 +55,7 @@ RSpec.describe JobApplication::Form do
           from: Date.new(2016, 11, 1),
           to: nil
         )
+        specialist.save
       }
 
       context 'when project is rfp' do
