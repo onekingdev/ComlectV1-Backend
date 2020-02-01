@@ -8,6 +8,7 @@ class Specialist < ApplicationRecord
   belongs_to :rewards_tier
   belongs_to :rewards_tier_override, class_name: 'RewardsTier'
 
+  before_save :calculate_years_of_experience
   has_and_belongs_to_many :industries
   has_and_belongs_to_many :jurisdictions
   has_and_belongs_to_many :skills
@@ -144,21 +145,19 @@ class Specialist < ApplicationRecord
   scope :join_experience, -> {
     joins(:work_experiences)
       .where(work_experiences: { compliance: true })
-      .select("specialists.*, #{dates_between_query} AS years_of_experience")
       .group(:id)
   }
 
   scope :experience_between, ->(min, max) {
-    base_scope = join_experience.where(work_experiences: { compliance: true })
     if max
-      base_scope.having("#{dates_between_query} BETWEEN ? AND ?", min, max)
+      where('years_of_experience BETWEEN ? AND ?', min, max)
     else
-      base_scope.having("#{dates_between_query} >= ?", min)
+      where('years_of_experience >= ?', min)
     end
   }
 
   scope :by_experience, ->(dir = :desc) {
-    join_experience.order("years_of_experience #{dir}")
+    order("years_of_experience #{dir}")
   }
 
   scope :by_distance, ->(lat, lng) do
@@ -217,11 +216,6 @@ class Specialist < ApplicationRecord
     errors.add(:cookie_agree, 'You must agree to cookies to create an account') unless user.cookie_agreement&.status
   end
 
-  def self.dates_between_query
-    'SUM(ROUND((COALESCE("to", NOW())::date - "from"::date)::float / 365.0)::numeric::int)'
-  end
-  private_class_method :dates_between_query
-
   def referral_token
     referral_tokens.last
   end
@@ -230,15 +224,16 @@ class Specialist < ApplicationRecord
     (ratings_received.preload_associations + forum_ratings).sort_by(&:created_at).reverse
   end
 
-  def years_of_experience
-    return @_years_of_experience if @_years_of_experience
-    @_years_of_experience = (calculate_years_of_experience / 365.0).round
-  end
+  # def years_of_experience
+  #  return @_years_of_experience if @_years_of_experience
+  #  @_years_of_experience = (calculate_years_of_experience / 365.0).round
+  # end
 
   def calculate_years_of_experience
-    work_experiences.compliance.map do |exp|
+    yrs = work_experiences.compliance.map do |exp|
       exp.from ? ((exp.to || Time.zone.today) - exp.from).to_f : 0.0
     end.reduce(:+) || 0.0
+    self.years_of_experience = (yrs / 365.0).round
   end
 
   def messages
