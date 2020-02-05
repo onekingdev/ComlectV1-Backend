@@ -109,7 +109,7 @@ class Business < ApplicationRecord
   def questionarrie_percentage
     score = 0
     total = Business::QUIZ.count - 1
-    total -= 3 if business_stages.include? 'startup'
+    total -= 3 if business_stages.present? && (business_stages.include? 'startup')
     Business::QUIZ.map(&:first).each do |q|
       score += 1 if (q != :finish) && !public_send(q).nil?
     end

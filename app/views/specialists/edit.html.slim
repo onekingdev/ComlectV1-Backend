@@ -2,6 +2,8 @@
   script src="https://maps.googleapis.com/maps/api/js?key=#{ENV.fetch('GOOGLE_PLACES_API_KEY')}&libraries=places"
 
 = simple_form_for decorate(@specialist), url: update_specialist_path, wrapper: :inline_form, html: { class: 'form-specialist' } do |f|
+  .text-danger.text-center
+    b = f.object.errors.full_messages.first if f.object.errors.any?
   - if f.object.new_record?
     .well.well-lg.m-t-3
       h2.text-center.m-b-2 Let's start with your login details
