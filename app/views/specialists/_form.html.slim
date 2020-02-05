@@ -5,6 +5,12 @@
   h2.m-t-1.m-b-2.text-center Let's set up your account!
 
   .col-xs-12
+    - if f.object.errors.any?
+      .clearfix.m-y-3
+        .alert.alert-danger.text-center.col-xs-12.col-sm-8.col-sm-push-2.m-b-0
+          = raw f.object.errors[:base].join('<br/>')
+          = raw f.object.errors.messages.except(:base).to_a.join(" ").gsub(".", " ").gsub("_", " ").gsub("required field", "required field<br/>")
+
     = f.fields_for :user, wrapper: :inline_form do |uf|
       .row
         .col-sm-6
