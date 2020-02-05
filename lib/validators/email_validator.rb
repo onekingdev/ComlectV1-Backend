@@ -6,7 +6,7 @@ class EmailValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     address = Mail::Address.new(value).address
 
-    if address.match?(/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i)
+    if address&.match?(/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i)
       record.public_send("#{attribute}=", address)
     else
       record.errors[attribute] << email_error_message

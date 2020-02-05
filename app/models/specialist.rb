@@ -127,7 +127,7 @@ class Specialist < ApplicationRecord
   end
 
   def generate_username
-    src = "#{first_name.capitalize}#{last_name[0].capitalize}"
+    src = "#{first_name&.capitalize}#{last_name[0]&.capitalize}"
     generated = src.gsub(/[^0-9a-z ]/i, '')
     while Specialist.where(username: generated).count.positive?
       ext_num = generated.scan(/\d/).join('')
