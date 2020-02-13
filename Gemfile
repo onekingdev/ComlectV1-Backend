@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '2.5.1'
+ruby '2.5.7'
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?('/')
@@ -10,6 +10,19 @@ end
 
 # conversion fun
 gem 'imgkit'
+
+# Capistrano deploy
+group :development do
+  gem 'capistrano', '~> 3.10', require: false
+  gem 'capistrano-rails', '~> 1.4', require: false
+  gem 'capistrano3-unicorn'
+  gem 'rvm1-capistrano3', require: false
+end
+
+# concurrent server
+gem 'unicorn'
+
+# doc to pdf
 gem 'libreconv'
 gem 'pdfjs_viewer-rails'
 gem 'wicked_pdf'
@@ -55,6 +68,7 @@ gem 'coffee-rails'
 gem 'non-stupid-digest-assets'
 gem 'rack-cors', require: 'rack/cors'
 gem 'sassc-rails'
+gem 'sprockets', '~>3.0'
 gem 'uglifier'
 
 # Views
@@ -125,11 +139,11 @@ group :development, :test do
   gem 'byebug'
 
   # Testing
-  gem 'factory_bot_rails'
+  gem 'factory_bot_rails', '~> 4.10.0'
   gem 'rspec-rails'
 
   # Code Quality
-  gem 'rubocop', require: false
+  gem 'rubocop', '~> 0.58.1', require: false
 end
 
 group :development do
