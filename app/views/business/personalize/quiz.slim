@@ -57,7 +57,7 @@ br/
         p Not all state require an annual compliance program review, but it is a mandatory requirement once you are SEC registered and a best business practice that regulators like to see. Your compliance command center will give you the ability to conduct one yourself or hire one of our compliance specialists to conduct a review for you in the form of a mock audit!
       - elsif @business.state_or_sec == "sec"
         p Oh no! As an SEC registered investment adviser, Rule 204(6)-7 requires all you to review your compliance program on at least an annual basis. Not to worry though, your compliance command center will give you the ability to conduct one yourself or hire one of our compliance specialists to conduct a review for you in the form of a mock audit!
-    = link_to 'Continue to Dashboard', (current_user ? specialists_business_path(@business) : business_dashboard_path), class: "btn btn-primary"
+    = link_to 'Continue to Dashboard', (current_business ? business_dashboard_path : specialists_business_path(@business)), class: "btn btn-primary"
   - else
     = f.submit "Next", class: 'btn btn-primary'
 

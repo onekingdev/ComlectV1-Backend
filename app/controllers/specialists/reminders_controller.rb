@@ -23,10 +23,19 @@ class Specialists::RemindersController < ApplicationController
     redirect_to specialists_business_path(@business.username)
   end
 
+  # rubocop:disable Metrics/LineLength
   def update
-    @business.reminders.where(id: params[:id]).first.update(done_at: Time.zone.now) if params[:done].present?
-    redirect_to specialists_business_path(@business.username)
+    @business.reminders.where(id: params[:id]).first.update(done_at: (params[:done] == 'false' ? nil : Time.zone.now)) if params[:done].present?
+    respond_to do |format|
+      format.html do
+        redirect_to specialists_business_path(@business.username)
+      end
+      format.json do
+        render json: :ok
+      end
+    end
   end
+  # rubocop:enable Metrics/LineLength
 
   private
 

@@ -9,10 +9,9 @@
       .td.col-xs-12.col-sm-4.col-md-3.va-top
         - if @business.ria?
           = render partial: "reminders"
-          = render partial: "audit_prep"
-          = render partial: "annual_review"
           = render partial: "compliance_manual"
-
+          = render partial: "annual_review"
+          = render partial: "audit_prep"
         - if !@business.ria? 
           .panel.panel-default.profile-info
             .panel-heading

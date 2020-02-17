@@ -24,11 +24,52 @@
 }
 
 .upcoming_task {
-  width: 100%;
-  border: 2px solid #ffcc00;
-  padding: 5px 10px;
-  display: block;
+  //width: 100%;
+  //border: 2px solid #ffcc00;
+  padding: 5px 0px;
+  //display: inline-block;
   margin-bottom: 5px !important;
+  line-height: 20px;
+}
+
+.calendar_hr {
+  margin: 0px auto 22px auto;
+  width: 62%;
+}
+
+.padded-checkboxes {
+  padding-left: 9px;
+
+  input[type=checkbox] {
+    position:absolute; z-index:-1000; left:-1000px; overflow: hidden; clip: rect(0 0 0 0); height:1px; width:1px; margin:-1px; padding:0; border:0;
+  }
+
+  input[type=checkbox] + label {
+    padding-left:22px;
+    //height:18px; 
+    display:inline-block;
+    line-height:13px;
+    background-repeat:no-repeat;
+    background-position: 0 -52px;
+    background-size: 22px 70px;
+    vertical-align:middle;
+    cursor:pointer;
+  }
+
+  input[type=checkbox]:checked + label {
+    background-position: 0 0;
+  }
+
+  label {
+    background-image:asset_url("checkbox.png");
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font-weight: normal;
+  }
 }
 
 .add-compliance-policy {
