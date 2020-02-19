@@ -1509,7 +1509,8 @@ CREATE TABLE public.specialists (
     specialist_risks character varying,
     specialist_other character varying,
     sub_industries character varying,
-    project_types character varying
+    project_types character varying,
+    years_of_experience integer
 );
 
 
@@ -6189,4 +6190,6 @@ INSERT INTO schema_migrations (version) VALUES ('20190827194645');
 INSERT INTO schema_migrations (version) VALUES ('20190912145221');
 
 INSERT INTO schema_migrations (version) VALUES ('20200113034256');
+
+INSERT INTO schema_migrations (version) VALUES ('20200131171456');
 
