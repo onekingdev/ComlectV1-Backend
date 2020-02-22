@@ -17,7 +17,21 @@ body.businesses.show, body.business_dashboard, body.compliance_policies, body.an
   }
 
   .close {
-    display: none;
+    //display: none;
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    //border: 0px;
+    position: absolute;
+    right: -6px;
+    z-index: 10000;
+    background-color: #000;
+    color: #fff;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    top: -18px;
+    font-size: 30px;
   }
 
   .bootbox.confirm .modal-footer {

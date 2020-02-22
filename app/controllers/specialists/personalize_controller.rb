@@ -37,6 +37,15 @@ class Specialists::PersonalizeController < ApplicationController
   # rubocop:enable Metrics/LineLength
   # rubocop:enable Metrics/AbcSize
 
+  def book
+    respond_to do |format|
+      format.json do
+        @business.update(onboard_call_booked: true)
+        render json: { url: 'https://calendly.com/complect' }.to_json
+      end
+    end
+  end
+
   private
 
   def fix_aum(str)

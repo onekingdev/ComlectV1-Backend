@@ -483,7 +483,8 @@ CREATE TABLE public.businesses (
     annual_compliance boolean,
     already_covered_other character varying,
     tutorial_complete boolean DEFAULT false,
-    review_declined boolean DEFAULT false
+    review_declined boolean DEFAULT false,
+    onboard_call_booked boolean DEFAULT false
 );
 
 
@@ -1813,7 +1814,8 @@ CREATE TABLE public.specialists (
     specialist_risks character varying,
     specialist_other character varying,
     sub_industries character varying,
-    project_types character varying
+    project_types character varying,
+    years_of_experience integer
 );
 
 
@@ -6891,4 +6893,8 @@ INSERT INTO schema_migrations (version) VALUES ('20200119192255');
 INSERT INTO schema_migrations (version) VALUES ('20200120025054');
 
 INSERT INTO schema_migrations (version) VALUES ('20200120122015');
+
+INSERT INTO schema_migrations (version) VALUES ('20200131171456');
+
+INSERT INTO schema_migrations (version) VALUES ('20200221232045');
 

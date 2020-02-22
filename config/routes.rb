@@ -76,6 +76,7 @@ Rails.application.routes.draw do
   namespace :business do
     get '/personalize' => 'personalize#quiz'
     post '/personalize' => 'personalize#quiz'
+    get '/personalize_book' => 'personalize#book'
     resources :compliance_policies, only: %i[new update create edit show destroy]
     resources :annual_reviews, only: %i[new create show destroy index edit update]
     resources :annual_reports, only: %i[new create index update]
@@ -137,6 +138,7 @@ Rails.application.routes.draw do
     resources :businesses, only: %i[new create show] do
       get '/personalize' => 'personalize#quiz'
       post '/personalize' => 'personalize#quiz'
+      get '/personalize_book' => 'personalize#book'
       resources :compliance_policies, only: %i[new update create edit show destroy]
       resources :annual_reviews, only: %i[new create show destroy index edit update]
       resources :annual_reports, only: %i[new create index update]
