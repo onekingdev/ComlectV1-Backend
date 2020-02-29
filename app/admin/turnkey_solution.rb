@@ -88,7 +88,7 @@ ActiveAdmin.register TurnkeySolution do
           pt.input :public_features, as: :text, label: 'Features (1 line per feature, sub-features begin with space)'
           pt.input :description, as: :text
           pt.input :description_aum, as: :text
-          pt.input :payment_schedule, as: :select, collection: %w[upon_completion bi_weekly monthly fifty_fifty]
+          pt.input :payment_schedule, as: :select, collection: %w[upon_completion bi_weekly monthly fifty_fifty upfront]
           pt.input :key_deliverables
           pt.input :pricing_type, as: :select, collection: %w[hourly fixed]
           pt.input :fixed_budget
@@ -100,6 +100,7 @@ ActiveAdmin.register TurnkeySolution do
           pt.input :minimum_experience
           pt.input :duration_type, as: :select, collection: %w[asap custom]
           pt.input :estimated_days
+          pf.input :business_fee_free, as: :boolean
           pt.input :_destroy, as: :boolean, required: false, label: 'Remove'
         end
       end

@@ -899,7 +899,8 @@ CREATE TABLE public.projects (
     rfp_timing character varying,
     est_budget numeric,
     applicant_selection character varying DEFAULT 'interview'::character varying,
-    admin_notified boolean DEFAULT false
+    admin_notified boolean DEFAULT false,
+    business_fee_free boolean DEFAULT false
 );
 
 
@@ -6880,6 +6881,8 @@ INSERT INTO schema_migrations (version) VALUES ('20191219201057');
 INSERT INTO schema_migrations (version) VALUES ('20191221035118');
 
 INSERT INTO schema_migrations (version) VALUES ('20191221040705');
+
+INSERT INTO schema_migrations (version) VALUES ('20200113034256');
 
 INSERT INTO schema_migrations (version) VALUES ('20200114210331');
 
