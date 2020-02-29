@@ -82,7 +82,7 @@ Rails.application.routes.draw do
     resources :annual_reports, only: %i[new create index update]
     resources :teams, only: %i[new create show edit index update]
     resources :reminders, only: %i[new update create destroy show index]
-    resources :audit_requests, only: %i[index update create new edit show]
+    resources :audit_requests, only: %i[index update create new edit show destroy]
     resource :settings, only: :show do
       resource :password
       resource :key_contact
@@ -144,7 +144,7 @@ Rails.application.routes.draw do
       resources :annual_reports, only: %i[new create index update]
       # resources :teams, only: %i[new create show edit index update]
       resources :reminders, only: %i[new update create destroy show index]
-      resources :audit_requests, only: %i[index update create new edit show]
+      resources :audit_requests, only: %i[index update create new edit show destroy]
     end
     resource :settings, only: :show do
       resource :password

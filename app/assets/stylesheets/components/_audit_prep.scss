@@ -20,5 +20,8 @@
   }
   .audit_request_body {
     padding-left: 60px;
+    input[type="file"] {
+      display: inline-block;
+    }
   }
 }

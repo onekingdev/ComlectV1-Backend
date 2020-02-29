@@ -18,7 +18,7 @@
       table.annual_review_table
         - ((Date.today.year-4)..Date.today.year).to_a.reverse.each do |y|
           - years_avail = @business.annual_reviews.collect(&:year)
-          | &nbsp;
+          /| &nbsp;
           tr 
             - if years_avail.include? y
               - annual_review = @business.annual_reviews.where(year: y).first
