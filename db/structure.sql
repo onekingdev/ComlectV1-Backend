@@ -485,7 +485,8 @@ CREATE TABLE public.businesses (
     tutorial_complete boolean DEFAULT false,
     review_declined boolean DEFAULT false,
     onboard_call_booked boolean DEFAULT false,
-    welcomed boolean DEFAULT false
+    welcomed boolean DEFAULT false,
+    total_assets numeric
 );
 
 
@@ -3512,7 +3513,10 @@ CREATE TABLE public.project_templates (
     title_aum character varying,
     description_aum character varying,
     public_description text,
-    public_features text
+    public_features text,
+    business_fee_free boolean DEFAULT false,
+    identifier character varying,
+    applicant_selection character varying DEFAULT 'interview'::character varying
 );
 
 
@@ -6909,4 +6913,12 @@ INSERT INTO schema_migrations (version) VALUES ('20200222224002');
 INSERT INTO schema_migrations (version) VALUES ('20200223204523');
 
 INSERT INTO schema_migrations (version) VALUES ('20200225070555');
+
+INSERT INTO schema_migrations (version) VALUES ('20200229052054');
+
+INSERT INTO schema_migrations (version) VALUES ('20200229053148');
+
+INSERT INTO schema_migrations (version) VALUES ('20200229114848');
+
+INSERT INTO schema_migrations (version) VALUES ('20200301120149');
 
