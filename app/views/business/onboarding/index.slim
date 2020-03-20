@@ -9,9 +9,9 @@
     h2.m-t-1.m-b-2.text-center What service do you need?
     = simple_form_for :onboarding, path: "/business/onboarding" do |f|
       = f.hidden_field :business_stages
-      .signup_products
+      .signup_products.col-md-8.col-md-push-2
         - I18n.t(:business_products).each do |k,v|
-          .col-md-4
+          .col-md-6
             .product class=("active" if k.to_s == current_business.business_stages) data-product="#{k.to_s}" = v
 
       .clearfix
@@ -43,6 +43,17 @@
               .pull-right = "$#{@product.fixed_budget.to_i}"
               .clearfix
             - if @subscription
+              - if current_business.business_stages == "compliance_command_center"
+                ul.turnkey-entry-profits.m-t-1.m-b-1
+                  li Compliance dashboard, AKA the "Compliance Command Center"
+                  li.lst-none
+                    ul
+                      li Compliance Calendar
+                      li Compliance Manual Tracker
+                      li Annual Review Tool With Report Generator
+                      li Audit Prep Tool
+                  li Initial compliance program set up consultation
+                hr style="border-top: dotted 6px #e2e2e2; width: 70%;"
               .pull-left On-boarding fee
               .pull-right $500
               .clearfix
