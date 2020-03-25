@@ -6,10 +6,6 @@ if ((window.location.pathname == "/businesses/new") || ($("body").hasClass("busi
   var required_fields_step0 = ["#business_contact_first_name", "#business_contact_last_name", "#business_business_name", "#business_address_1", "#business_city", "#business_state", "#business_country", "#business_time_zone", "#business_employees", "#business_client_account_cnt", "#business_total_assets", "#business_user_attributes_password_confirmation"];
   var cookie_form_attrs = ["#business_contact_first_name", "#business_contact_last_name", "#business_user_attributes_email", "#business_business_name", "#business_contact_job_title", "#business_contact_phone", "#business_address_1", "#business_address_2", "#business_city", "#business_state", "#business_zipcode", "#business_client_account_cnt", "#business_total_assets"];
 
-  //function step_signup_continue() {
-  //  console.log("hhhheehehhehehey");
-  //}
-
   var step_signup_continue = function() {
     console.log("continuing");
     for (var name of step_names) {
@@ -442,5 +438,8 @@ if ((window.location.pathname.indexOf("/business/onboarding") > -1)) {
         $(".on_going_cost").html("$100");
       }
     })
+    if (typeof(trigger_monthly_sub) != "undefined") {
+      $("#checkout_schedule_monthly").trigger("click");
+    }
   });
 }
