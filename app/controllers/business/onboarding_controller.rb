@@ -63,9 +63,7 @@ class Business::OnboardingController < ApplicationController
   end
 
   def find_product
-    identifier = if current_business.business_stages == 'registration_and_maintenance'
-                   'registration'
-                 elsif %w[registration rescue_consultation registration_take_two].include?(current_business.business_stages)
+    identifier = if I18n.t(:business_products).keys.map(&:to_s).include?(current_business.business_stages)
                    current_business.business_stages
                  end
     return unless identifier

@@ -43,7 +43,7 @@
                         - for sub_feature in feature do
                           li = sub_feature.html_safe
               hr style="border-top: dotted 6px #e2e2e2; width: 70%;"
-              .pull-left One-time fee
+              .pull-left Project fee
               .pull-right = "$#{@product.fixed_budget.to_i}"
               .clearfix
             - if need_subscription? && !current_business.base_subscribed?
