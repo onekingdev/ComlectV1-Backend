@@ -73,7 +73,6 @@ class Business < ApplicationRecord
 
   delegate :suspended?, to: :user
 
-  after_commit :sync_with_hubspot, on: %i[create update]
   after_commit :generate_referral_token, on: :create
 
   after_create :sync_with_mailchimp
@@ -162,10 +161,6 @@ class Business < ApplicationRecord
   def rewards_tier_override_precedence?
     return false unless rewards_tier_override
     rewards_tier_override.fee_percentage < original_rewards_tier.fee_percentage
-  end
-
-  def sync_with_hubspot
-    SyncHubspotContactJob.perform_later(self)
   end
 
   def generate_referral_token
