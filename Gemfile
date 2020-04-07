@@ -160,7 +160,7 @@ group :development do
 
   # Testing
   gem 'meta_request'
-  gem 'overcommit', require: false
+  gem 'overcommit', '~> 0.52.1', require: false
 end
 
 group :test do

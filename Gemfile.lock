@@ -638,7 +638,7 @@ DEPENDENCIES
   mini_magick (~> 4.5.1)
   mocha
   non-stupid-digest-assets
-  overcommit
+  overcommit (~> 0.52.1)
   pdfjs_viewer-rails!
   pg (= 0.20.0)
   pg_search
