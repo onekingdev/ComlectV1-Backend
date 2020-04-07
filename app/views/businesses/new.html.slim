@@ -58,8 +58,8 @@
     .clearfix
     h2.m-t-1.m-b-1.text-center
       | We want to learn about your business
-    .text-center.m-b-2
-      small Select all that applies:
+    .m-b-2.m-l-3
+      | Select all that applies:
     .choices.padded-checkboxes
       - Industry.all.order(:id).each do |industry|
         .col-sm-4.m-b-1

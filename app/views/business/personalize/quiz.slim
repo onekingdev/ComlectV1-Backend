@@ -15,7 +15,7 @@ br/
     = f.input :sec_or_crd
 
   - if @question[0] == :office_state
-    = f.input :office_state, collection: State.fetch_all, placeholder: "Choose State", input_html: { class: 'input-lg js-select', multiple: false }
+    = f.input :office_state, collection: State.fetch_all_usa, placeholder: "Choose State", input_html: { class: 'input-lg js-select', multiple: false }
 
   - if @question[0] == :branch_offices
     = f.input :branch_offices, collection: [["Yes", 1], ["No", 0]], placeholder: "Choose option", input_html: { class: 'input-lg js-select', multiple: false }

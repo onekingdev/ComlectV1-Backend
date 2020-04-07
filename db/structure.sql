@@ -1687,7 +1687,8 @@ CREATE TABLE public.jurisdictions (
     id integer NOT NULL,
     name character varying,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    sub_jurisdictions_specialist text DEFAULT ''::text
 );
 
 
@@ -1823,7 +1824,11 @@ CREATE TABLE public.specialists (
     specialist_other character varying,
     sub_industries character varying,
     project_types character varying,
-    years_of_experience integer
+    years_of_experience integer,
+    jurisdiction_states_usa character varying DEFAULT ''::character varying,
+    jurisdiction_states_canada character varying DEFAULT ''::character varying,
+    sub_jurisdictions character varying,
+    sub_jurisdictions_other character varying
 );
 
 
@@ -6981,4 +6986,12 @@ INSERT INTO schema_migrations (version) VALUES ('20200305192127');
 INSERT INTO schema_migrations (version) VALUES ('20200310192546');
 
 INSERT INTO schema_migrations (version) VALUES ('20200317092334');
+
+INSERT INTO schema_migrations (version) VALUES ('20200405173634');
+
+INSERT INTO schema_migrations (version) VALUES ('20200406000415');
+
+INSERT INTO schema_migrations (version) VALUES ('20200407165401');
+
+INSERT INTO schema_migrations (version) VALUES ('20200407183907');
 

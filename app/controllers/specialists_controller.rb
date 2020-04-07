@@ -48,7 +48,7 @@ class SpecialistsController < ApplicationController
       mixpanel_track_later 'Sign Up'
       SpecialistMailer.welcome(@specialist).deliver_later
       # rubocop:disable Metrics/LineLength
-      %i[complect_s_email complect_s_first_name complect_s_last_name referral complect_s_step1 complect_s_step11 complect_s_step2 complect_s_step3 complect_s_step31 complect_s_step32 complect_s_other complect_s_step7].each do |c|
+      %i[complect_s_address_1 complect_s_address_2 complect_s_city complect_s_state complect_s_zipcode complect_s_user_attributes_email complect_s_step21 complect_s_step4 complect_s_jur_other complect_s_states_canada complect_s_states_usa].each do |c|
         cookies.delete c
       end
       # rubocop:enable Metrics/LineLength

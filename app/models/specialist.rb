@@ -57,6 +57,9 @@ class Specialist < ApplicationRecord
   end
 
   serialize :sub_industries
+  serialize :sub_jurisdictions
+  serialize :jurisdiction_states_usa
+  serialize :jurisdiction_states_canada
   serialize :specialist_risks
   serialize :project_types
 
@@ -100,25 +103,50 @@ class Specialist < ApplicationRecord
   # end
 
   # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/MethodLength
   def apply_quiz(cookies)
     step1_c = cookies[:complect_s_step1].split('-').map(&:to_i)
     self.sub_industries = []
-    unless cookies[:complect_s_step11].nil?
-      cookies[:complect_s_step11].split('-').map(&proc { |p| p.split('_').map(&:to_i) }).each do |c|
-        sub_industries.push(Industry.find(c[0]).sub_industries.split("\r\n")[c[1]]) if step1_c.include? c[0]
+    unless cookies[:complect_s_step21].nil?
+      cookies[:complect_s_step21].split('-').map(&proc { |p| p.split('_').map(&:to_i) }).each do |c|
+        sub_industries.push(Industry.find(c[0]).sub_industries_specialist.split("\r\n")[c[1]]) if step1_c.include? c[0]
       end
     end
-    self.specialist_risks = []
-    specialist_risks[0] = STEP_RISKS[0][cookies[:complect_s_step3].to_i]
-    specialist_risks[1] = STEP_RISKS[1][cookies[:complect_s_step31].to_i]
-    specialist_risks[2] = STEP_RISKS[2][cookies[:complect_s_step32].to_i]
+    self.specialist_risks = cookies[:complect_s_step4].split('-').map(&:to_i)
     self.specialist_other = cookies[:complect_s_other] if industries.collect(&:name).include? 'Other'
-    self.project_types = []
-    cookies[:complect_s_step7].split('-').map(&:to_i).each do |c|
-      project_types.push(PROJECT_TYPES[c]) if project_types.count < 5
+
+    unless cookies[:complect_s_states_usa].nil?
+      tgt_states = []
+      cookies[:complect_s_states_usa].split('-').each do |usa_state|
+        tgt_states.push(usa_state) if State.fetch_all_usa.include?(usa_state)
+      end
+      self.jurisdiction_states_usa = tgt_states
     end
+
+    unless cookies[:complect_s_states_canada].nil?
+      tgt_states = []
+      cookies[:complect_s_states_canada].split('-').each do |can_state|
+        tgt_states.push(can_state) if State.fetch_all_canada.include?(can_state)
+      end
+      self.jurisdiction_states_canada = tgt_states
+    end
+
+    # rubocop:disable Style/GuardClause
+    unless cookies[:complect_s_step3].nil?
+      sub_jurs = cookies[:complect_s_step3].split('-')
+      if sub_jurs.include?('0_1') # Other
+        self.sub_jurisdictions_other = cookies[:complect_s_jur_other] unless cookies[:complect_s_jur_other].nil?
+        sub_jurs.delete('0_1')
+      end
+      self.sub_jurisdictions = []
+      sub_jurs.map(&proc { |p| p.split('_').map(&:to_i) }).each do |c|
+        sub_jurisdictions.push(Jurisdiction.find(c[0]).sub_jurisdictions_specialist.split("\r\n")[c[1]])
+      end
+    end
+    # rubocop:enable Style/GuardClause
   end
   # rubocop:enable Metrics/AbcSize
+  # rubocop:enable Metrics/MethodLength
 
   has_one :tos_agreement, through: :user
   has_one :cookie_agreement, through: :user
