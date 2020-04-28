@@ -1,0 +1,14 @@
+version: v1.0
+name: Docker
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: "Set things up"
+    task:
+      jobs:
+        - name: Compile
+          commands:
+            - checkout
+            - echo "do nothing"
