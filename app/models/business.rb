@@ -248,8 +248,6 @@ class Business < ApplicationRecord
 
   after_commit :generate_referral_token, on: :create
 
-  after_create :sync_with_mailchimp
-
   def self.fix_aum(str)
     vocab = [%w[BN bn Billion billion Bill bill], '000000000'], \
             [%w[Million million MM mm Mill mill], '000000']
@@ -451,12 +449,6 @@ class Business < ApplicationRecord
 
   def generate_referral_token
     GenerateReferralTokensJob.perform_later(self)
-  end
-
-  def sync_with_mailchimp
-    SyncBusinessUsersToMailchimpJob.perform_later(self)
-    # For dev testing and triggering heroku deploy
-    # SyncBusinessUsersToMailchimpJob.perform_now(self)
   end
 
   def subscription?
