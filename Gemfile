@@ -29,7 +29,6 @@ gem 'combine_pdf'
 gem 'libreconv'
 gem 'pdfjs_viewer-rails', git: 'https://github.com/kourindouhime/pdfjs_viewer-rails.git'
 gem 'wicked_pdf'
-gem 'wkhtmltopdf-binary'
 
 # calendar
 gem 'simple_calendar', '~> 2.0'

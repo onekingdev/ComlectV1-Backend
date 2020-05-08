@@ -6,6 +6,7 @@ RUN apt-get update -yqq \
       build-essential \
       nodejs \
       libreoffice \
+      wkhtmltopdf \
     && apt-get -q clean \
     && rm -rf /var/lib/apt/lists
 

@@ -585,7 +585,6 @@ GEM
     where-or (0.1.6)
     wicked_pdf (2.0.1)
       activesupport
-    wkhtmltopdf-binary (0.12.5.4)
     xpath (3.2.0)
       nokogiri (~> 1.8)
 
@@ -688,7 +687,6 @@ DEPENDENCIES
   webpacker
   where-or
   wicked_pdf
-  wkhtmltopdf-binary
 
 RUBY VERSION
    ruby 2.5.7p206
