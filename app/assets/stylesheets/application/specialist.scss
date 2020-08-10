@@ -1,11 +1,14 @@
+body {
+  background-color: #F3F5F7;
+}
+
 body.specialists.index {
-  background-image: asset_url('bg.png');
   background-position: center top;
   background-repeat: repeat-y;
 
   .new_specialist_search {
     .input-lg {
-      border: 2px solid #ffcc00;
+      border: 2px solid #FFCC01;
       border-radius: 0px;
       height: 32px;
       line-height: 28px;
@@ -32,18 +35,8 @@ body.specialists.index {
 }
 
 body.specialists.show {
-  /*#header {
-    background-image: asset_url("header-profile.jpg");
-    background-position-y: -100px;
-
-    @media (max-width: 689px) {
-      background-size: auto 300px + 150px;
-    }
-  }*/
-
   #header {
     background-image: asset_url("header-profile.jpg");
-    //background-position-y: -120px;
     background-size: cover;
     @media (min-width: $screen-xs-max) {
       height: 381px;
@@ -60,26 +53,27 @@ body.specialists.show {
   }
 }
 
-body.specialists.new, body.specialists.create, body.specialists.edit, body.specialists.update {
-  background-image: asset_url('bg.png');
+body.ported_businesses {
+  background-color: #fff;
+}
+
+body.specialists.new, body.specialists.create {
   background-position: center top;
   background-repeat: repeat-y;
+  background-color: #fff;
   .app_container{
-    -webkit-box-shadow: 0px 13px 32px 3px rgba(0,0,0,0.3);
-    -moz-box-shadow: 0px 13px 32px 3px rgba(0,0,0,0.3);
-    box-shadow: 0px 13px 32px 3px rgba(0,0,0,0.3);
     background-color: #ffffff;
     padding-top: 25px;
     margin-bottom: 100px;
   }
-  .btn-lg {
-    text-transform: uppercase;
-    font-weight: bold;
-    font-size: 14px;
-    letter-spacing: 2px;
-    border-radius: 0px;
-    padding: 10px 20px;
-  }
+  //.btn-lg {
+  //  text-transform: uppercase;
+  //  font-weight: bold;
+  //  font-size: 14px;
+  //  letter-spacing: 2px;
+  //  border-radius: 0px;
+  //  padding: 10px 20px;
+  //}
   #eligible-huge {
     display: inline-block;
     max-width: 360px;
@@ -97,7 +91,6 @@ body.specialists.new, body.specialists.create, body.specialists.edit, body.speci
 
 .card.specialist {
   .panel-heading {
-    //background-color: rgba(0, 0, 0, 0.65);
     position: relative;
 
     .avatar {
@@ -152,7 +145,7 @@ body.specialists.new, body.specialists.create, body.specialists.edit, body.speci
       color: #d2d2d2;
 
       &:hover {
-        color: #ffcc00;
+        color: #FFCC01;
       }
     }
 
@@ -177,7 +170,7 @@ body.specialists.new, body.specialists.create, body.specialists.edit, body.speci
 
     .add {
       position: absolute;
-      right: 14px;
+      right: 110px;
       bottom: 1px;
     }
   }
@@ -191,9 +184,9 @@ body.specialists.new, body.specialists.create, body.specialists.edit, body.speci
 
     .add {
       position: absolute;
-      right: 14px;
+      right: 114px;
       @media (min-width: $screen-sm-max) {
-        bottom: 38px;
+        bottom: 2px;
       }
       bottom: 0px;
     }
@@ -226,5 +219,16 @@ body.specialists.new, body.specialists.create, body.specialists.edit, body.speci
       color: lighten($text-muted, 10%);
       pointer-events: none;
     }
+  }
+}
+
+.specialists_ported_business_page {
+  label {
+    background-size: cover; position: absolute; margin-left: -50px;
+    padding: 10px;
+    margin-top: 4px;
+  }
+  b {
+    font-size: 15px;
   }
 }

@@ -2,6 +2,7 @@
 
 class ApplicationController < ActionController::Base
   before_action :store_user_location!, if: :storable_location?
+  before_action :lock_specialist, if: :current_specialist
   include ::Pundit
   include ::MixpanelHelper
 
@@ -27,6 +28,14 @@ class ApplicationController < ActionController::Base
   }
 
   private
+
+  def lock_specialist
+    return if current_specialist.dashboard_unlocked
+
+    return if (params['controller'] == 'specialists/dashboard') && (params['action'] == 'locked')
+
+    return redirect_to specialists_locked_path if params['controller'] != 'users/sessions'
+  end
 
   def storable_location?
     request.get? && is_navigational_format? && !devise_controller? && !request.xhr?
@@ -54,10 +63,22 @@ class ApplicationController < ActionController::Base
 
   def current_business
     return @_current_business if @_current_business
-    return nil if !user_signed_in? || current_user.business.nil?
-    @_current_business = ::Business::Decorator.decorate(current_user.business)
+    return unless user_signed_in?
+
+    business = if session[:employee_business_id].present?
+                 ::Business.find_by(id: session[:employee_business_id])
+               else
+                 current_user.business
+               end
+    return unless business
+
+    define_current_business(business)
   end
   helper_method :current_business
+
+  def define_current_business(business = nil)
+    @_current_business = ::Business::Decorator.decorate(business || current_user.business)
+  end
 
   def current_specialist
     return @_current_specialist if @_current_specialist
@@ -92,6 +113,7 @@ class ApplicationController < ActionController::Base
   def require_business!
     return if user_signed_in? && current_business
     return authenticate_user! unless user_signed_in?
+
     render 'forbidden', status: :forbidden, locals: { message: 'Only business accounts can access this page' }
   end
 
@@ -100,6 +122,30 @@ class ApplicationController < ActionController::Base
     return authenticate_user! unless user_signed_in?
     render 'forbidden', status: :forbidden, locals: { message: 'Only specialist accounts can access this page' }
   end
+
+  def employee?
+    current_specialist&.employee?
+  end
+  helper_method :employee?
+
+  def mirror?
+    return false if true_user.nil? || current_business_or_specialist.nil?
+
+    true_user.id != current_business_or_specialist.user&.id
+  end
+  helper_method :mirror?
+
+  def seat?
+    current_specialist&.seat?
+  end
+  helper_method :seat?
+
+  # def redirect_to_employee
+  #   return unless current_specialist
+  #   return unless current_specialist.dashboard_unlocked
+  #
+  #   redirect_to employees_path if current_specialist&.employee?(current_business)
+  # end
 
   def render_404
     render file: 'public/404', status: :not_found

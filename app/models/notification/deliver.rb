@@ -65,9 +65,35 @@ class Notification::Deliver < Draper::Decorator
       dispatcher.deliver_mail(action_url)
     end
 
-    def got_employee_invitation!(invitation)
+    def got_seat_assigned!(invitation, path = :new_specialist)
       action_path, action_url = path_and_url(
-        :new_specialist,
+        path,
+        invite_token: invitation.token
+      )
+
+      dispatcher = Dispatcher.new(
+        key: :got_seat_assigned,
+        action_path: action_path,
+        t: {
+          company_name: invitation.department.business.name
+        }
+      )
+
+      NotificationMailer.deliver_later(
+        :notification,
+        invitation.email,
+        dispatcher.message_mail,
+        dispatcher.action_label,
+        dispatcher.initiator_name,
+        dispatcher.img_path,
+        action_url,
+        dispatcher.subject
+      )
+    end
+
+    def got_employee_invitation!(invitation, path = :new_specialist)
+      action_path, action_url = path_and_url(
+        path,
         invite_token: invitation.token
       )
 
@@ -75,8 +101,8 @@ class Notification::Deliver < Draper::Decorator
         key: :got_employee_invitation,
         action_path: action_path,
         t: {
-          manager_full_name: invitation.team.manager.full_name,
-          team_name: invitation.team.name
+          manager_full_name: (invitation.team&.manager&.full_name || invitation.department&.business&.contact_full_name),
+          team_name: (invitation.team || invitation.department)&.name
         }
       )
 
@@ -468,6 +494,33 @@ class Notification::Deliver < Draper::Decorator
       # No mail notification here
     end
 
+    def invite_business_to_join!(ported, path = :new_business)
+      action_path, action_url = path_and_url(
+        path,
+        invite_token: ported&.token
+      )
+
+      dispatcher = Dispatcher.new(
+        key: :got_employee_invitation,
+        action_path: action_path,
+        t: {
+          manager_full_name: (ported&.specialist&.user&.full_name || 'some specialist'),
+          team_name: 'No team name'
+        }
+      )
+
+      NotificationMailer.deliver_later(
+        :notification,
+        ported.email,
+        dispatcher.message_mail,
+        dispatcher.action_label,
+        dispatcher.initiator_name,
+        dispatcher.img_path,
+        action_url,
+        dispatcher.subject
+      )
+    end
+
     def project_application!(application)
       project = application.project
       action_path, action_url = path_and_url(
@@ -810,7 +863,7 @@ class Notification::Deliver < Draper::Decorator
     end
 
     def default_img_url
-      asset_url('/icon-specialist.png')
+      asset_url('/default_userpic.png')
     end
 
     def business_name_and_img(business)

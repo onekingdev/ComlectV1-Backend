@@ -44,7 +44,7 @@
     width: 90%;
     margin-left: auto;
     margin-right: auto;
-    border: 3px solid #ffcc00;
+    border: 3px solid #FFCC01;
     input {
       font-size: 14px;
       padding: 24px 16px;
@@ -58,11 +58,14 @@
 }
 
 #choose-signup {
-  padding: 30px;
+  //padding: 30px;
+  padding-top: 20px;
   margin-left: auto;
   margin-right: auto;
-  padding-top: 60px !important;
-  background-color: #fff;
+  //padding-top: 60px !important;
+  .modal-wrapper {
+    background-color: transparent;
+  }
   @media screen and (min-width: $screen-md-min) { 
     width: 650px;
   }
@@ -84,10 +87,8 @@
     }
 
     p {
-      font-family: "Canela";
-      color: #000;
-      font-size: 17px;
-      letter-spacing: 0;
+      font-family: "Open Sans";
+      font-size: 12px;
       font-weight: $bold-weight;
       line-height: 24px;
       span {
@@ -116,10 +117,6 @@
 
 
   }
-
-  .btn {
-    height: 46px;
-  }
 }
 
 #sign-in {
@@ -131,17 +128,13 @@
   }
 
   .input-lg {
-    border: 3px solid #ffcc00;
-    border-radius: 0px;
-    font-weight: $light-weight;
+    //border: 3px solid #FFCC01;
+    //border-radius: 0px;
+    //font-weight: $light-weight;
   }
 
   h4 {
     margin: 20px 0px 15px 0px;
-  }
-
-  .btn-primary {
-    padding: 0px 60px;
   }
 
   .modal-fake {

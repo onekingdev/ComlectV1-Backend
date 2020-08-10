@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.16
--- Dumped by pg_dump version 9.6.16
+-- Dumped from database version 12.2
+-- Dumped by pg_dump version 12.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -15,20 +15,6 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
 
 --
 -- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
@@ -82,7 +68,7 @@ CREATE FUNCTION public.set_point_from_lat_lng() RETURNS trigger
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: admin_users; Type: TABLE; Schema: public; Owner: -
@@ -112,6 +98,7 @@ CREATE TABLE public.admin_users (
 --
 
 CREATE SEQUENCE public.admin_users_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -124,6 +111,118 @@ CREATE SEQUENCE public.admin_users_id_seq
 --
 
 ALTER SEQUENCE public.admin_users_id_seq OWNED BY public.admin_users.id;
+
+
+--
+-- Name: annual_reports; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.annual_reports (
+    id integer NOT NULL,
+    exam_start date,
+    exam_end date,
+    review_start date,
+    review_end date,
+    tailored_lvl integer,
+    comments text,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    business_id integer,
+    cof_bits character varying,
+    pdf_data jsonb,
+    year integer
+);
+
+
+--
+-- Name: annual_reports_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.annual_reports_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: annual_reports_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.annual_reports_id_seq OWNED BY public.annual_reports.id;
+
+
+--
+-- Name: annual_review_employees; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.annual_review_employees (
+    id integer NOT NULL,
+    name character varying,
+    title character varying,
+    department character varying,
+    annual_report_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: annual_review_employees_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.annual_review_employees_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: annual_review_employees_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.annual_review_employees_id_seq OWNED BY public.annual_review_employees.id;
+
+
+--
+-- Name: annual_reviews; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.annual_reviews (
+    id integer NOT NULL,
+    business_id integer,
+    file_data jsonb,
+    year integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    pdf_data jsonb,
+    processed boolean DEFAULT false
+);
+
+
+--
+-- Name: annual_reviews_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.annual_reviews_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: annual_reviews_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.annual_reviews_id_seq OWNED BY public.annual_reviews.id;
 
 
 --
@@ -144,6 +243,7 @@ CREATE TABLE public.answers (
 --
 
 CREATE SEQUENCE public.answers_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -181,6 +281,7 @@ CREATE TABLE public.articles (
 --
 
 CREATE SEQUENCE public.articles_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -193,6 +294,108 @@ CREATE SEQUENCE public.articles_id_seq
 --
 
 ALTER SEQUENCE public.articles_id_seq OWNED BY public.articles.id;
+
+
+--
+-- Name: audit_comments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.audit_comments (
+    id integer NOT NULL,
+    audit_request_id integer,
+    business_id integer,
+    body text,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: audit_comments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.audit_comments_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: audit_comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.audit_comments_id_seq OWNED BY public.audit_comments.id;
+
+
+--
+-- Name: audit_docs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.audit_docs (
+    id integer NOT NULL,
+    pdf_data jsonb,
+    file_data jsonb,
+    audit_request_id integer,
+    business_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    processed boolean DEFAULT false
+);
+
+
+--
+-- Name: audit_docs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.audit_docs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: audit_docs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.audit_docs_id_seq OWNED BY public.audit_docs.id;
+
+
+--
+-- Name: audit_requests; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.audit_requests (
+    id integer NOT NULL,
+    body character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: audit_requests_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.audit_requests_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: audit_requests_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.audit_requests_id_seq OWNED BY public.audit_requests.id;
 
 
 --
@@ -218,6 +421,7 @@ CREATE TABLE public.bank_accounts (
 --
 
 CREATE SEQUENCE public.bank_accounts_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -230,6 +434,39 @@ CREATE SEQUENCE public.bank_accounts_id_seq
 --
 
 ALTER SEQUENCE public.bank_accounts_id_seq OWNED BY public.bank_accounts.id;
+
+
+--
+-- Name: business_changes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.business_changes (
+    id integer NOT NULL,
+    change text,
+    annual_report_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: business_changes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.business_changes_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: business_changes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.business_changes_id_seq OWNED BY public.business_changes.id;
 
 
 --
@@ -270,15 +507,36 @@ CREATE TABLE public.businesses (
     rewards_tier_override_id integer,
     hubspot_company_id character varying,
     hubspot_contact_id character varying,
+    credits_in_cents integer DEFAULT 0,
     qna_lvl integer DEFAULT 0,
     qna_viewed_questions integer[] DEFAULT '{}'::integer[],
     qna_views_left integer DEFAULT 3,
-    credits_in_cents integer DEFAULT 0,
     username character varying,
     sub_industries character varying,
     business_stages character varying,
     business_risks character varying,
-    business_other character varying
+    business_other character varying,
+    sec_or_crd character varying,
+    office_state character varying,
+    branch_offices boolean,
+    client_account_cnt integer,
+    client_types character varying,
+    aum numeric,
+    cco character varying,
+    already_covered character varying,
+    review_plan character varying,
+    annual_compliance boolean,
+    already_covered_other character varying,
+    tutorial_complete boolean DEFAULT false,
+    review_declined boolean DEFAULT false,
+    onboard_call_booked boolean DEFAULT false,
+    welcomed boolean DEFAULT false,
+    total_assets numeric,
+    onboarding_passed boolean DEFAULT false,
+    ria_dashboard boolean DEFAULT false,
+    compliance_policies_spawned boolean DEFAULT false,
+    annual_budget numeric,
+    risk_tolerance character varying
 );
 
 
@@ -287,6 +545,7 @@ CREATE TABLE public.businesses (
 --
 
 CREATE SEQUENCE public.businesses_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -353,6 +612,7 @@ CREATE TABLE public.charges (
 --
 
 CREATE SEQUENCE public.charges_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -365,6 +625,113 @@ CREATE SEQUENCE public.charges_id_seq
 --
 
 ALTER SEQUENCE public.charges_id_seq OWNED BY public.charges.id;
+
+
+--
+-- Name: compliance_categories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.compliance_categories (
+    id integer NOT NULL,
+    name character varying,
+    checkboxes text,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    description text DEFAULT ''::text,
+    however text DEFAULT ''::text,
+    findings_everywhere text DEFAULT ''::text
+);
+
+
+--
+-- Name: compliance_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.compliance_categories_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: compliance_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.compliance_categories_id_seq OWNED BY public.compliance_categories.id;
+
+
+--
+-- Name: compliance_policies; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.compliance_policies (
+    id integer NOT NULL,
+    title character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    business_id integer,
+    section character varying,
+    last_uploaded timestamp without time zone,
+    pdf_data jsonb,
+    docs_count integer DEFAULT 0
+);
+
+
+--
+-- Name: compliance_policies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.compliance_policies_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: compliance_policies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.compliance_policies_id_seq OWNED BY public.compliance_policies.id;
+
+
+--
+-- Name: compliance_policy_docs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.compliance_policy_docs (
+    id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    compliance_policy_id integer,
+    doc_data jsonb,
+    pdf_data jsonb
+);
+
+
+--
+-- Name: compliance_policy_docs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.compliance_policy_docs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: compliance_policy_docs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.compliance_policy_docs_id_seq OWNED BY public.compliance_policy_docs.id;
 
 
 --
@@ -388,6 +755,7 @@ CREATE TABLE public.cookie_agreements (
 --
 
 CREATE SEQUENCE public.cookie_agreements_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -423,6 +791,7 @@ CREATE TABLE public.documents (
 --
 
 CREATE SEQUENCE public.documents_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -457,6 +826,7 @@ CREATE TABLE public.education_histories (
 --
 
 CREATE SEQUENCE public.education_histories_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -490,6 +860,7 @@ CREATE TABLE public.email_threads (
 --
 
 CREATE SEQUENCE public.email_threads_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -524,6 +895,7 @@ CREATE TABLE public.favorites (
 --
 
 CREATE SEQUENCE public.favorites_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -562,6 +934,7 @@ CREATE TABLE public.feedback_requests (
 --
 
 CREATE SEQUENCE public.feedback_requests_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -574,6 +947,76 @@ CREATE SEQUENCE public.feedback_requests_id_seq
 --
 
 ALTER SEQUENCE public.feedback_requests_id_seq OWNED BY public.feedback_requests.id;
+
+
+--
+-- Name: file_docs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_docs (
+    id integer NOT NULL,
+    business_id integer,
+    file_folder_id integer,
+    file_data jsonb,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    name character varying
+);
+
+
+--
+-- Name: file_docs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.file_docs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: file_docs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.file_docs_id_seq OWNED BY public.file_docs.id;
+
+
+--
+-- Name: file_folders; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_folders (
+    id integer NOT NULL,
+    business_id integer,
+    name character varying,
+    parent_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    locked boolean DEFAULT false
+);
+
+
+--
+-- Name: file_folders_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.file_folders_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: file_folders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.file_folders_id_seq OWNED BY public.file_folders.id;
 
 
 --
@@ -1060,6 +1503,43 @@ UNION
 
 
 --
+-- Name: findings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.findings (
+    id integer NOT NULL,
+    annual_report_id integer,
+    finding text,
+    action text,
+    risk_lvl integer DEFAULT 3,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    compliance_category integer,
+    checkbox_index integer
+);
+
+
+--
+-- Name: findings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.findings_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: findings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.findings_id_seq OWNED BY public.findings.id;
+
+
+--
 -- Name: flags; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1080,6 +1560,7 @@ CREATE TABLE public.flags (
 --
 
 CREATE SEQUENCE public.flags_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1116,6 +1597,7 @@ CREATE TABLE public.forum_answers (
 --
 
 CREATE SEQUENCE public.forum_answers_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1152,6 +1634,7 @@ CREATE TABLE public.forum_questions (
 --
 
 CREATE SEQUENCE public.forum_questions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1202,7 +1685,8 @@ CREATE TABLE public.forum_subscriptions (
     stripe_customer_id character varying,
     stripe_subscription_id character varying,
     renewal_date timestamp without time zone,
-    cancelled boolean DEFAULT false
+    cancelled boolean DEFAULT false,
+    auto_renew boolean DEFAULT false
 );
 
 
@@ -1211,6 +1695,7 @@ CREATE TABLE public.forum_subscriptions (
 --
 
 CREATE SEQUENCE public.forum_subscriptions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1244,6 +1729,7 @@ CREATE TABLE public.forum_votes (
 --
 
 CREATE SEQUENCE public.forum_votes_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1278,6 +1764,7 @@ CREATE TABLE public.industries (
 --
 
 CREATE SEQUENCE public.industries_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1342,7 +1829,6 @@ CREATE TABLE public.job_applications (
     estimated_hours integer,
     starts_on date,
     ends_on date,
-    estimated_days integer,
     status character varying
 );
 
@@ -1352,6 +1838,7 @@ CREATE TABLE public.job_applications (
 --
 
 CREATE SEQUENCE public.job_applications_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1374,7 +1861,8 @@ CREATE TABLE public.jurisdictions (
     id integer NOT NULL,
     name character varying,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    sub_jurisdictions_specialist text DEFAULT ''::text
 );
 
 
@@ -1383,6 +1871,7 @@ CREATE TABLE public.jurisdictions (
 --
 
 CREATE SEQUENCE public.jurisdictions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1442,7 +1931,8 @@ CREATE TABLE public.messages (
     message character varying,
     file_data jsonb,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    read_by_recipient boolean DEFAULT false
 );
 
 
@@ -1451,6 +1941,7 @@ CREATE TABLE public.messages (
 --
 
 CREATE SEQUENCE public.messages_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1510,7 +2001,17 @@ CREATE TABLE public.specialists (
     specialist_other character varying,
     sub_industries character varying,
     project_types character varying,
-    years_of_experience integer
+    years_of_experience integer,
+    jurisdiction_states_usa character varying DEFAULT ''::character varying,
+    jurisdiction_states_canada character varying DEFAULT ''::character varying,
+    sub_jurisdictions character varying,
+    sub_jurisdictions_other character varying,
+    call_booked boolean DEFAULT false,
+    dashboard_unlocked boolean DEFAULT false,
+    min_hourly_rate integer,
+    annual_revenue_goal numeric,
+    risk_tolerance character varying,
+    automatching_available boolean DEFAULT false
 );
 
 
@@ -2926,6 +3427,7 @@ CREATE TABLE public.notifications (
 --
 
 CREATE SEQUENCE public.notifications_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2963,6 +3465,7 @@ CREATE TABLE public.partnerships (
 --
 
 CREATE SEQUENCE public.partnerships_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2996,6 +3499,7 @@ CREATE TABLE public.payment_profiles (
 --
 
 CREATE SEQUENCE public.payment_profiles_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3039,6 +3543,7 @@ CREATE TABLE public.payment_sources (
 --
 
 CREATE SEQUENCE public.payment_sources_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3051,6 +3556,80 @@ CREATE SEQUENCE public.payment_sources_id_seq
 --
 
 ALTER SEQUENCE public.payment_sources_id_seq OWNED BY public.payment_sources.id;
+
+
+--
+-- Name: ported_businesses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ported_businesses (
+    id integer NOT NULL,
+    company character varying,
+    email character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    specialist_id integer,
+    status integer DEFAULT 0,
+    token text,
+    business_id integer
+);
+
+
+--
+-- Name: ported_businesses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ported_businesses_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ported_businesses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ported_businesses_id_seq OWNED BY public.ported_businesses.id;
+
+
+--
+-- Name: ported_subscriptions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ported_subscriptions (
+    id integer NOT NULL,
+    specialist_id integer,
+    period integer DEFAULT 0,
+    subscribed_at timestamp without time zone,
+    billing_period_ends_at timestamp without time zone,
+    stripe_subscription_id text,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    status integer DEFAULT 0
+);
+
+
+--
+-- Name: ported_subscriptions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ported_subscriptions_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ported_subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ported_subscriptions_id_seq OWNED BY public.ported_subscriptions.id;
 
 
 --
@@ -3072,6 +3651,7 @@ CREATE TABLE public.project_ends (
 --
 
 CREATE SEQUENCE public.project_ends_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3106,6 +3686,7 @@ CREATE TABLE public.project_extensions (
 --
 
 CREATE SEQUENCE public.project_extensions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3141,6 +3722,7 @@ CREATE TABLE public.project_invites (
 --
 
 CREATE SEQUENCE public.project_invites_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3160,6 +3742,7 @@ ALTER SEQUENCE public.project_invites_id_seq OWNED BY public.project_invites.id;
 --
 
 CREATE SEQUENCE public.project_issues_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3203,7 +3786,10 @@ CREATE TABLE public.project_templates (
     title_aum character varying,
     description_aum character varying,
     public_description text,
-    public_features text
+    public_features text,
+    business_fee_free boolean DEFAULT false,
+    identifier character varying,
+    applicant_selection character varying DEFAULT 'interview'::character varying
 );
 
 
@@ -3212,6 +3798,7 @@ CREATE TABLE public.project_templates (
 --
 
 CREATE SEQUENCE public.project_templates_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3231,6 +3818,7 @@ ALTER SEQUENCE public.project_templates_id_seq OWNED BY public.project_templates
 --
 
 CREATE SEQUENCE public.projects_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3274,6 +3862,7 @@ CREATE TABLE public.questions (
 --
 
 CREATE SEQUENCE public.questions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3311,6 +3900,7 @@ CREATE TABLE public.ratings (
 --
 
 CREATE SEQUENCE public.ratings_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3346,6 +3936,7 @@ CREATE TABLE public.referral_tokens (
 --
 
 CREATE SEQUENCE public.referral_tokens_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3379,6 +3970,7 @@ CREATE TABLE public.referrals (
 --
 
 CREATE SEQUENCE public.referrals_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3391,6 +3983,78 @@ CREATE SEQUENCE public.referrals_id_seq
 --
 
 ALTER SEQUENCE public.referrals_id_seq OWNED BY public.referrals.id;
+
+
+--
+-- Name: regulatory_changes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.regulatory_changes (
+    id integer NOT NULL,
+    annual_report_id integer,
+    change text,
+    response text,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: regulatory_changes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.regulatory_changes_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: regulatory_changes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.regulatory_changes_id_seq OWNED BY public.regulatory_changes.id;
+
+
+--
+-- Name: reminders; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.reminders (
+    id integer NOT NULL,
+    body character varying,
+    remindable_id integer,
+    remind_at date,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    done_at timestamp without time zone,
+    end_date date,
+    remindable_type character varying,
+    business_id integer
+);
+
+
+--
+-- Name: reminders_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.reminders_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: reminders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.reminders_id_seq OWNED BY public.reminders.id;
 
 
 --
@@ -3412,6 +4076,7 @@ CREATE TABLE public.rewards_tiers (
 --
 
 CREATE SEQUENCE public.rewards_tiers_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3436,6 +4101,42 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: seats; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.seats (
+    id integer NOT NULL,
+    business_id bigint,
+    subscription_id bigint,
+    team_member_id bigint,
+    subscribed_at timestamp without time zone,
+    assigned_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: seats_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.seats_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: seats_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.seats_id_seq OWNED BY public.seats.id;
+
+
+--
 -- Name: settings; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3455,6 +4156,7 @@ CREATE TABLE public.settings (
 --
 
 CREATE SEQUENCE public.settings_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3486,6 +4188,7 @@ CREATE TABLE public.skills (
 --
 
 CREATE SEQUENCE public.skills_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3516,13 +4219,14 @@ CREATE TABLE public.skills_specialists (
 
 CREATE TABLE public.specialist_invitations (
     id integer NOT NULL,
-    specialist_team_id integer NOT NULL,
+    specialist_team_id integer,
     specialist_id integer,
     first_name character varying NOT NULL,
-    last_name character varying NOT NULL,
+    last_name character varying,
     email character varying NOT NULL,
     token character varying NOT NULL,
-    status integer DEFAULT 0 NOT NULL
+    status integer DEFAULT 0 NOT NULL,
+    team_id integer
 );
 
 
@@ -3531,6 +4235,7 @@ CREATE TABLE public.specialist_invitations (
 --
 
 CREATE SEQUENCE public.specialist_invitations_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3543,6 +4248,45 @@ CREATE SEQUENCE public.specialist_invitations_id_seq
 --
 
 ALTER SEQUENCE public.specialist_invitations_id_seq OWNED BY public.specialist_invitations.id;
+
+
+--
+-- Name: specialist_payment_sources; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.specialist_payment_sources (
+    id integer NOT NULL,
+    specialist_id integer,
+    stripe_customer_id text,
+    stripe_card_id text,
+    brand text,
+    exp_month integer,
+    exp_year integer,
+    last4 text,
+    "primary" boolean DEFAULT false,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: specialist_payment_sources_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.specialist_payment_sources_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: specialist_payment_sources_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.specialist_payment_sources_id_seq OWNED BY public.specialist_payment_sources.id;
 
 
 --
@@ -3563,6 +4307,7 @@ CREATE TABLE public.specialist_teams (
 --
 
 CREATE SEQUENCE public.specialist_teams_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3582,6 +4327,7 @@ ALTER SEQUENCE public.specialist_teams_id_seq OWNED BY public.specialist_teams.i
 --
 
 CREATE SEQUENCE public.specialists_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3638,6 +4384,7 @@ CREATE TABLE public.stripe_accounts (
 --
 
 CREATE SEQUENCE public.stripe_accounts_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3674,6 +4421,7 @@ CREATE TABLE public.subscription_charges (
 --
 
 CREATE SEQUENCE public.subscription_charges_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3686,6 +4434,120 @@ CREATE SEQUENCE public.subscription_charges_id_seq
 --
 
 ALTER SEQUENCE public.subscription_charges_id_seq OWNED BY public.subscription_charges.id;
+
+
+--
+-- Name: subscriptions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subscriptions (
+    id integer NOT NULL,
+    business_id bigint,
+    stripe_subscription_id character varying,
+    stripe_invoice_item_id character varying,
+    plan integer DEFAULT 0,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    kind_of integer DEFAULT 0,
+    title character varying,
+    billing_period_ends integer,
+    payment_source_id integer,
+    auto_renew boolean DEFAULT false,
+    status integer DEFAULT 0
+);
+
+
+--
+-- Name: subscriptions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.subscriptions_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.subscriptions_id_seq OWNED BY public.subscriptions.id;
+
+
+--
+-- Name: team_members; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.team_members (
+    id integer NOT NULL,
+    team_id integer,
+    name character varying,
+    email character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    title character varying,
+    start_date date,
+    end_date date,
+    termination_reason text,
+    first_name character varying,
+    last_name character varying
+);
+
+
+--
+-- Name: team_members_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.team_members_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: team_members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.team_members_id_seq OWNED BY public.team_members.id;
+
+
+--
+-- Name: teams; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.teams (
+    id integer NOT NULL,
+    business_id integer,
+    name character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: teams_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.teams_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: teams_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.teams_id_seq OWNED BY public.teams.id;
 
 
 --
@@ -3710,6 +4572,7 @@ CREATE TABLE public.time_logs (
 --
 
 CREATE SEQUENCE public.time_logs_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3746,6 +4609,7 @@ CREATE TABLE public.timesheets (
 --
 
 CREATE SEQUENCE public.timesheets_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3781,6 +4645,7 @@ CREATE TABLE public.tos_agreements (
 --
 
 CREATE SEQUENCE public.tos_agreements_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3827,6 +4692,7 @@ CREATE TABLE public.transactions (
 --
 
 CREATE SEQUENCE public.transactions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3862,6 +4728,7 @@ CREATE TABLE public.turnkey_pages (
 --
 
 CREATE SEQUENCE public.turnkey_pages_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3902,6 +4769,7 @@ CREATE TABLE public.turnkey_solutions (
 --
 
 CREATE SEQUENCE public.turnkey_solutions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3921,6 +4789,7 @@ ALTER SEQUENCE public.turnkey_solutions_id_seq OWNED BY public.turnkey_solutions
 --
 
 CREATE SEQUENCE public.users_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3960,6 +4829,7 @@ CREATE TABLE public.work_experiences (
 --
 
 CREATE SEQUENCE public.work_experiences_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3982,6 +4852,27 @@ ALTER TABLE ONLY public.admin_users ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: annual_reports id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.annual_reports ALTER COLUMN id SET DEFAULT nextval('public.annual_reports_id_seq'::regclass);
+
+
+--
+-- Name: annual_review_employees id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.annual_review_employees ALTER COLUMN id SET DEFAULT nextval('public.annual_review_employees_id_seq'::regclass);
+
+
+--
+-- Name: annual_reviews id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.annual_reviews ALTER COLUMN id SET DEFAULT nextval('public.annual_reviews_id_seq'::regclass);
+
+
+--
 -- Name: answers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3996,10 +4887,38 @@ ALTER TABLE ONLY public.articles ALTER COLUMN id SET DEFAULT nextval('public.art
 
 
 --
+-- Name: audit_comments id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.audit_comments ALTER COLUMN id SET DEFAULT nextval('public.audit_comments_id_seq'::regclass);
+
+
+--
+-- Name: audit_docs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.audit_docs ALTER COLUMN id SET DEFAULT nextval('public.audit_docs_id_seq'::regclass);
+
+
+--
+-- Name: audit_requests id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.audit_requests ALTER COLUMN id SET DEFAULT nextval('public.audit_requests_id_seq'::regclass);
+
+
+--
 -- Name: bank_accounts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.bank_accounts ALTER COLUMN id SET DEFAULT nextval('public.bank_accounts_id_seq'::regclass);
+
+
+--
+-- Name: business_changes id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.business_changes ALTER COLUMN id SET DEFAULT nextval('public.business_changes_id_seq'::regclass);
 
 
 --
@@ -4014,6 +4933,27 @@ ALTER TABLE ONLY public.businesses ALTER COLUMN id SET DEFAULT nextval('public.b
 --
 
 ALTER TABLE ONLY public.charges ALTER COLUMN id SET DEFAULT nextval('public.charges_id_seq'::regclass);
+
+
+--
+-- Name: compliance_categories id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.compliance_categories ALTER COLUMN id SET DEFAULT nextval('public.compliance_categories_id_seq'::regclass);
+
+
+--
+-- Name: compliance_policies id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.compliance_policies ALTER COLUMN id SET DEFAULT nextval('public.compliance_policies_id_seq'::regclass);
+
+
+--
+-- Name: compliance_policy_docs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.compliance_policy_docs ALTER COLUMN id SET DEFAULT nextval('public.compliance_policy_docs_id_seq'::regclass);
 
 
 --
@@ -4056,6 +4996,27 @@ ALTER TABLE ONLY public.favorites ALTER COLUMN id SET DEFAULT nextval('public.fa
 --
 
 ALTER TABLE ONLY public.feedback_requests ALTER COLUMN id SET DEFAULT nextval('public.feedback_requests_id_seq'::regclass);
+
+
+--
+-- Name: file_docs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_docs ALTER COLUMN id SET DEFAULT nextval('public.file_docs_id_seq'::regclass);
+
+
+--
+-- Name: file_folders id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_folders ALTER COLUMN id SET DEFAULT nextval('public.file_folders_id_seq'::regclass);
+
+
+--
+-- Name: findings id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.findings ALTER COLUMN id SET DEFAULT nextval('public.findings_id_seq'::regclass);
 
 
 --
@@ -4150,6 +5111,20 @@ ALTER TABLE ONLY public.payment_sources ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
+-- Name: ported_businesses id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ported_businesses ALTER COLUMN id SET DEFAULT nextval('public.ported_businesses_id_seq'::regclass);
+
+
+--
+-- Name: ported_subscriptions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ported_subscriptions ALTER COLUMN id SET DEFAULT nextval('public.ported_subscriptions_id_seq'::regclass);
+
+
+--
 -- Name: project_ends id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4220,10 +5195,31 @@ ALTER TABLE ONLY public.referrals ALTER COLUMN id SET DEFAULT nextval('public.re
 
 
 --
+-- Name: regulatory_changes id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.regulatory_changes ALTER COLUMN id SET DEFAULT nextval('public.regulatory_changes_id_seq'::regclass);
+
+
+--
+-- Name: reminders id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reminders ALTER COLUMN id SET DEFAULT nextval('public.reminders_id_seq'::regclass);
+
+
+--
 -- Name: rewards_tiers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rewards_tiers ALTER COLUMN id SET DEFAULT nextval('public.rewards_tiers_id_seq'::regclass);
+
+
+--
+-- Name: seats id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.seats ALTER COLUMN id SET DEFAULT nextval('public.seats_id_seq'::regclass);
 
 
 --
@@ -4245,6 +5241,13 @@ ALTER TABLE ONLY public.skills ALTER COLUMN id SET DEFAULT nextval('public.skill
 --
 
 ALTER TABLE ONLY public.specialist_invitations ALTER COLUMN id SET DEFAULT nextval('public.specialist_invitations_id_seq'::regclass);
+
+
+--
+-- Name: specialist_payment_sources id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specialist_payment_sources ALTER COLUMN id SET DEFAULT nextval('public.specialist_payment_sources_id_seq'::regclass);
 
 
 --
@@ -4273,6 +5276,27 @@ ALTER TABLE ONLY public.stripe_accounts ALTER COLUMN id SET DEFAULT nextval('pub
 --
 
 ALTER TABLE ONLY public.subscription_charges ALTER COLUMN id SET DEFAULT nextval('public.subscription_charges_id_seq'::regclass);
+
+
+--
+-- Name: subscriptions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subscriptions ALTER COLUMN id SET DEFAULT nextval('public.subscriptions_id_seq'::regclass);
+
+
+--
+-- Name: team_members id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.team_members ALTER COLUMN id SET DEFAULT nextval('public.team_members_id_seq'::regclass);
+
+
+--
+-- Name: teams id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.teams ALTER COLUMN id SET DEFAULT nextval('public.teams_id_seq'::regclass);
 
 
 --
@@ -4340,6 +5364,30 @@ ALTER TABLE ONLY public.admin_users
 
 
 --
+-- Name: annual_reports annual_reports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.annual_reports
+    ADD CONSTRAINT annual_reports_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: annual_review_employees annual_review_employees_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.annual_review_employees
+    ADD CONSTRAINT annual_review_employees_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: annual_reviews annual_reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.annual_reviews
+    ADD CONSTRAINT annual_reviews_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: answers answers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4356,11 +5404,43 @@ ALTER TABLE ONLY public.articles
 
 
 --
+-- Name: audit_comments audit_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.audit_comments
+    ADD CONSTRAINT audit_comments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: audit_docs audit_docs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.audit_docs
+    ADD CONSTRAINT audit_docs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: audit_requests audit_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.audit_requests
+    ADD CONSTRAINT audit_requests_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: bank_accounts bank_accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.bank_accounts
     ADD CONSTRAINT bank_accounts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: business_changes business_changes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.business_changes
+    ADD CONSTRAINT business_changes_pkey PRIMARY KEY (id);
 
 
 --
@@ -4377,6 +5457,30 @@ ALTER TABLE ONLY public.businesses
 
 ALTER TABLE ONLY public.charges
     ADD CONSTRAINT charges_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: compliance_categories compliance_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.compliance_categories
+    ADD CONSTRAINT compliance_categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: compliance_policies compliance_policies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.compliance_policies
+    ADD CONSTRAINT compliance_policies_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: compliance_policy_docs compliance_policy_docs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.compliance_policy_docs
+    ADD CONSTRAINT compliance_policy_docs_pkey PRIMARY KEY (id);
 
 
 --
@@ -4425,6 +5529,30 @@ ALTER TABLE ONLY public.favorites
 
 ALTER TABLE ONLY public.feedback_requests
     ADD CONSTRAINT feedback_requests_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: file_docs file_docs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_docs
+    ADD CONSTRAINT file_docs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: file_folders file_folders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_folders
+    ADD CONSTRAINT file_folders_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: findings findings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.findings
+    ADD CONSTRAINT findings_pkey PRIMARY KEY (id);
 
 
 --
@@ -4532,6 +5660,22 @@ ALTER TABLE ONLY public.payment_sources
 
 
 --
+-- Name: ported_businesses ported_businesses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ported_businesses
+    ADD CONSTRAINT ported_businesses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ported_subscriptions ported_subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ported_subscriptions
+    ADD CONSTRAINT ported_subscriptions_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: project_ends project_ends_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4612,11 +5756,35 @@ ALTER TABLE ONLY public.referrals
 
 
 --
+-- Name: regulatory_changes regulatory_changes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.regulatory_changes
+    ADD CONSTRAINT regulatory_changes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: reminders reminders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reminders
+    ADD CONSTRAINT reminders_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: rewards_tiers rewards_tiers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rewards_tiers
     ADD CONSTRAINT rewards_tiers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: seats seats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.seats
+    ADD CONSTRAINT seats_pkey PRIMARY KEY (id);
 
 
 --
@@ -4641,6 +5809,14 @@ ALTER TABLE ONLY public.skills
 
 ALTER TABLE ONLY public.specialist_invitations
     ADD CONSTRAINT specialist_invitations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: specialist_payment_sources specialist_payment_sources_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specialist_payment_sources
+    ADD CONSTRAINT specialist_payment_sources_pkey PRIMARY KEY (id);
 
 
 --
@@ -4673,6 +5849,30 @@ ALTER TABLE ONLY public.stripe_accounts
 
 ALTER TABLE ONLY public.subscription_charges
     ADD CONSTRAINT subscription_charges_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: subscriptions subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subscriptions
+    ADD CONSTRAINT subscriptions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: team_members team_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.team_members
+    ADD CONSTRAINT team_members_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: teams teams_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.teams
+    ADD CONSTRAINT teams_pkey PRIMARY KEY (id);
 
 
 --
@@ -5062,6 +6262,20 @@ CREATE INDEX index_payment_sources_on_type ON public.payment_sources USING btree
 
 
 --
+-- Name: index_ported_businesses_on_business_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_ported_businesses_on_business_id ON public.ported_businesses USING btree (business_id);
+
+
+--
+-- Name: index_ported_subscriptions_on_specialist_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_ported_subscriptions_on_specialist_id ON public.ported_subscriptions USING btree (specialist_id);
+
+
+--
 -- Name: index_project_ends_on_expires_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5370,6 +6584,20 @@ CREATE UNIQUE INDEX index_referrals_on_referrable_id_and_referrable_type ON publ
 
 
 --
+-- Name: index_seats_on_business_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_seats_on_business_id ON public.seats USING btree (business_id);
+
+
+--
+-- Name: index_seats_on_team_member_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_seats_on_team_member_id ON public.seats USING btree (team_member_id);
+
+
+--
 -- Name: index_settings_on_target_type_and_target_id_and_var; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5398,10 +6626,24 @@ CREATE INDEX index_specialist_invitations_on_specialist_team_id ON public.specia
 
 
 --
+-- Name: index_specialist_invitations_on_team_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_specialist_invitations_on_team_id ON public.specialist_invitations USING btree (team_id);
+
+
+--
 -- Name: index_specialist_invitations_on_token; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_specialist_invitations_on_token ON public.specialist_invitations USING btree (token);
+
+
+--
+-- Name: index_specialist_payment_sources_on_specialist_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_specialist_payment_sources_on_specialist_id ON public.specialist_payment_sources USING btree (specialist_id);
 
 
 --
@@ -5479,6 +6721,13 @@ CREATE INDEX index_stripe_accounts_on_stripe_id ON public.stripe_accounts USING 
 --
 
 CREATE INDEX index_subscription_charges_on_forum_subscription_id ON public.subscription_charges USING btree (forum_subscription_id);
+
+
+--
+-- Name: index_subscriptions_on_kind_of; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_subscriptions_on_kind_of ON public.subscriptions USING btree (kind_of);
 
 
 --
@@ -5695,28 +6944,28 @@ CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING b
 -- Name: projects calculate_budget; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER calculate_budget BEFORE INSERT OR UPDATE ON public.projects FOR EACH ROW EXECUTE PROCEDURE public.projects_calculate_budget();
+CREATE TRIGGER calculate_budget BEFORE INSERT OR UPDATE ON public.projects FOR EACH ROW EXECUTE FUNCTION public.projects_calculate_budget();
 
 
 --
 -- Name: projects trigger_projects_on_lat_lng; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER trigger_projects_on_lat_lng BEFORE INSERT OR UPDATE OF lat, lng ON public.projects FOR EACH ROW EXECUTE PROCEDURE public.set_point_from_lat_lng();
+CREATE TRIGGER trigger_projects_on_lat_lng BEFORE INSERT OR UPDATE OF lat, lng ON public.projects FOR EACH ROW EXECUTE FUNCTION public.set_point_from_lat_lng();
 
 
 --
 -- Name: specialists trigger_specialists_on_lat_lng; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER trigger_specialists_on_lat_lng BEFORE INSERT OR UPDATE OF lat, lng ON public.specialists FOR EACH ROW EXECUTE PROCEDURE public.set_point_from_lat_lng();
+CREATE TRIGGER trigger_specialists_on_lat_lng BEFORE INSERT OR UPDATE OF lat, lng ON public.specialists FOR EACH ROW EXECUTE FUNCTION public.set_point_from_lat_lng();
 
 
 --
 -- Name: projects tsvectorupdate; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON public.projects FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger('tsv', 'pg_catalog.english', 'title', 'description');
+CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON public.projects FOR EACH ROW EXECUTE FUNCTION tsvector_update_trigger('tsv', 'pg_catalog.english', 'title', 'description');
 
 
 --
@@ -6189,7 +7438,191 @@ INSERT INTO schema_migrations (version) VALUES ('20190827194645');
 
 INSERT INTO schema_migrations (version) VALUES ('20190912145221');
 
+INSERT INTO schema_migrations (version) VALUES ('20190929215310');
+
+INSERT INTO schema_migrations (version) VALUES ('20191013070720');
+
+INSERT INTO schema_migrations (version) VALUES ('20191028010601');
+
+INSERT INTO schema_migrations (version) VALUES ('20191028033710');
+
+INSERT INTO schema_migrations (version) VALUES ('20191028035845');
+
+INSERT INTO schema_migrations (version) VALUES ('20191028040525');
+
+INSERT INTO schema_migrations (version) VALUES ('20191028054616');
+
+INSERT INTO schema_migrations (version) VALUES ('20191101200437');
+
+INSERT INTO schema_migrations (version) VALUES ('20191106180256');
+
+INSERT INTO schema_migrations (version) VALUES ('20191107010504');
+
+INSERT INTO schema_migrations (version) VALUES ('20191119063004');
+
+INSERT INTO schema_migrations (version) VALUES ('20191119080112');
+
+INSERT INTO schema_migrations (version) VALUES ('20191120121410');
+
+INSERT INTO schema_migrations (version) VALUES ('20191205023843');
+
+INSERT INTO schema_migrations (version) VALUES ('20191205203522');
+
+INSERT INTO schema_migrations (version) VALUES ('20191205235626');
+
+INSERT INTO schema_migrations (version) VALUES ('20191206010659');
+
+INSERT INTO schema_migrations (version) VALUES ('20191208014625');
+
+INSERT INTO schema_migrations (version) VALUES ('20191208014754');
+
+INSERT INTO schema_migrations (version) VALUES ('20191208014928');
+
+INSERT INTO schema_migrations (version) VALUES ('20191208015014');
+
+INSERT INTO schema_migrations (version) VALUES ('20191208015712');
+
+INSERT INTO schema_migrations (version) VALUES ('20191208015810');
+
+INSERT INTO schema_migrations (version) VALUES ('20191209010949');
+
+INSERT INTO schema_migrations (version) VALUES ('20191219200231');
+
+INSERT INTO schema_migrations (version) VALUES ('20191219201057');
+
+INSERT INTO schema_migrations (version) VALUES ('20191221035118');
+
+INSERT INTO schema_migrations (version) VALUES ('20191221040705');
+
 INSERT INTO schema_migrations (version) VALUES ('20200113034256');
 
+INSERT INTO schema_migrations (version) VALUES ('20200114210331');
+
+INSERT INTO schema_migrations (version) VALUES ('20200117080343');
+
+INSERT INTO schema_migrations (version) VALUES ('20200117095549');
+
+INSERT INTO schema_migrations (version) VALUES ('20200118000622');
+
+INSERT INTO schema_migrations (version) VALUES ('20200118201501');
+
+INSERT INTO schema_migrations (version) VALUES ('20200119192255');
+
+INSERT INTO schema_migrations (version) VALUES ('20200120025054');
+
+INSERT INTO schema_migrations (version) VALUES ('20200120122015');
+
 INSERT INTO schema_migrations (version) VALUES ('20200131171456');
+
+INSERT INTO schema_migrations (version) VALUES ('20200221232045');
+
+INSERT INTO schema_migrations (version) VALUES ('20200222224002');
+
+INSERT INTO schema_migrations (version) VALUES ('20200223204523');
+
+INSERT INTO schema_migrations (version) VALUES ('20200225070555');
+
+INSERT INTO schema_migrations (version) VALUES ('20200229052054');
+
+INSERT INTO schema_migrations (version) VALUES ('20200229053148');
+
+INSERT INTO schema_migrations (version) VALUES ('20200229114848');
+
+INSERT INTO schema_migrations (version) VALUES ('20200301120149');
+
+INSERT INTO schema_migrations (version) VALUES ('20200305092313');
+
+INSERT INTO schema_migrations (version) VALUES ('20200305192127');
+
+INSERT INTO schema_migrations (version) VALUES ('20200310192546');
+
+INSERT INTO schema_migrations (version) VALUES ('20200317092334');
+
+INSERT INTO schema_migrations (version) VALUES ('20200405173634');
+
+INSERT INTO schema_migrations (version) VALUES ('20200406000415');
+
+INSERT INTO schema_migrations (version) VALUES ('20200407165401');
+
+INSERT INTO schema_migrations (version) VALUES ('20200407183907');
+
+INSERT INTO schema_migrations (version) VALUES ('20200410005704');
+
+INSERT INTO schema_migrations (version) VALUES ('20200410021818');
+
+INSERT INTO schema_migrations (version) VALUES ('20200417022050');
+
+INSERT INTO schema_migrations (version) VALUES ('20200420060723');
+
+INSERT INTO schema_migrations (version) VALUES ('20200426013206');
+
+INSERT INTO schema_migrations (version) VALUES ('20200426033608');
+
+INSERT INTO schema_migrations (version) VALUES ('20200426092251');
+
+INSERT INTO schema_migrations (version) VALUES ('20200506095205');
+
+INSERT INTO schema_migrations (version) VALUES ('20200513204030');
+
+INSERT INTO schema_migrations (version) VALUES ('20200525022434');
+
+INSERT INTO schema_migrations (version) VALUES ('20200602133029');
+
+INSERT INTO schema_migrations (version) VALUES ('20200603162452');
+
+INSERT INTO schema_migrations (version) VALUES ('20200604180231');
+
+INSERT INTO schema_migrations (version) VALUES ('20200613233942');
+
+INSERT INTO schema_migrations (version) VALUES ('20200613235248');
+
+INSERT INTO schema_migrations (version) VALUES ('20200615212030');
+
+INSERT INTO schema_migrations (version) VALUES ('20200615222549');
+
+INSERT INTO schema_migrations (version) VALUES ('20200616003446');
+
+INSERT INTO schema_migrations (version) VALUES ('20200616103242');
+
+INSERT INTO schema_migrations (version) VALUES ('20200617023543');
+
+INSERT INTO schema_migrations (version) VALUES ('20200624064838');
+
+INSERT INTO schema_migrations (version) VALUES ('20200626125809');
+
+INSERT INTO schema_migrations (version) VALUES ('20200629164722');
+
+INSERT INTO schema_migrations (version) VALUES ('20200630113358');
+
+INSERT INTO schema_migrations (version) VALUES ('20200630141818');
+
+INSERT INTO schema_migrations (version) VALUES ('20200630161825');
+
+INSERT INTO schema_migrations (version) VALUES ('20200630192522');
+
+INSERT INTO schema_migrations (version) VALUES ('20200630205225');
+
+INSERT INTO schema_migrations (version) VALUES ('20200630220333');
+
+INSERT INTO schema_migrations (version) VALUES ('20200630223715');
+
+INSERT INTO schema_migrations (version) VALUES ('20200701133723');
+
+INSERT INTO schema_migrations (version) VALUES ('20200705150209');
+
+INSERT INTO schema_migrations (version) VALUES ('20200715003410');
+
+INSERT INTO schema_migrations (version) VALUES ('20200715034355');
+
+INSERT INTO schema_migrations (version) VALUES ('20200719214711');
+
+INSERT INTO schema_migrations (version) VALUES ('20200722151132');
+
+INSERT INTO schema_migrations (version) VALUES ('20200722221907');
+
+INSERT INTO schema_migrations (version) VALUES ('20200722233313');
+
+INSERT INTO schema_migrations (version) VALUES ('20200723011130');
+
+INSERT INTO schema_migrations (version) VALUES ('20200723030449');
 

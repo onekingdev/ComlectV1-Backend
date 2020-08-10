@@ -1,26 +1,57 @@
 .panel {
-  margin-bottom: 35px;
+  // margin-bottom: 35px;
   border-radius: 0;
 }
 
-.settings {
+.panel-content-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  padding: 11px 18px;
+}
+
+.panel-default.settings, .panel-default.helps {
   margin-left: auto;
   margin-right: auto;
+  background-color: #F3F5F7;
+  position: fixed;
+  left: 60px;
+  z-index: 990;
+  width: 250px;
+  height: 875px;
+  border-radius: 0px;
+  box-shadow: none;
 }
 
 .panel-heading a {
   color: #333;
 }
 
+.panel-heading h3 {
+  font-family: "Canela";
+  font-weight: normal;
+  font-size: 22px;
+}
+
+.panel-settings-body, .panel-helps-body {
+  padding-left: 230px;
+  .panel {
+    box-shadow: none;
+  }
+}
+body.annual_reports .panel-settings-body .panel-default {
+  box-shadow: 0px 3px 6px 0px rgba(44, 40, 40, 0.11);
+}
 .panel-default {
+  font-size: 12px;
   .fw-700 {
     font-family: "Open Sans";
     font-weight: bold;
   }
   border: 0;
+  border-radius: 10px;
   -webkit-box-shadow: 0px 13px 32px 3px rgba(0,0,0,0.2);
   -moz-box-shadow: 0px 13px 32px 3px rgba(0,0,0,0.2);
-  box-shadow: 0px 13px 32px 3px rgba(0,0,0,0.2);
+  box-shadow: 0px 3px 6px 0px rgba(44,40,40,0.11);
 
   a.panel-heading {
     //color: #fff !important;
@@ -33,8 +64,9 @@
   }
 
   .panel-heading:first-child {
-    padding-top: 30px;
-    padding-bottom: 20px;
+    padding-bottom: 0px;
+    padding-top: 15px;
+    border-radius: 10px;
   }
 
   .panel-heading {
@@ -49,16 +81,16 @@
     padding-left: 25px;
     padding-right: 25px;
     h3 {
-      font-size: 13px;
-      font-family: "Open Sans";
-      font-weight: bold;
+      font-size: 16px;
+      font-family: "Canela";
+      font-weight: normal;
       display: inline-block;
       margin: 0;
       white-space: nowrap;
       text-overflow: ellipsis;
       max-width: 100%;
       overflow: hidden;
-      text-transform: uppercase;
+      line-height: 18px;
 
       span {
         font-size: 16px;
@@ -94,6 +126,11 @@
     }
   }
 
+  .panel-content-wrapper h2 {
+    text-transform: uppercase;
+    color: #d8d8d8;
+  }
+
   .panel-body {
     padding-left: 25px;
     padding-right: 25px;
@@ -109,14 +146,21 @@
     a {
       color: rgba(0, 0, 0, 0.8);
     }
-
+    table {
+      a {
+        &:hover {
+          text-decoration: none !important;
+          color: #FFCC01;
+        }
+      }
+    }
     .table th span {
       font-weight: $bold-weight;
       margin-left: 10px;
     }
 
     .table th {
-      font-weight: bold;
+      font-weight: 500;
       font-family: "Open Sans";
     }
 
@@ -168,14 +212,14 @@
   }
 }
 
-.panel-padded {
-  @media (min-width: $screen-xs-max) {
-    .panel-heading, .panel-body {
-      padding-left: 50px;
-      padding-right: 50px;
-    }
-  }
-}
+// .panel-padded {
+//   @media (min-width: $screen-xs-max) {
+//     .panel-heading, .panel-body {
+//       padding-left: 50px;
+//       padding-right: 50px;
+//     }
+//   }
+// }
 
 .panel-flat {
   box-shadow: none;
@@ -236,7 +280,7 @@
 
   a {
     font-family: "Open Sans";
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 400;
     color: #000;
     background-color: transparent;
@@ -251,7 +295,7 @@
 
   a:hover, li.active a, a:focus {
     background-color: #fff;
-    color: #ffcc00;
+    color: #FFCC01;
     font-family: "Open Sans";
     font-weight: 400;
   }
@@ -271,6 +315,20 @@
       font-size: 90%;
     }
   }
+}
+
+.bootbox-heading .nav-pills {
+  font-family: 'Open Sans';
+  font-size: 12px;
+  .btn-shadow {
+    cursor: pointer;
+    box-shadow: none;
+    display: inline-block;
+    border-left: 1px solid #ccc !important;
+    &:first-child {
+      border-left: 0px !important;
+    }
+  }  
 }
 
 .panel-heading.full-nav-pills {
@@ -305,7 +363,7 @@
 
 .list-icon {
   font-size: 12px;
-  font-weight: $regular-weight;
+  font-weight: 300;
   line-height: 24px;
   .item {
     i {
@@ -399,7 +457,7 @@
 .panel-body {
   font-size: 13px;
   color: #333333;
-  font-weight: $regular-weight;
+  font-weight: 300;
 
   > :first-child, .list-group .list-group-item:first-child {
     margin-top: 0;
@@ -433,10 +491,10 @@
   padding: 0px 10px;
 
   .project, .specialist {
-    border: 2px solid #ffcc00;
+    border: 2px solid #FFCC01;
 
     .panel-heading {
-      border-bottom: 2px solid #ffcc00;
+      border-bottom: 2px solid #FFCC01;
       display: block;
     }
   }

@@ -4,12 +4,16 @@ require 'sidekiq/web'
 require 'sidekiq-scheduler/web'
 
 Rails.application.routes.draw do
-  if Rails.env.production?
+  delete 'subscriptions/:id', to: 'subscriptions#cancel', as: 'cancel_subscription'
+  put 'subscriptions/:id', to: 'subscriptions#update', as: 'update_subscription'
+
+  if Rails.env.production? || Rails.env.staging?
     Sidekiq::Web.use Rack::Auth::Basic do |username, password|
       username == ENV.fetch('SIDEKIQ_USERNAME') && password == ENV.fetch('SIDEKIQ_PASSWORD')
     end
   end
   mount Sidekiq::Web => '/sidekiq'
+  mount PdfjsViewer::Rails::Engine => '/pdfjs', as: 'pdfjs'
 
   devise_for :admin_users, ActiveAdmin::Devise.config
   begin
@@ -34,7 +38,7 @@ Rails.application.routes.draw do
   root to: 'landing_page#show'
   get 'info/:page' => 'home#page', as: :page
   get 'app_config' => 'home#app_config', format: 'js'
-  get 'partnerships' => 'home#partnerships'
+  get 'marketplace' => 'home#partnerships'
   get 'press' => 'home#press'
   get 'r/:token' => 'referrals#show', as: :referrals
 
@@ -73,12 +77,39 @@ Rails.application.routes.draw do
   resources :flags, only: %i[new create]
 
   namespace :business do
-    resources :charges, only: :create
-
+    get '/personalize' => 'personalize#quiz'
+    post '/personalize' => 'personalize#quiz'
+    get '/personalize_book' => 'personalize#book'
+    get '/onboarding' => 'onboarding#index'
+    post '/onboarding' => 'onboarding#subscribe'
+    get '/upgrade' => 'upgrade#index'
+    get '/upgrade/buy' => 'upgrade#buy'
+    post '/upgrade/buy' => 'upgrade#subscribe'
+    resources :file_folders
+    resources :file_docs
+    resources :upgrade
+    resources :addons, only: %i[index]
+    resources :seats, only: %i[index new] do
+      delete :unassign
+      post :assign
+    end
+    post '/seats/buy' => 'seats#buy'
+    resources :compliance_policies, only: %i[new update create edit show destroy index]
+    resources :annual_reviews, only: %i[new create show destroy index edit update]
+    resources :annual_reports, only: %i[new create index update]
+    resources :teams, only: %i[new create show edit index update destroy]
+    resources :team_members, only: %i[new create edit update destroy]
+    resources :reminders, only: %i[new update create destroy show edit index]
+    resources :audit_requests, only: %i[index update create new edit show destroy]
+    put '/audit_requests' => 'audit_requests#update'
+    resource :help, only: :show do
+      resource :questions
+    end
+    resource :projects, only: %i[index]
     resource :settings, only: :show do
       resource :password
       resource :key_contact
-      resource :referrals, only: :show
+      # resource :referrals, only: :show
       resource :delete_account
       resources :payment_settings, as: :payment, path: 'payment' do
         patch :make_primary
@@ -126,15 +157,40 @@ Rails.application.routes.draw do
 
   resources :tos_agreement, only: %i[create]
 
+  resources :employees, path: 'employee', only: %i[new create index]
+  get '/employees/mirror/:business_id', to: 'employees#mirror', as: 'mirror_business'
+  get '/employees/stop-mirror', to: 'employees#stop_mirror', as: 'stop_mirror_business'
+
   namespace :specialists, path: 'specialist' do
     get '/' => 'dashboard#show', as: :dashboard
+    get '/locked' => 'dashboard#locked'
+    resources :reminders, only: %i[new update create destroy edit show index]
+    resources :addons, only: %i[index]
+    resources :businesses, only: %i[new create show] do
+      get '/personalize' => 'personalize#quiz'
+      post '/personalize' => 'personalize#quiz'
+      get '/personalize_book' => 'personalize#book'
+      resources :seats, only: %i[index new]
+      resources :compliance_policies, only: %i[new update create edit show destroy index]
+      resources :annual_reviews, only: %i[new create show destroy index edit update]
+      resources :annual_reports, only: %i[new create index update]
+      # resources :teams, only: %i[new create show edit index update]
+      resources :audit_requests, only: %i[index update create new edit show destroy]
+    end
+    resource :help, only: :show do
+      resource :questions
+    end
     resource :settings, only: :show do
       resource :password
       resource :contact_information, only: %i[show update]
-      resource :referrals, only: :show
+      # resource :referrals, only: :show
       resource :delete_account
       resources :delete_managed_accounts, only: :destroy
-      resource :payment_settings, as: :payment, path: 'payment'
+      resource :payment_settings, as: :payment, path: 'payment' do
+        get :new_card
+        post :create_card
+        delete 'delete_card/:id', to: 'payment_settings#delete_card', as: 'delete_card'
+      end
       resource :team
 
       resources :bank_accounts do
@@ -143,6 +199,10 @@ Rails.application.routes.draw do
       resources :notification_settings, as: :notifications, path: 'notifications', only: %i[index update]
     end
 
+    resources :ported_businesses, only: %i[index new create]
+    get '/ported_businesses/buy' => 'ported_businesses#buy'
+    post '/ported_businesses/buy' => 'ported_businesses#subscribe'
+    delete '/ported_businesses/:id', to: 'ported_businesses#delete', as: 'delete_ported_businesses'
     resources :invitations, only: %i[create destroy]
     resources :projects, path: 'my-projects'
     concerns :favoriteable
@@ -153,6 +213,7 @@ Rails.application.routes.draw do
   end
 
   resources :specialists, only: %i[index new create show]
+  get '/profile/:id', to: 'specialists#edit', as: 'employee_profile'
   resource :specialist, only: %i[edit] do
     patch '/' => 'specialists#update', as: :update
   end

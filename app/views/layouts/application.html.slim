@@ -24,7 +24,7 @@ html lang=I18n.locale
     = yield :html_head
     = render partial: "layouts/fullstory" if Rails.env == "production"
 
-body class="#{controller_name} #{action_name}"
+body class="#{controller_name} #{action_name} #{yield(:body_class)}"
   .content-wrap
     header#header class=(yield(:header_class) || 'compact')
       = render "navbar", user: User::Decorator.new(current_user)
@@ -33,7 +33,7 @@ body class="#{controller_name} #{action_name}"
 
     = render partial: "layouts/cookies"
 
-    .container.app_container
+    .app_container style=("padding-left: 0px; margin-right: 0px;" if !current_user)
       = render_flash
       - if current_user && current_user.cookie_agreement&.status == false && params[:page] != 'privacy-policy'
         = render partial: "layouts/cookies_required"
@@ -47,12 +47,12 @@ body class="#{controller_name} #{action_name}"
         .modal-content
           .modal-header
             button.close type="button" data-dismiss="modal" aria-label="Close"
-              span aria-hidden="true" &times;
+              span aria-hidden="true" &nbsp;
             h4.modal-title
           .modal-body
           .modal-footer
 
-  = render 'footer'
+  /= render 'footer'
 
   = yield :prepend_scripts
   = javascript_include_tag 'application'

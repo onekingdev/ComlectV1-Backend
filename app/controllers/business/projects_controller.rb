@@ -14,15 +14,18 @@ class Business::ProjectsController < ApplicationController
   }.freeze
 
   def index
+    @business = current_user.business
+    @ratings = @business.ratings_received.preload_associations
     @filter   = FILTERS[params[:filter]] || :none
     @projects = Project.cards_for_user(current_user, filter: @filter)
+    @is_business_cards = request.original_fullpath.include?('business_cards')
     @projects.each do |project|
       project.populate_rfp(project.job_application) if project.rfp? && project.active?
     end
 
     respond_to do |format|
       format.html do
-        render partial: 'cards', projects: @projects if request.xhr?
+        render partial: @is_business_cards ? 'business_cards' : 'cards', projects: @projects if request.xhr?
       end
       format.js
     end
@@ -39,7 +42,7 @@ class Business::ProjectsController < ApplicationController
   def create
     respond_to do |format|
       if @project.save
-        redirect_path = @project.review? ? business_project_path(@project) : business_dashboard_path(anchor: 'projects-pending')
+        redirect_path = @project.review? ? business_project_path(@project) : business_projects_path(anchor: 'projects-pending')
         format.html { redirect_to redirect_path }
         format.js { js_redirect url_for(redirect_path) }
       else
@@ -53,7 +56,7 @@ class Business::ProjectsController < ApplicationController
     respond_to do |format|
       if @project.update(project_params)
         Project::Starting.fix_starting!(@project) unless @project.asap_duration? || @project.rfp?
-        redirect_path = @project.review? ? business_project_path(@project) : business_dashboard_path
+        redirect_path = @project.review? ? business_project_path(@project) : business_projects_path(anchor: 'projects-pending')
         format.html { redirect_to redirect_path }
         format.js { js_redirect url_for(redirect_path) }
       else
@@ -66,7 +69,7 @@ class Business::ProjectsController < ApplicationController
   def post
     if policy(@project).post?
       @project.post!
-      redirect_to business_dashboard_path
+      redirect_to business_dashboard_path(anchor: 'projects-pending')
       @project.new_project_notification
     else
       redirect_to business_project_path(@project),
@@ -99,7 +102,6 @@ class Business::ProjectsController < ApplicationController
     end
   end
 
-  # rubocop:disable Metrics/MethodLength
   def project_params
     return { invite_id: params[:invite_id] } unless params.key?(:project)
 
@@ -137,5 +139,4 @@ class Business::ProjectsController < ApplicationController
       skill_names: []
     )
   end
-  # rubocop:enable Metrics/MethodLength
 end

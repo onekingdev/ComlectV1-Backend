@@ -11,21 +11,15 @@ blocks:
         - name: docker-hub
       env_vars:
         - name: HEROKU_APP
-          value: semaphore-complect-staging
+          value: complect-docker-staging
         - name: RACK_ENV
           value: production
         - name: RAILS_ENV
           value: production
       jobs:
-        - name: 'Deploy STG'
+        - name: Deploy STG
           commands:
             - checkout
-            - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-            - docker pull "$DOCKER_USERNAME"/docker-hub:$SEMAPHORE_WORKFLOW_ID
-            - docker images
-            - heroku container:login
-            - docker tag "$DOCKER_USERNAME"/docker-hub:$SEMAPHORE_WORKFLOW_ID registry.heroku.com/$HEROKU_APP/web
-            - heroku stack:set container --app $HEROKU_APP
-            - docker push registry.heroku.com/$HEROKU_APP/web
-            - heroku container:release web --app $HEROKU_APP
-            - heroku run --exit-code -- bundle exec rake db:migrate
+            - 'heroku container:login'
+            - 'heroku container:release web worker --app $HEROKU_APP'
+            - 'heroku run --exit-code -- bundle exec rake db:migrate'

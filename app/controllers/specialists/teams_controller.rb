@@ -2,10 +2,12 @@
 
 class Specialists::TeamsController < ApplicationController
   before_action :require_specialist!
+  before_action :go_to_dashboard
 
   def show
     @specialist = current_specialist
     @team = @specialist.managed_team
+    @team = Specialist::Team.create(manager_id: @specialist.id, name: 'Employees') if @team.blank?
     @employees = @team.employees
     @invitations = @team.invitations.pending
   end
@@ -29,5 +31,9 @@ class Specialists::TeamsController < ApplicationController
 
   def permitted_params
     params.require(:specialist_team).permit(:name)
+  end
+
+  def go_to_dashboard
+    redirect_to specialists_dashboard_path if employee?
   end
 end
