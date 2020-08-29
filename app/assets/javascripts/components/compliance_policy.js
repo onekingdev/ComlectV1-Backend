@@ -78,11 +78,11 @@ $("#new_compliance_policy_name").on('keydown', function(e) {
 
 $(".compliance_list").sortable({
     update: function(e, ui) {
-        $.ajax({
-            url: $(this).data("url"),
-            type: "PUT",
-            data: $(this).sortable('serialize'),
-        });
+      $.ajax({
+        url: $(this).data("url"),
+        type: "PUT",
+        data: $(this).sortable('serialize'),
+      });
     }
 });
 
