@@ -92,7 +92,7 @@ module RemindersFetcher
   def reminders_week(remindable)
     remindable
       .reminders
-      .where('end_date >= ? AND end_date <= ?',
+      .where('end_date >= ? AND remind_at <= ?',
              Time.zone.today.beginning_of_week.in_time_zone(remindable.time_zone),
              Time.zone.today.end_of_week.in_time_zone(remindable.time_zone))
       .order(remind_at: :asc, id: :asc) +
