@@ -34,26 +34,24 @@ var patch_payment_form = function() {
       return new Promise((resolve, reject) => {
         if($("#coupon-input").val()==""){
           resolve("");
-        }else{
+        }
+        else{
           fetch('/business/settings/payment/apply_coupon', {
             method: 'POST',
             body: JSON.stringify({
               coupon: $("#coupon-input").val(),
             })})
-            .then((response) => response.json()).then((data) => {
-              if (data.is_valid)
-              {
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.is_valid){
                 resolve(data.message);
               }
-              else
-              {
+              else{
                 reject(data.message);
               }
           })
         }
-
-      });
-    
+      });  
     }
 
     function createCardToken() {
