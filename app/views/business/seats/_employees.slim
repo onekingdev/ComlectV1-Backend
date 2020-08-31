@@ -26,7 +26,7 @@
       tbody.tasks-widget
         - @employees.each do |emp|
           tr
-            td= emp.full_name
+            td= link_to emp.full_name, edit_business_team_member_path(emp), "data-target": "#modal", "data-toggle": "modal", "data-remote": true
             td= emp.title
             td= emp.team&.name
             td= emp.email
