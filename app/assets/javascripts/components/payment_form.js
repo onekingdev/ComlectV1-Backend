@@ -156,7 +156,7 @@ var patch_payment_form = function() {
                 window.location.href = e2.redirectTo;
               }
               submitMainForm();
-              if (window.location.pathname.indexOf("/business/settings" + "?coupon=" + coupon) > -1) {
+              if (window.location.pathname.indexOf("/business/settings") > -1) {
                 window.location.href = "/business/settings/payment";
               }
             })
