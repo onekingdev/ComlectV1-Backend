@@ -23,7 +23,7 @@ class Subscription < ActiveRecord::Base
     )
   end
 
-  def self.subscribe(plan, customer_id, coupon_id = nil, options = {})
+  def self.subscribe(plan, customer_id, options = {}, coupon_id = nil)
     plan_id = get_plan_id(plan)
     return unless plan_id
     sub_attributes = {

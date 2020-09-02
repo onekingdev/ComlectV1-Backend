@@ -6,6 +6,8 @@ var patch_payment_form = function() {
     let displayError = $('#card-errors');
     let form = $('#payment_method_form');
     let submitButton = $('#submit-ongoing');
+    let displayCouponError = $('#coupon-errors');
+    let couponId;
 
     isLoading(true);
 
@@ -44,10 +46,12 @@ var patch_payment_form = function() {
             .then((response) => response.json())
             .then((data) => {
               if (data.is_valid){
+                couponId = data.coupon_id;
+                console.log("Coupon:::::::::::: ", data.coupon_id);
                 resolve(data.message);
               }
               else{
-                reject(data.message);
+                  reject(data.message);
               }
           })
         }
@@ -148,7 +152,7 @@ var patch_payment_form = function() {
           createCardToken().then(e => {
             const options = {
               stripeToken: $('#payment_form_card_token').val(),
-              coupon: $("#coupon-input").val()
+              coupon: couponId
             }
             createPaymentMethod(options).then(e2 => {
               if (e2.redirectTo !== undefined) {
@@ -166,8 +170,8 @@ var patch_payment_form = function() {
           })
           .catch((e) => setError(e.error.message));
         }).catch((e) => {
-          console.log("ERROR: ", e);
-          setError(e);
+            displayCouponError.text(e);
+            isLoading(false);
         });
       } else {
         const options = {

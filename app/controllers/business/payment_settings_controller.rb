@@ -22,7 +22,7 @@ class Business::PaymentSettingsController < ApplicationController
 
   def create
     @payment_source = payment_source_type.plaid_or_manual current_business, stripe_params
-    @payment_source.update(coupon_id: params[:coupon_id])
+    @payment_source.update(coupon_id: params[:coupon_id].to_s)
     respond_to do |format|
       format.html do
         alert = @payment_source.errors[:base].any? ? @payment_source.errors[:base].to_sentence : nil
@@ -51,8 +51,10 @@ class Business::PaymentSettingsController < ApplicationController
   def apply_coupon
     coupon = JSON.parse(request.body.read, symbolize_names: true)[:coupon]
     if coupon.present?
-      if Stripe::Coupon.list.select { |x| x.id == coupon }.present?
-        render json: { message: 'Coupon code applied successfully.', is_valid: true }, status: :ok
+      valid_id = found_in_coupons(coupon)
+      valid_id ||= found_in_promotions(coupon)
+      if valid_id
+        render json: { message: 'Coupon code applied successfully.', coupon_id: valid_id, is_valid: true }, status: :ok
       else
         render json: { message: 'Entered Coupon code is not valid.', is_valid: false }, status: :unprocessable_entity
       end
@@ -80,6 +82,20 @@ class Business::PaymentSettingsController < ApplicationController
   end
 
   private
+
+  def found_in_coupons(code)
+    Stripe::Coupon.list.each do |coupon|
+      return coupon.id if coupon.id == code
+    end
+    false
+  end
+
+  def found_in_promotions(code)
+    Stripe::PromotionCode.list.each do |promo|
+      return promo.coupon.id if promo.code == code
+    end
+    false
+  end
 
   def handle_ach_update
     @payment_source.validate_microdeposits(stripe_validation_params)
