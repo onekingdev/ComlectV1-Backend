@@ -194,6 +194,7 @@ Rails.application.routes.draw do
         get :new_card
         post :create_card
         delete 'delete_card/:id', to: 'payment_settings#delete_card', as: 'delete_card'
+        patch 'make_primary/:id', to: 'payment_settings#make_primary', as: 'make_primary'
       end
       resource :team
 
