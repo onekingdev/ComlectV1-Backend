@@ -39,7 +39,7 @@ var patch_payment_form = function() {
 
     function verifyCoupon(){
       return new Promise((resolve, reject) => {
-        if($("#coupon-input").val()==""){
+        if($("#coupon-input").val()=="" || (typeof $("#coupon-input").val()=="undefined")){
           resolve("");
         } else {
           fetch('/business/settings/payment/apply_coupon', {

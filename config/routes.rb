@@ -5,6 +5,7 @@ require 'sidekiq-scheduler/web'
 
 Rails.application.routes.draw do
   delete 'subscriptions/:id', to: 'subscriptions#cancel', as: 'cancel_subscription'
+  delete 'ported_subscriptions/:id', to: 'subscriptions#specialist_cancel', as: 'specialist_cancel_subscription'
   put 'subscriptions/:id', to: 'subscriptions#update', as: 'update_subscription'
 
   if Rails.env.production? || Rails.env.staging?
@@ -191,6 +192,7 @@ Rails.application.routes.draw do
       resource :password
       resource :contact_information, only: %i[show update]
       # resource :referrals, only: :show
+      resources :subscription_settings, as: :subscriptions, path: 'subscriptions', only: %i[index update]
       resource :delete_account
       resources :delete_managed_accounts, only: :destroy
       resource :payment_settings, as: :payment, path: 'payment' do
