@@ -193,8 +193,10 @@ Rails.application.routes.draw do
       resource :payment_settings, as: :payment, path: 'payment' do
         get :new_card
         post :create_card
+        post :create_bank
         delete 'delete_card/:id', to: 'payment_settings#delete_card', as: 'delete_card'
         patch 'make_primary/:id', to: 'payment_settings#make_primary', as: 'make_primary'
+        patch '/specialist/settings/payment/:id/validate', to: 'payment_settings#validate', as: 'validate'
       end
       resource :team
 

@@ -2,6 +2,9 @@
     tr data-payment-source-id=source.id class="#{'primary' if source.primary?}"
       td
         '#{source.brand} **** **** **** #{source.last4}
+        - if source.bank_account? && !source.validated
+          = link_to specialists_settings_payment_path(payment_source: source.id), remote: true do
+            .td-u.small Validate
       td
         - if source.primary?
           .payment_source_primary

@@ -1,10 +1,5 @@
-= simple_form_for @bank_account,  html: {novalidate: false }, url: specialists_settings_bank_accounts_path do |f|
-  .alert.alert-danger class=('hidden' if f.object.errors.empty?) = f.object.errors.full_messages.join(', ')
-
-  .panel-heading
-    h3 Account Details
-
-  .panel-body.p-b-2
+.form-switch.m-b-1
+  = simple_form_for @payment_source, url: create_bank_specialists_settings_payment_path, method: :post, html: {id: :payment_method_form} do |f|
     .row
       .col-xs-12.col-sm-6
         = f.input :country, as: :hidden
@@ -12,7 +7,7 @@
           input.form-control.input-lg disabled=true value=Stripe::SUPPORTED_COUNTRIES[f.object.country.to_s.upcase.to_sym]
       .col-xs-12.col-sm-6
         - if Stripe::SUPPORTED_BANK_CURRENCIES[f.object.country.to_sym].size == 1
-          = f.input :currency, as: :hidden, input_html: { value: Stripe::SUPPORTED_BANK_CURRENCIES[f.object.country.to_sym].first }
+          = f.input :currency, as: :hidden, input_html: {value: Stripe::SUPPORTED_BANK_CURRENCIES[f.object.country.to_sym].first}
           .form-group
             input.form-control.input-lg disabled=true value=Stripe::SUPPORTED_BANK_CURRENCIES[f.object.country.to_sym].first
         - else
@@ -22,16 +17,25 @@
                   label: false,
                   include_blank: false,
                   collection: Stripe::SUPPORTED_BANK_CURRENCIES[f.object.country.to_sym],
-                  input_html: { class: 'input-lg js-select' }
+                  input_html: {class: 'input-lg js-select'}
+    .panel-body.p-b-2.p-x-0
+      .row
+        .col-xs-12.col-sm-6
+          = f.input :routing_number, placeholder: "", input_html: {class: 'input-lg'}
+        .col-xs-12.col-sm-6
+          = f.input :account_number, placeholder: "", input_html: {class: 'input-lg'}
+      .row
+        .col-xs-12.col-sm-6
+          = f.input :account_holder_name, placeholder: "", label: "Account Holder Name", input_html: {class: 'input-lg'}
+        .col-xs-12.col-sm-6
+          = f.input :account_number, placeholder: "", label: "Confirm Account Number", input_html: {class: 'input-lg'}
+        .col-xs-12.col-sm-6
+          = f.input :account_holder_type, placeholder: "", \
+              include_blank: t('simple_form.placeholders.payment_source_ach.account_holder_type'), \
+              collection: [%w(Individual individual), %w(Company company)], \
+              input_html: {class: 'input-lg js-select', style: 'padding: 0'}
 
-    .row
-      - if f.object.require_iban?
-        .col-xs-12
-          = f.input :account_number, required: true, label: false, placeholder: 'IBAN', input_html: { class: 'input-lg' }, wrapper: :vertical_tight
-      - else
-        .col-xs-12.col-sm-6
-          = f.input :routing_number, required: true, label: false, input_html: { class: 'input-lg' }, wrapper: :vertical_tight
-        .col-xs-12.col-sm-6
-          = f.input :account_number, required: true, label: false, input_html: { class: 'input-lg' }, wrapper: :vertical_tight
-  .text-center.m-b-3.p-b-1
-    = f.submit f.object.persisted? ? 'Update Account' : 'Add Account', class: 'btn btn-primary btn-md p-x-3'
+      .alert.alert-danger class=('hidden' if f.object.errors.empty?) = f.object.errors.full_messages.join(', ')
+
+    .text-right.m-t-0.m-b-1
+      = f.submit 'Add', class: 'btn btn-primary p-x-3', style: "width: 150px;"
