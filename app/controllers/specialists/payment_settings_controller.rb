@@ -94,11 +94,11 @@ class Specialists::PaymentSettingsController < ApplicationController
 
   def create_bank
     begin
-      cus_id = current_specialist&.stripe_customer
+      cus_id = current_specialist.stripe_customer
       unless cus_id
         cus = Stripe::Customer.create(
-          email: current_specialist&.user&.email,
-          name: current_specialist&.user&.full_name
+          email: current_specialist.user.email,
+          name: current_specialist.user.full_name
         )
         cus_id = cus.id
       end
@@ -145,7 +145,7 @@ class Specialists::PaymentSettingsController < ApplicationController
   def validate
     @payment_source = current_specialist.payment_sources.find(params[:id])
     response = @payment_source.validate_microdeposits(params[:specialist_payment_source])
-    if response[:success] == 'true'
+    if response[:success] == true
       flash[:notice] = 'Validate Successfully'
       redirect_to specialists_settings_payment_path
     else

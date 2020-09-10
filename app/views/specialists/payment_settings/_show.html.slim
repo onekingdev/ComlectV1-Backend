@@ -3,7 +3,6 @@
 - if @payment_source.present?
   = render 'specialists/payment_settings/verify_bank'
 - else
-
   .col-sm-6.payment_list
     = link_to "Add Payment",new_card_specialists_settings_payment_path, class: "btn btn-primary m-b-3", "data-target": "#modal", "data-toggle": "modal", "data-remote": true
     table.table.m-b-1.table-blue.borderless.payment-sources-table
