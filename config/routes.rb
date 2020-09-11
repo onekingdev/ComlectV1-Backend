@@ -99,6 +99,10 @@ Rails.application.routes.draw do
       collection do
         put :sort
       end
+      member do
+        put :ban
+        put :unban
+      end
     end
     resources :annual_reviews, only: %i[new create show destroy index edit update]
     resources :annual_reports, only: %i[new create index update]
@@ -179,7 +183,12 @@ Rails.application.routes.draw do
       post '/personalize' => 'personalize#quiz'
       get '/personalize_book' => 'personalize#book'
       resources :seats, only: %i[index new]
-      resources :compliance_policies, only: %i[new update create edit show destroy index]
+      resources :compliance_policies, only: %i[new update create edit show destroy index] do
+        member do
+          put :ban
+          put :unban
+        end
+      end
       resources :annual_reviews, only: %i[new create show destroy index edit update]
       resources :annual_reports, only: %i[new create index update]
       # resources :teams, only: %i[new create show edit index update]
