@@ -317,6 +317,16 @@ class Business < ApplicationRecord
     employees.split('-')[0].scan(/\d/).join('').to_i
   end
 
+  def all_employees
+    employee_array = []
+    teams_ids = teams.pluck(:id)
+    employees = TeamMember.where(team_id: teams_ids)
+    employees.each do |employee|
+      employee_array << [employee.full_name, employee.id]
+    end
+    employee_array
+  end
+
   # rubocop:disable Metrics/CyclomaticComplexity
   # rubocop:disable Metrics/PerceivedComplexity
   def gap_analysis_est
