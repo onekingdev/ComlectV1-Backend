@@ -138,7 +138,8 @@ class Project < ApplicationRecord
 
   after_create :new_project_notification
   after_update :new_project_notification
-  after_create :send_email
+  after_create :send_email, if: :internal?
+  before_create :check_specialist, if: :internal?
 
   LOCATIONS = [%w[Remote remote], %w[Remote\ +\ Travel remote_and_travel], %w[Onsite onsite]].freeze
   COLORS = [%w[CB00FF CB00FF], %w[B3FF00 B3FF00], %w[F7862B F7862B], %w[0033FF 0033FF], %w[FFB8FD FFB8FD]].freeze
@@ -458,7 +459,16 @@ class Project < ApplicationRecord
   end
 
   def send_email
-    ProjectMailer.send_email_to_specialist(self).deliver_now if internal?
+    Notification::Deliver.got_assigned! self
+  end
+
+  def check_specialist
+    if business.hired_specialists.map(&:id).include? specialist_id
+      true
+    else
+      errors.add :base, 'Invalid specialist'
+      false
+    end
   end
 
   private

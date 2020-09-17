@@ -51,7 +51,7 @@
                 li= link_to '#project-overview', data: { toggle: 'tab', "remote-load" => true, url: business_project_overview_path(project), 'toggle-sync' => true } do
                   span Overview
                 li.active= link_to '#project-messages', data: { toggle: 'tab', "remote-load" => true, url: project_messages_path(project), 'toggle-sync' => true } do
-                  span Messagesee
+                  span Messages
                 li= link_to '#project-documents', data: { toggle: 'tab', "remote-load" => true, url: project_documents_path(project), 'toggle-sync' => true } do
                   span Documents
                 - if project.hourly_pricing? && project.specialist_id
