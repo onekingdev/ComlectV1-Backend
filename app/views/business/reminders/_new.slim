@@ -52,38 +52,44 @@ javascript:
     $(".add_task_btn").on("click", function(e) {
       var formselector = $(e.target).parent().parent();
       e.preventDefault();
-      switch(formselector.find("select[name='reminder[repeats]']").val()) {
-        case "Daily":
-          formselector.find(".reminder_repeat_every").last().remove();
-          formselector.find(".reminder_repeat_on, .reminder_on_type").remove();
-          break;
-        case "Weekly":
-          formselector.find(".reminder_repeat_on").first().remove();
-          formselector.find(".reminder_repeat_every").last().remove();
-          formselector.find(".reminder_on_type").remove();
-          break;
-        case "Monthly":
-          formselector.find(".reminder_repeat_every").last().remove();
-          switch(formselector.find("select[name='reminder[on_type]']").val()) {
-            case "Day":
-              formselector.find(".reminder_repeat_on").last().remove();
-              break;
-            default:
-              formselector.find(".reminder_repeat_on").first().remove();
-          }
-          break;
-        case "Yearly":
-          formselector.find(".reminder_repeat_every").first().remove();
-          switch(formselector.find("select[name='reminder[on_type]']").val()) {
-            case "Day":
-              formselector.find(".reminder_repeat_on").last().remove();
-              break;
-            default:
-              formselector.find(".reminder_repeat_on").first().remove();
-          }
-          break;
+      var emptiness = formselector.find("input:visible,select:visible").filter(function() { return !this.value; });
+      var end_by = formselector.find(".reminder_end_by input:visible").filter(function() { return !this.value; });
+      var repeats = formselector.find(".reminder_repeats select:visible").filter(function() { return !this.value; });
+      if ((emptiness.length == 0) || (emptiness.length-end_by.length == 0) || (emptiness.length-repeats.length == 0)) {
+        switch(formselector.find("select[name='reminder[repeats]']").val()) {
+          case "Daily":
+            formselector.find(".reminder_repeat_every").last().remove();
+            formselector.find(".reminder_repeat_on, .reminder_on_type").remove();
+            break;
+          case "Weekly":
+            formselector.find(".reminder_repeat_on").first().remove();
+            formselector.find(".reminder_repeat_every").last().remove();
+            formselector.find(".reminder_on_type").remove();
+            break;
+          case "Monthly":
+            formselector.find(".reminder_repeat_every").last().remove();
+            switch(formselector.find("select[name='reminder[on_type]']").val()) {
+              case "Day":
+                formselector.find(".reminder_repeat_on").last().remove();
+                break;
+              default:
+                formselector.find(".reminder_repeat_on").first().remove();
+            }
+            break;
+          case "Yearly":
+            formselector.find(".reminder_repeat_every").first().remove();
+            switch(formselector.find("select[name='reminder[on_type]']").val()) {
+              case "Day":
+                formselector.find(".reminder_repeat_on").last().remove();
+                break;
+              default:
+                formselector.find(".reminder_repeat_on").first().remove();
+            }
+            break;
+        }
+        formselector.submit();
+      } else {
+        emptiness.addClass("form_error");
       }
-      //$("form.new_reminder, form.edit_reminder").submit();
-      formselector.submit();
     })
   }

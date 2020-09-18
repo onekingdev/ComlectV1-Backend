@@ -68,47 +68,49 @@ if (typeof(show_reminders_at_date) != "undefined") {
 
 var patch_reminder_datepickers = function(selector) {
   var from_$input = selector.find("input[name='reminder[remind_at]']").pickadate({
-      format: $(this).data('format') || 'mmmm d, yyyy',
-      formatSubmit: 'yyyy-mm-dd',
-      hiddenName: true,
+    format: $(this).data('format') || 'mmmm d, yyyy',
+    formatSubmit: 'yyyy-mm-dd',
+    hiddenName: true,
   }),
   from_picker = from_$input.pickadate('picker')
 
   var to_$input = selector.find("input[name='reminder[end_date]']").pickadate({
-      format: $(this).data('format') || 'mmmm d, yyyy',
-      formatSubmit: 'yyyy-mm-dd',
-      hiddenName: true,
+    format: $(this).data('format') || 'mmmm d, yyyy',
+    formatSubmit: 'yyyy-mm-dd',
+    hiddenName: true,
   }),
   to_picker = to_$input.pickadate('picker')
 
   var end_$input = selector.find("input[name='reminder[end_by]']").pickadate({
-      format: $(this).data('format') || 'mmmm d, yyyy',
-      formatSubmit: 'yyyy-mm-dd',
-      hiddenName: true,
+    format: $(this).data('format') || 'mmmm d, yyyy',
+    formatSubmit: 'yyyy-mm-dd',
+    hiddenName: true,
   }),
   end_picker = end_$input.pickadate('picker')
 
   // Check if there’s a “from” or “to” date to start with.
   if (from_picker.get('value')) {
-  to_picker.set('min', from_picker.get('select'))
+    to_picker.set('min', from_picker.get('select'))
   }
   // When something is selected, update the “from” and “to” limits.
   from_picker.on('set', function (event) {
-  if (event.select) {
+    if (event.select) {
       to_picker.set('min', from_picker.get('select'))
-  } else if ('clear' in event) {
+      end_picker.set('min', from_picker.get('select'))
+    } else if ('clear' in event) {
       to_picker.set('min', false)
-  }
+      end_picker.set('min', false)
+    }
   })
 
   to_picker.on('set', function (event) {
-  if (event.select) {
+    if (event.select) {
       from_picker.set('max', to_picker.get('select'))
-  } else if ('clear' in event) {
+    } else if ('clear' in event) {
       from_picker.set('max', false)
-  }
+    }
   })
-
+  end_picker.set('min', from_picker.get('select'))
 }
 
 var update_reminder_form = function(selector) {

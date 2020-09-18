@@ -27,6 +27,7 @@ class BusinessDashboardController < ApplicationController
     @reminders_today = reminders_today(current_business, @calendar_grid)
     @reminders_week = reminders_week(current_business, @calendar_grid)
     @reminders_past = reminders_past(current_business)
+    @calendar_grid = tasks_calendar_grid(current_business, Date.parse(params[:start_date]).beginning_of_month) if params[:start_date]
     @current_year_annual_review = @business.processed_annual_reviews.where(year: Time.zone.today.year)
   end
 
@@ -41,6 +42,6 @@ class BusinessDashboardController < ApplicationController
   end
 
   def init_tasks_calendar_grid
-    tasks_calendar_grid(current_business)
+    @calendar_grid = tasks_calendar_grid(current_business, Time.zone.today.beginning_of_month)
   end
 end

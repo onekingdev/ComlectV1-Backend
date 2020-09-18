@@ -19,12 +19,12 @@
     - week_rendered_ids = []
     = month_calendar do |date, reminders|
       - week_rendered_ids = [] if ((date.wday+6) % 7) == 0
-      .coloring class=("real_today" if date == Time.zone.today.in_time_zone(current_business.time_zone).to_date)
+      .coloring class=("real_today" if date == Time.zone.today.in_time_zone(current_business ? current_business.time_zone : current_specialist.time_zone).to_date)
         = link_to date.day, eval("#{new_path}(date: date)"), "data-target": "#modal", "data-toggle": "modal", "data-remote": true
         - if !@calendar_grid[date].nil?
           - @calendar_grid[date].each_with_index do |task,i|
             - if task.class.name != "FakeTask"
-              - if ["Reminder", "RemindersFetcher::RecurringReminder"].include?(task.class.name) && !week_rendered_ids.include?(task.id)
+              - if ["Reminder", "RecurringReminder"].include?(task.class.name) && !week_rendered_ids.include?(task.id)
                 - week_rendered_ids.push(task.id)
                 - visual_duration = task.end_date.mjd-date.mjd+1
                 - visual_duration = 7-((date.wday+6) % 7) if visual_duration > (7-((date.wday+6) % 7))

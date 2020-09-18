@@ -663,7 +663,8 @@ CREATE TABLE public.compliance_policies (
     last_uploaded timestamp without time zone,
     pdf_data jsonb,
     docs_count integer DEFAULT 0,
-    "position" integer
+    "position" integer,
+    ban boolean DEFAULT false
 );
 
 
@@ -4216,7 +4217,13 @@ CREATE TABLE public.specialist_payment_sources (
     last4 text,
     "primary" boolean DEFAULT false,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    validated boolean DEFAULT false,
+    bank_account boolean DEFAULT false,
+    country character varying,
+    currency character varying,
+    account_holder_name character varying,
+    account_holder_type character varying
 );
 
 
@@ -7564,6 +7571,10 @@ INSERT INTO schema_migrations (version) VALUES ('20200723030449');
 INSERT INTO schema_migrations (version) VALUES ('20200828043028');
 
 INSERT INTO schema_migrations (version) VALUES ('20200903144149');
+
+INSERT INTO schema_migrations (version) VALUES ('20200908062614');
+
+INSERT INTO schema_migrations (version) VALUES ('20200911062229');
 
 INSERT INTO schema_migrations (version) VALUES ('20200914113651');
 

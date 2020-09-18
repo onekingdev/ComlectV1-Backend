@@ -4,7 +4,7 @@ class Reminder < ActiveRecord::Base
   belongs_to :remindable, polymorphic: true
 
   REPEATS = %w[Daily Weekly Monthly Yearly].freeze
-  ONTYPES = %w[Day First Second Third Forth].freeze
+  ONTYPES = %w[Day First Second Third Fourth].freeze
 
   serialize :skip_occurencies
   serialize :done_occurencies

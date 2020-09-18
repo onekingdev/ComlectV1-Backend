@@ -23,3 +23,7 @@
         - @reminders_week.each do |reminder|
           = render partial: "business_dashboard/task", locals: { reminder: reminder }
         .clearfix
+
+- if current_specialist
+  javascript:
+    var reminders_bsurl = "/specialist/reminders/";

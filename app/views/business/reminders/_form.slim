@@ -28,7 +28,7 @@
   .col-md-6.p-l-0
     = f.input :repeats, collection: Reminder::REPEATS, input_html: { class: 'input-lg js-select', data: { show_blank: true } }, include_blank: " --- "
   .col-md-2
-    = f.input :repeat_every, input_html: { class: 'input-lg' }, label: "Every"
+    = f.input :repeat_every, input_html: { class: 'input-lg', min: 1 }, label: "Every"
     = f.input :repeat_every, collection: [["January", 1], ["February", 2], ["March", 3], ["April", 4], ["May", 5], ["June", 6], ["July", 7], ["August", 8], ["September", 9], ["October", 10], ["November", 11], ["December", 12]], input_html: { class: 'input-lg js-select' }, label: "Every", include_blank: false
   .col-md-2.p-x-0.text-center
     br/
@@ -43,25 +43,20 @@
   .col-md-12.p-x-0
     = f.input :end_by, label: "End By", as: :string, input_html: { \
       class: 'input-lg js-datepicker date', \
-      data: {\
-        min: [2020,6,23], \
-        'date-to' => true, \
-        value: (l(f.object.end_by, format: :pickadate) if f.object.end_by.present?) \
-                    } \
+      data: { 'date-to' => true, value: (l(f.object.end_by, format: :pickadate) if f.object.end_by.present?) } \
     }
   .col-md-12.text-center
     - if @occurence && f.object.new_record?
-      button.add_task_btn.btn.btn-primary.p-x-3.m-t-1.m-b-1 = "Edit Task"
-      = link_to "Delete", business_reminder_path(@reminder.id, oid: @occurence_id), class: "btn btn-primary p-x-3 m-t-1 m-b-1 m-l-2",
+      button.add_task_btn.btn.btn-primary.p-x-3.m-t-1.m-b-1 = "Save"
+      = link_to "Delete", current_business ? business_reminder_path(@reminder.id, oid: @occurence_id) : specialists_reminder_path(@reminder.id, oid: @occurence_id), class: "btn btn-primary p-x-3 m-t-1 m-b-1 m-l-2",
                 remote: false,
                 method: :delete,
                 title: 'Confirm Deletion',
                 data: {confirm: "<div class='bootbox-heading'>Delete Task<hr></div><div class='p-x-3'>Are you sure you want to delete this task?</div>", confirm_label: 'Confirm', no_cancel: true}
     - else
-      button.add_task_btn.btn.btn-primary.p-x-3.m-t-1.m-b-1 = f.object.new_record? ? "Add Task" : "Edit Task"
-      /= f.submit f.object.new_record? ? "Add Task" : "Edit Task", class: "btn btn-primary p-x-3 m-t-1 m-b-1"
+      button.add_task_btn.btn.btn-primary.p-x-3.m-t-1.m-b-1 = f.object.new_record? ? "Add" : "Save"
       - unless f.object.new_record?
-        = link_to 'Delete', business_reminder_path(f.object), class: "btn btn-primary p-x-3 m-t-1 m-b-1 m-l-2",
+        = link_to 'Delete', current_business ? business_reminder_path(f.object) : specialists_reminder_path(f.object), class: "btn btn-primary p-x-3 m-t-1 m-b-1 m-l-2",
                 remote: false,
                 method: :delete,
                 title: 'Confirm Deletion',
