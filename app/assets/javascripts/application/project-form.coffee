@@ -24,3 +24,11 @@ $(document).ready ->
 
 $(document).on 'change', '#project_type_rfp, #project_type_one_off, #project_type_full_time,  #project_type_internal', (e) ->
   filter_project_form($('.project_type .active input').val())
+
+  $("#project_color").spectrum({
+    showPaletteOnly: true,
+    showPalette: true,
+    color: 'CB00FF',
+    palette: [['CB00FF', 'B3FF00', 'F7862B', '0033FF', 'FFB8FD']]
+  });
+

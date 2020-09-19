@@ -143,7 +143,6 @@ class Project < ApplicationRecord
   before_create :remove_specialist, unless: :internal?
 
   LOCATIONS = [%w[Remote remote], %w[Remote\ +\ Travel remote_and_travel], %w[Onsite onsite]].freeze
-  COLORS = [%w[CB00FF CB00FF], %w[B3FF00 B3FF00], %w[F7862B F7862B], %w[0033FF 0033FF], %w[FFB8FD FFB8FD]].freeze
   # DB Views depend on these so don't modify:
   HOURLY_PAYMENT_SCHEDULES = [
     %w[Upon\ Completion upon_completion],

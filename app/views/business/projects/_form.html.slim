@@ -24,7 +24,7 @@
           = f.input :location, input_html: { class: "input-lg js-place-autocomplete", data: { lat: '#project_lat', lng: '#project_lng', self: 'full' } }
           = project.industries_input(f)
           = f.input :specialist_id, label: "Employee", collection: current_business.all_employees, include_blank: I18n.t('simple_form.placeholders.project.employee'), input_html: { class: 'input-lg js-select' }
-          = f.input :color, label: "Color Code", collection: Project::COLORS, include_blank: I18n.t('simple_form.placeholders.project.color'), input_html: { class: 'input-lg js-select' }
+          = f.input :color, label: "Color Code", input_html: { class: 'input-lg' }
         .col-xs-12.col-sm-8
           = f.input :description, as: :text, input_html: { class: 'input-lg tt-n' }
       .row.row-compact
