@@ -525,7 +525,8 @@ CREATE TABLE public.businesses (
     ria_dashboard boolean DEFAULT false,
     compliance_policies_spawned boolean DEFAULT false,
     annual_budget numeric,
-    risk_tolerance character varying
+    risk_tolerance character varying,
+    reminders_mailed_at date
 );
 
 
@@ -1980,7 +1981,8 @@ CREATE TABLE public.specialists (
     min_hourly_rate integer,
     annual_revenue_goal numeric,
     risk_tolerance character varying,
-    automatching_available boolean DEFAULT false
+    automatching_available boolean DEFAULT false,
+    reminders_mailed_at date
 );
 
 
@@ -7579,4 +7581,6 @@ INSERT INTO schema_migrations (version) VALUES ('20200911062229');
 INSERT INTO schema_migrations (version) VALUES ('20200914113651');
 
 INSERT INTO schema_migrations (version) VALUES ('20200914144201');
+
+INSERT INTO schema_migrations (version) VALUES ('20200918212506');
 

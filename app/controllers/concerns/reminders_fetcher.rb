@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ModuleLength
 module RemindersFetcher
   class FakeTask
     def initialize(id)
@@ -83,31 +82,7 @@ module RemindersFetcher
           end
           occurence_idx += 1
         end
-        case task.repeats
-        when ''
-          date_cursor = last_day
-        when 'Daily'
-          date_cursor += task.repeat_every.day
-        when 'Weekly'
-          date_cursor += (task.repeat_every * 7).day
-        when 'Monthly'
-          date_cursor += task.repeat_every.months
-          date_cursor = date_cursor.beginning_of_month
-          date_cursor = if task.on_type == 'Day'
-                          date_cursor.change(day: task.repeat_on)
-                        else
-                          Reminder.find_month_day(date_cursor, task.on_type, task.repeat_on)
-                        end
-        when 'Yearly'
-          date_cursor += 1.year
-          date_cursor = date_cursor.change(month: task.repeat_every)
-          date_cursor = date_cursor.beginning_of_month
-          date_cursor = if task.on_type == 'Day'
-                          date_cursor.change(day: task.repeat_on)
-                        else
-                          Reminder.find_month_day(date_cursor, task.on_type, task.repeat_on)
-                        end
-        end
+        date_cursor = task.repeats == '' ? last_day : task.next_occurence(date_cursor)
       end
     end
     calendar_grid
@@ -145,4 +120,3 @@ module RemindersFetcher
     week_tasks.uniq
   end
 end
-# rubocop:enable Metrics/ModuleLength

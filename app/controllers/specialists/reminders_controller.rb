@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Specialists::RemindersController < ApplicationController
+  include RemindersUpdater
+
   before_action :require_specialist!
   before_action :set_specialist
 
@@ -35,12 +37,7 @@ class Specialists::RemindersController < ApplicationController
     @reminder.repeats = nil if @reminder.repeats.blank?
     @reminder.skip_occurencies = []
     @reminder.done_occurencies = []
-    if params[:src_id]
-      src_reminder = current_specialist.reminders.where(id: params[:src_id].to_i)
-      if src_reminder.count.positive?
-        src_reminder.first.update(skip_occurencies: src_reminder.first.skip_occurencies + [params[:oid].to_i])
-      end
-    end
+    skip_occurence(current_specialist) if params[:src_id]
     redirect_to specialists_dashboard_path(reminder: @reminder.remind_at.strftime('%Y-%m-%d')) if @reminder.save
   end
 
@@ -71,13 +68,7 @@ class Specialists::RemindersController < ApplicationController
 
   def update
     @reminder = @specialist.reminders.find(params[:id])
-    if params[:done].present?
-      if params[:oid].present?
-        @reminder.update(done_occurencies: @reminder.done_occurencies + [params[:oid].to_i])
-      else
-        @reminder.update(done_at: (params[:done] == 'false' ? nil : Time.zone.now))
-      end
-    end
+    change_reminder_state if params[:done].present?
     @reminder.update(reminder_params) if params[:reminder]
     @reminder.update(repeats: nil) if @reminder.repeats.blank?
     respond_to do |format|

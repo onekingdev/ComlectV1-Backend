@@ -1,5 +1,5 @@
 - reminder = reminder
-- action_path = (@occurence && reminder.id.nil?) ? business_reminders_path : @action_path
+- action_path = (@occurence && reminder.id.nil?) ? (current_business ? business_reminders_path : specialists_reminders_path) : @action_path
 = simple_form_for reminder, wrapper: :inline_form, url: action_path do |f|
   .text-danger = f.object.errors.full_messages.first if f.object.errors.any?
   - if @occurence && f.object.id.nil?
