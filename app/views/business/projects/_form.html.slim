@@ -24,7 +24,7 @@
           = f.input :location, input_html: { class: "input-lg js-place-autocomplete", data: { lat: '#project_lat', lng: '#project_lng', self: 'full' } }
           = project.industries_input(f)
           = f.input :specialist_id, label: "Employee", collection: current_business.all_employees, include_blank: I18n.t('simple_form.placeholders.project.employee'), input_html: { class: 'input-lg js-select' }
-          = f.input :color, label: "Color Code", collection: Project::COLORS, include_blank: I18n.t('simple_form.placeholders.project.color'), input_html: { class: 'input-lg js-select' }
+          = f.input :color, label: "Color Code", input_html: { class: 'input-lg' }
         .col-xs-12.col-sm-8
           = f.input :description, as: :text, input_html: { class: 'input-lg tt-n' }
       .row.row-compact
@@ -86,7 +86,7 @@
             }
         .row.row-compact.p-b-1
           .col-xs-12
-            .small.text-muted Please estimate if necessary to allow our specialists to determine their availability. You will be able to extend the deadline later.
+            .small.text-muted.project-edit-info Please estimate if necessary to allow our specialists to determine their availability. You will be able to extend the deadline later.
       .project-duration-asap
         .row.row-compact
           .col-xs-12.col-sm-4.col-sm-offset-4.text-center
