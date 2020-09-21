@@ -3,7 +3,7 @@
 # rubocop:disable Metrics/ClassLength
 class Project < ApplicationRecord
   self.inheritance_column = '_none'
-  attr_accessor :color
+  # attr_accessor :color
 
   belongs_to :business
   belongs_to :specialist

@@ -27,8 +27,9 @@ $(document).on 'change', '#project_type_rfp, #project_type_one_off, #project_typ
 
   $("#project_color").spectrum({
     showPaletteOnly: true,
+    preferredFormat: "hex",
     showPalette: true,
-    color: 'CB00FF',
-    palette: [['CB00FF', 'B3FF00', 'F7862B', '0033FF', 'FFB8FD']]
+    color: '#CB00FF',
+    palette: [['#CB00FF', '#B3FF00', '#F7862B', '#0033FF', '#FFB8FD']]
   });
 

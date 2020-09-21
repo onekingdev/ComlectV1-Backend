@@ -256,7 +256,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 .sp-container {
     border-radius: 0;
     background-color: #ECECEC;
-    border: solid 1px #f0c49B;
+    border: solid 2px #f0c49B;
     padding: 0;
 }
 .sp-container, .sp-container button, .sp-container input, .sp-color, .sp-hue, .sp-clear {
@@ -369,9 +369,9 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     padding: 4px;
     /*display:inline-block;*/
     *zoom: 1;
-    width: 50px;
+    width: 55px;
     *display: inline;
-    border: solid 1px #91765d;
+    border: solid 2px #91765d;
     background: #eee;
     color: #333;
     vertical-align: middle;
@@ -450,7 +450,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     text-shadow: 0 1px 0 #ddd;
 }
 .sp-container button:active {
-    border: 1px solid #aaa;
+    border: 2px solid #aaa;
     border-bottom: 1px solid #888;
     -webkit-box-shadow: inset 0 0 5px 2px #aaaaaa, 0 1px 0 0 #eeeeee;
     -moz-box-shadow: inset 0 0 5px 2px #aaaaaa, 0 1px 0 0 #eeeeee;

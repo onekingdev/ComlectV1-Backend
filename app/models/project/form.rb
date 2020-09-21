@@ -65,7 +65,7 @@ class Project::Form < Project
 
   ATTRIBUTES_FOR_COPY = %w[
     annual_salary business_id description estimated_hours fee_type fixed_budget hourly_rate key_deliverables
-    location_type location minimum_experience only_regulators payment_schedule pricing_type status title type
+    location_type location color minimum_experience only_regulators payment_schedule pricing_type status title type
   ].freeze
 
   def self.copy(original, attributes = {})
