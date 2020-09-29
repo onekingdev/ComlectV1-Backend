@@ -9,8 +9,8 @@ class ReminderMailerJob < ApplicationJob
     remindable.update(reminders_mailed_at: Time.zone.today.in_time_zone(remindable.time_zone).to_date)
     calendar_grid = tasks_calendar_grid(remindable, Time.zone.today.in_time_zone(remindable.time_zone).beginning_of_month
     .to_date)
-    todays = reminders_today(remindable, calendar_grid)
-    past_dues = reminders_past(remindable)
+    todays = reminders_today(remindable, calendar_grid).collect(&:body).to_json
+    past_dues = reminders_past(remindable).collect(&:body).to_json
     ReminderMailer.deliver_later(:send_today, remindable, past_dues, todays) if (todays.length + past_dues.length).positive?
   end
 
