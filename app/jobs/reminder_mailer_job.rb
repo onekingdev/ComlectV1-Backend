@@ -3,7 +3,7 @@
 class ReminderMailerJob < ApplicationJob
   include RemindersFetcher
   queue_as :mailers
-
+  
   def perform(remindable = nil)
     return process_all if remindable.nil?
     remindable.update(reminders_mailed_at: Time.zone.today.in_time_zone(remindable.time_zone).to_date)
