@@ -87,8 +87,10 @@ class Business < ApplicationRecord
     team_member.last_name =  contact_last_name
     team_member.business_member = true
     team_member.title = contact_job_title
-    team_member.save
-    assign_team(team_member)
+    team_member.transaction do
+      team_member.save
+      assign_team(team_member)
+    end
   end
 
   STEP_THREE = [
