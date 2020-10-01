@@ -120,14 +120,16 @@ class Reminder < ActiveRecord::Base
     reminders = remindable.reminders.where('remind_at > ?', tgt_from_date).where('remind_at < ?', tgt_to_date) || []
     recurring_tasks = remindable.reminders.where('remind_at < ?', tgt_to_date).where.not(repeats: nil)
     recurring_tasks.each do |task|
-      end_by_date = task.end_by.to_date > tgt_to_date ? tgt_to_date : task.end_by.to_date
+      end_by_date = tgt_to_date
+      unless task.end_by.nil?
+        end_by_date = task.end_by if task.end_by < tgt_to_date
+      end
       occurrences = task.detect_all_occurrences(end_by_date) # [[date, id]...]
       occurrences.each do |occurrence|
-        if occurrence[0] > tgt_from_date && occurrence[0] < tgt_to_date
+        if occurrence[0] >= tgt_from_date && occurrence[0] <= tgt_to_date
           data_recurring << RecurringReminder.new(task, "#{task.id}_#{occurrence[1]}", occurrence[0])
         end
       end
-      break
     end
     (reminders + data_recurring).sort_by { |e| e.remind_at.strftime('%Y-%m-%d') }
   end
