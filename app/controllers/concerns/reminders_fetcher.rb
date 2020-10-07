@@ -4,8 +4,9 @@ module RemindersFetcher
   class FakeTask
     def initialize(id)
       self.id = id
+      self.body = nil
     end
-    attr_accessor :id
+    attr_accessor :id, :body
   end
 
   def tasks_calendar_grid(remindable, beginning)
@@ -14,7 +15,7 @@ module RemindersFetcher
     last_day = end_of_month + (6 - end_of_month.wday).days
     @grid_tasks = remindable.reminders.where('end_date >= ? AND remind_at < ?', first_day, last_day).where(repeats: nil)
     @recurring_tasks = remindable.reminders.where('remind_at < ?', last_day).where.not(repeats: nil)
-    @active_projects = remindable.projects.active
+    @active_projects = remindable.projects
     calendar_grid = {}
     (first_day..last_day).each do |cell|
       calendar_grid[cell] = []
@@ -78,7 +79,7 @@ module RemindersFetcher
       date_cursor = task.remind_at
       while (task.end_by.blank? || (task.end_by.present? && (date_cursor < task.end_by))) && (date_cursor < last_day)
         if %w[Daily Weekly Monthly Yearly].include?(task.repeats)
-          unless task.skip_occurencies.include?(occurence_idx.to_s)
+          unless (task.skip_occurencies.presence || [])&.include?(occurence_idx)
             calendar_grid = populate_calendar(date_cursor, task, occurence_idx, calendar_grid)
           end
           occurence_idx += 1
@@ -109,7 +110,7 @@ module RemindersFetcher
     calendar_grid.each do |k, v|
       today_tasks = v if k == Time.zone.today.in_time_zone(remindable.time_zone).to_date
     end
-    today_tasks
+    today_tasks.delete_if { |x| x.class.name == 'RemindersFetcher::FakeTask' }
   end
 
   def reminders_week(remindable, calendar_grid)
@@ -118,6 +119,6 @@ module RemindersFetcher
     calendar_grid.each do |k, v|
       week_tasks += v if k >= beginning_of_week && k <= beginning_of_week + 6.days
     end
-    week_tasks.uniq
+    week_tasks.uniq.delete_if { |x| x.class.name == 'RemindersFetcher::FakeTask' }
   end
 end
