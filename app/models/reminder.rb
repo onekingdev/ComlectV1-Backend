@@ -107,7 +107,7 @@ class Reminder < ActiveRecord::Base
     occurrences = []
     occurrence_idx = 0
     date_cursor = remind_at
-    while date_cursor + (duration - 1).days < date.to_date
+    while date_cursor + (duration - 1).days <= date.to_date
       occurrences.push([date_cursor, occurrence_idx]) unless (skip_occurencies.presence || []).include?(occurrence_idx)
       occurrence_idx += 1
       date_cursor = next_occurence(date_cursor)
