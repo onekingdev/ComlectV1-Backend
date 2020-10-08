@@ -2,7 +2,7 @@
 
 class Business::FileFoldersController < ApplicationController
   before_action :require_business!
-  before_action :set_folder, only: %i[destroy edit update show download_folder]
+  before_action :set_folder, only: %i[destroy edit update show download_folder check_zip]
 
   def new
     @file_folder = FileFolder.new
@@ -37,10 +37,25 @@ class Business::FileFoldersController < ApplicationController
   end
 
   def download_folder
-    filename = "#{@file_folder.name}.zip"
-    temp_file = Tempfile.new(filename)
-    zip_data = @file_folder.create_zip(@file_folder, temp_file)
-    send_data(zip_data, type: 'application/zip', filename: filename)
+    respond_to do |format|
+      format.html do
+        send_data(Rails.env.development? ? File.read("#{Rails.root}/public#{@file_folder.zip.url}") : File.read(@file_folder.zip.url),
+                  type: 'application/zip', filename: @file_folder.name)
+      end
+      format.js do
+        @file_folder.zip = nil
+        @file_folder.save
+        ZipFolderWorker.perform_async(params[:id])
+      end
+    end
+  end
+
+  def check_zip
+    respond_to do |format|
+      format.json do
+        render json: { "complete": @file_folder.zip.present? }
+      end
+    end
   end
 
   private

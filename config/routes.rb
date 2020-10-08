@@ -88,6 +88,7 @@ Rails.application.routes.draw do
     post '/upgrade/buy' => 'upgrade#subscribe'
     resources :file_folders do
       get :download_folder, on: :member
+      get :check_zip, on: :member
     end
     resources :file_docs
     resources :upgrade

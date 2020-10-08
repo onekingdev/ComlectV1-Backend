@@ -5,6 +5,7 @@ class FileFolder < ActiveRecord::Base
   belongs_to :parent, class_name: 'FileFolder'
   has_many :file_folders, class_name: 'FileFolder', foreign_key: :parent_id
   has_many :file_docs, dependent: :destroy
+  include FileUploader[:zip]
   scope :root, -> { where(parent_id: nil) }
   validates :name, uniqueness: { scope: %i[business_id parent_id] }
   validate :parent_belongs_to_business
@@ -21,7 +22,14 @@ class FileFolder < ActiveRecord::Base
     Zip::File.open(temp_file.path, Zip::File::CREATE) do |zip|
       write_entries folder.file_folders + folder.file_docs, '', zip
     end
-    File.read(temp_file.path)
+    uploader = FileUploader.new(:store)
+    uploaded_file = uploader.upload(File.open(temp_file.path))
+    folder.zip = uploaded_file
+    folder.save
+    folder.update(zip: uploaded_file, zip_data: uploaded_file.to_json)
+    File.close(temp_file.path)
+    temp_file.unlink
+    temp_file.delete
   end
 
   private
