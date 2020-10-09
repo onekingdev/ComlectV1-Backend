@@ -131,6 +131,8 @@ class Reminder < ActiveRecord::Base
         end
       end
     end
-    (reminders + data_recurring).sort_by { |e| e.remind_at.strftime('%Y-%m-%d') }
+    projects_complete = remindable.projects.complete.where('completed_at > ?', tgt_from_date).where('completed_at < ?', tgt_to_date)
+    projects_active = remindable.projects.active.where('starts_on > ?', tgt_from_date).where('starts_on < ?', tgt_to_date)
+    (reminders + data_recurring + projects_complete + projects_active).sort_by { |e| e.remind_at.strftime('%Y-%m-%d') }
   end
 end

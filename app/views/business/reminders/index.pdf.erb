@@ -62,9 +62,7 @@
       <% tgt_from_date = Date.parse("#{base_date.year}-#{i.to_s.rjust(2, '0')}-01") %>
       <% tgt_to_date = tgt_from_date+1.month %>
       <% reminders = Reminder.get_all_reminders(remindable, tgt_from_date, tgt_to_date) %>
-      <% projects_complete = remindable.projects.complete.where("completed_at > ?", tgt_from_date).where("completed_at < ?", tgt_to_date) %>
-      <% projects_active = remindable.projects.active.where("starts_on > ?", tgt_from_date).where("starts_on < ?", tgt_to_date) %>
-      <% if reminders.count.positive? || projects_complete.count.positive? || projects_active.count.positive? %>
+      <% if reminders.count.positive? %>
         <p>
           <table>
             <tr class="heading">
@@ -79,22 +77,6 @@
                 <td><%= reminder&.remind_at&.in_time_zone(remindable.time_zone)&.strftime('%b %-d, %Y') %></td>
                 <td><%= reminder&.end_date&.in_time_zone(remindable.time_zone)&.strftime('%b %-d, %Y') %></td>
                 <td><%= reminder&.done_at&.in_time_zone(remindable.time_zone)&.strftime('%b %-d, %Y') if reminder.done_at.present? %></td>
-              </tr>
-            <% end %>
-            <% projects_complete.each do |reminder| %>
-              <tr>
-                <td><%= reminder.title %></td>
-                <td><%= reminder&.starts_on&.in_time_zone(remindable.time_zone)&.strftime('%b %-d, %Y') %></td>
-                <td><%= reminder&.ends_on&.in_time_zone(remindable.time_zone)&.strftime('%b %-d, %Y') %></td>
-                <td><%= reminder&.completed_at&.in_time_zone(remindable.time_zone)&.strftime('%b %-d, %Y') %></td>
-              </tr>
-            <% end %>
-            <% projects_active.each do |reminder| %>
-              <tr>
-                <td><%= reminder.title %></td>
-                <td><%= reminder&.starts_on&.in_time_zone(remindable.time_zone)&.strftime('%b %-d, %Y') %></td>
-                <td><%= reminder&.ends_on&.in_time_zone(remindable.time_zone)&.strftime('%b %-d, %Y') %></td>
-                <td></td>
               </tr>
             <% end %>
           </table>
