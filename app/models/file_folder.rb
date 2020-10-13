@@ -25,8 +25,8 @@ class FileFolder < ActiveRecord::Base
     uploader = FileUploader.new(:store)
     uploaded_file = uploader.upload(File.open(temp_file.path))
     folder.zip = uploaded_file
+    folder.zip_data = uploaded_file.to_json
     folder.save
-    folder.update(zip: uploaded_file, zip_data: uploaded_file.to_json)
     File.close(temp_file.path)
     temp_file.unlink
     temp_file.delete
@@ -54,13 +54,22 @@ class FileFolder < ActiveRecord::Base
     end
   end
 
-  def recursively_deflate_directory(disk_file_path, zipfile_path, zipfile)
+  def recursively_deflate_directory(entry, zipfile_path, zipfile)
     zipfile.mkdir zipfile_path
-    write_entries disk_file_path.file_folders + disk_file_path.file_docs, zipfile_path, zipfile
+    write_entries entry.file_folders + entry.file_docs, zipfile_path, zipfile
   end
 
-  def put_into_archive(disk_file_path, zipfile, zipfile_path)
-    path = Rails.env.development? ? "#{Rails.root}/public#{disk_file_path.file_url.split('?')[0]}" : disk_file_path.file_url
-    zipfile.add(zipfile_path, File.open(path))
+  def put_into_archive(entry, zipfile, zipfile_path)
+    zipfile.add(zipfile_path, open_file(entry))
+  end
+
+  def open_file(entry)
+    if Rails.env.development?
+      path = "#{Rails.root}/public#{entry.file_url.split('?').first}"
+      File.open(path)
+    else
+      require 'open-uri'
+      URI.parse(entry.file_url).open
+    end
   end
 end

@@ -38,10 +38,6 @@ class Business::FileFoldersController < ApplicationController
 
   def download_folder
     respond_to do |format|
-      format.html do
-        send_data(Rails.env.development? ? File.read("#{Rails.root}/public#{@file_folder.zip.url}") : File.read(@file_folder.zip.url),
-                  type: 'application/zip', filename: @file_folder.name)
-      end
       format.js do
         @file_folder.zip = nil
         @file_folder.save
