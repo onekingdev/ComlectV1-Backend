@@ -77,11 +77,6 @@ class DocumentsController < ApplicationController
     @project.pending? ? current_specialist : @project.specialist
   end
 
-  def docs_of_current_page
-    current_page_num = params[:page].blank? ? 1 : params[:page].to_i
-    @docs_and_messages[((current_page_num - 1) * 10)..(current_page_num * 10)]
-  end
-
   def document_params
     params.require(:document).permit(:file, :specialist_id)
   end
