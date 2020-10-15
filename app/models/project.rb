@@ -143,6 +143,7 @@ class Project < ApplicationRecord
   after_update :new_project_notification
   after_create :send_email, if: :internal?
   before_create :check_specialist, if: :internal?
+  before_create :fix_internal_asap, if: :internal?
   before_create :remove_specialist, unless: :internal?
 
   LOCATIONS = [%w[Remote remote], %w[Remote\ +\ Travel remote_and_travel], %w[Onsite onsite]].freeze
@@ -488,6 +489,12 @@ class Project < ApplicationRecord
       errors.add :base, 'Invalid specialist'
       false
     end
+  end
+
+  def fix_internal_asap
+    return if duration_type != 'asap'
+    self.starts_on = Time.zone.now.in_time_zone(business.time_zone)
+    self.ends_on = starts_on + estimated_days.days
   end
 
   def remove_specialist
