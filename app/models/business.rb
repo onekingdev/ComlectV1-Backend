@@ -28,11 +28,13 @@ class Business < ApplicationRecord
   has_many :annual_reviews
   has_many :annual_reports
   has_many :teams
+  has_many :viewable_teams, -> { where(display: true) }, class_name: 'Team'
   has_many :active_projects, -> { where(status: statuses[:published]).where.not(specialist_id: nil) }, class_name: 'Project'
   has_many :active_specialists, through: :active_projects, class_name: 'Specialist', source: :specialist
   has_many :outdated_compliance_policies, -> { where('last_uploaded < ?', Time.zone.today - 1.year) }, class_name: 'CompliancePolicy'
   has_many :uptodate_compliance_policies, -> { where('last_uploaded >= ?', Time.zone.today - 1.year) }, class_name: 'CompliancePolicy'
   has_many :missing_compliance_policies, -> { where(docs_count: 0) }, class_name: 'CompliancePolicy'
+  has_many :sorted_unban_compliance_policies, -> { where(ban: false).order(:position) }, class_name: 'CompliancePolicy'
   has_many :sorted_compliance_policies, -> { order(:position) }, class_name: 'CompliancePolicy'
   has_many :seats
   has_many :subscriptions
@@ -66,6 +68,8 @@ class Business < ApplicationRecord
   serialize :already_covered
   serialize :cco
 
+  after_create :add_as_employee
+
   def spawn_compliance_policies
     # rubocop:disable Style/GuardClause
     unless compliance_policies_spawned
@@ -75,6 +79,18 @@ class Business < ApplicationRecord
       end
     end
     # rubocop:enable Style/GuardClause
+  end
+
+  def add_as_employee
+    team_member = TeamMember.find_or_initialize_by(email: user.email, business_member: true)
+    team_member.first_name = contact_first_name
+    team_member.last_name =  contact_last_name
+    team_member.business_member = true
+    team_member.title = contact_job_title.presence || 'Compliance Officer'
+    team_member.transaction do
+      team_member.save
+      assign_team(team_member)
+    end
   end
 
   STEP_THREE = [
@@ -217,6 +233,12 @@ class Business < ApplicationRecord
     self.business_stages = cookies[:complect_step4]
   end
 
+  def assign_team(team_member)
+    team = teams.find_or_create_by(name: 'Misc', display: false)
+    team_member.team_id = team.id
+    team_member.save
+  end
+
   alias communicable_projects projects
 
   default_scope -> { joins("INNER JOIN users ON users.id = businesses.user_id AND users.deleted = 'f'") }
@@ -314,6 +336,18 @@ class Business < ApplicationRecord
 
   def employees_cnt
     employees.split('-')[0].scan(/\d/).join('').to_i
+  end
+
+  def all_employees
+    assigned_team_members_ids = seats.pluck(:team_member_id).compact
+    assigned_team_members = TeamMember.where(id: assigned_team_members_ids)
+    employee_array = []
+    assigned_team_members.each do |employee|
+      user = User.find_by(email: employee.email)
+      specialist = user.specialist if user.present?
+      employee_array << [specialist.full_name, specialist.id] if specialist.present?
+    end
+    employee_array
   end
 
   # rubocop:disable Metrics/CyclomaticComplexity
@@ -453,6 +487,12 @@ class Business < ApplicationRecord
 
   def base_subscribed?
     subscriptions.base.present? ? (subscriptions&.base&.stripe_invoice_item_id && subscriptions&.base&.stripe_subscription_id) : false
+  end
+
+  def project_types
+    project_base_option = [['RFP', Project.types[:rfp]], ['Custom', Project.types[:one_off]], ['Full Time', Project.types[:full_time]]]
+    project_base_option << ['Internal', Project.types[:internal]] if subscriptions.base.present?
+    project_base_option
   end
 
   def payment_source_type

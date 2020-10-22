@@ -9,6 +9,7 @@ class Subscription < ActiveRecord::Base
   enum status: { active: 0, canceled: 1 }
 
   scope :base, -> { find_by(kind_of: 0) }
+  scope :active, -> { find_by(status: 0) }
 
   # unsure stripe customer business.payment_profile.stripe_customer
   # create one-time payment via InvoiceItem to customer
@@ -23,16 +24,16 @@ class Subscription < ActiveRecord::Base
     )
   end
 
-  def self.subscribe(plan, customer_id, options = {})
+  def self.subscribe(plan, customer_id, options = {}, coupon_id = nil)
     plan_id = get_plan_id(plan)
     return unless plan_id
-
     sub_attributes = {
       customer: customer_id,
       items: [
         plan: plan_id,
         quantity: (options[:quantity] || 1)
-      ]
+      ],
+      coupon: coupon_id
     }
     if options[:period_ends].present?
       sub_attributes[:cancel_at] = options[:period_ends]

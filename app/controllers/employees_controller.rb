@@ -38,7 +38,7 @@ class EmployeesController < ApplicationController
       @specialist.user.update_privacy_agreement(request.remote_ip)
       @specialist.user.update_cookie_agreement(request.remote_ip)
       # mixpanel_track_later 'Sign Up'
-      SpecialistMailer.welcome(@specialist).deliver_later
+      # SpecialistMailer.welcome(@specialist).deliver_later
 
       attributes_to_delete.each { |c| cookies.delete c }
       return redirect_to specialists_dashboard_path
@@ -77,11 +77,17 @@ class EmployeesController < ApplicationController
   end
 
   def init_tasks_calendar_grid
-    tasks_calendar_grid(current_business)
+    tasks_calendar_grid(current_business,
+                        params[:start_date] ? Date.parse(params[:start_date]).beginning_of_month : Time.zone.today.beginning_of_month)
   end
 
   def mirror
-    business = current_specialist.businesses_to_manage.find_by(id: params[:business_id])
+    businesses = if current_specialist.seat?
+                   current_specialist.businesses_to_manage
+                 else
+                   current_specialist.manageable_ria_businesses
+                 end
+    business = businesses.find_by(id: params[:business_id])
     return redirect_to specialists_projects_path unless business
 
     impersonate_user(business.user)

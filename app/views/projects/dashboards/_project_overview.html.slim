@@ -33,7 +33,7 @@ hr.m-b-1.m-t-1
       i.icon-clock
       | &nbsp;
       | End Date
-    p= project.ends_on.strftime('%d %b %Y')
+    p= project.ends_on.strftime('%d %b %Y') if project.ends_on.present?
 
     label
       i.icon-pie-chart
@@ -43,13 +43,13 @@ hr.m-b-1.m-t-1
       = project.pending? ? "0" : project.percent_complete.round
       |  %
   - if current_business
-    - if !project.complete? && !project.end_requests.any?(&:confirmed?) && !project.pending?
+    - if !project.complete? && !project.end_requests.any?(&:confirmed?) && !project.pending? && project.starts_on <= Time.zone.now.in_time_zone(project.business.time_zone).to_date
       .project-extension-picker-container.m-t-1
         button.btn.btn-block.btn-primary.btn-sm.m-b-1[
           data-method="post"
           data-remote="false"
           data-url=business_project_ends_path
-          data-confirm="<div class='bootbox-heading'>End Project<hr></div><div class='p-x-3'>Are you sure you want to end this project?<br>This will send a request to the specialist to<br>confirm project end and accelerate all project payments due.</div>"
+          data-confirm=get_confirm_text(project)
           data-confirm-label="Confirm"
           data-no-cancel="true"
         ]
@@ -65,4 +65,3 @@ hr.m-b-1.m-t-1
       .m-t-1
         a.btn.btn-block.btn-primary.btn-sm.m-b-1 href=business_project_job_applications_path(project) Applicants
         a.btn.btn-block.btn-default.btn-sm href=new_business_project_hire_path(project, job_application_id: project.job_applications.find_by_specialist_id(Specialist.find_by_username(params[:specialist_username])).id) data-remote=true Hire
-        

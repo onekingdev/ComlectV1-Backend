@@ -136,6 +136,23 @@ class Notification::Deliver < Draper::Decorator
       dispatcher.deliver_mail(action_url)
     end
 
+    def got_assigned!(project)
+      action_path, action_url = path_and_url :project_dashboard, project
+      key = :got_assigned_project
+      specialist = project.specialist
+      dispatcher = Dispatcher.new(
+        user: specialist.user,
+        key: key,
+        action_path: action_path,
+        associated: project,
+        initiator: project.business,
+        t: { project_title: project.title }
+      )
+
+      dispatcher.deliver_notification!
+      dispatcher.deliver_mail(action_url)
+    end
+
     def not_hired!(application)
       project = application.project
       action_path, action_url = path_and_url :projects
@@ -421,7 +438,7 @@ class Notification::Deliver < Draper::Decorator
       project = request.project
       action_path, action_url = path_and_url :project_dashboard, project
       key = project.fixed_pricing? ? :end_project_fixed : :end_project_hourly
-
+      key = :end_project_fixed if project.internal?
       dispatcher = Dispatcher.new(
         user: project.specialist.user,
         key: key,
@@ -499,12 +516,17 @@ class Notification::Deliver < Draper::Decorator
         path,
         invite_token: ported&.token
       )
-
+      spec_name = (ported&.specialist&.user&.full_name || 'some specialist')
+      subj = "You've Been Invited to Join Complect"
+      msg = "As your compliance consultant, #{spec_name} has requested you create a free profile on "\
+            'Complect to automate your fee billing and invoicing process. You will also have access to '\
+            'additional, optional tech solutions to help manage your compliance program! To create your '\
+            'profile, please sign up directly via the link below'
       dispatcher = Dispatcher.new(
         key: :got_employee_invitation,
         action_path: action_path,
         t: {
-          manager_full_name: (ported&.specialist&.user&.full_name || 'some specialist'),
+          manager_full_name: spec_name,
           team_name: 'No team name'
         }
       )
@@ -512,12 +534,12 @@ class Notification::Deliver < Draper::Decorator
       NotificationMailer.deliver_later(
         :notification,
         ported.email,
-        dispatcher.message_mail,
+        msg,
         dispatcher.action_label,
         dispatcher.initiator_name,
         dispatcher.img_path,
         action_url,
-        dispatcher.subject
+        subj
       )
     end
 

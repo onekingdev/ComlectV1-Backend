@@ -5,6 +5,7 @@ require 'sidekiq-scheduler/web'
 
 Rails.application.routes.draw do
   delete 'subscriptions/:id', to: 'subscriptions#cancel', as: 'cancel_subscription'
+  delete 'ported_subscriptions/:id', to: 'subscriptions#specialist_cancel', as: 'specialist_cancel_subscription'
   put 'subscriptions/:id', to: 'subscriptions#update', as: 'update_subscription'
 
   if Rails.env.production? || Rails.env.staging?
@@ -86,7 +87,10 @@ Rails.application.routes.draw do
     get '/upgrade' => 'upgrade#index'
     get '/upgrade/buy' => 'upgrade#buy'
     post '/upgrade/buy' => 'upgrade#subscribe'
-    resources :file_folders
+    resources :file_folders do
+      get :download_folder, on: :member
+      get :check_zip, on: :member
+    end
     resources :file_docs
     resources :upgrade
     resources :addons, only: %i[index]
@@ -98,6 +102,10 @@ Rails.application.routes.draw do
     resources :compliance_policies, only: %i[new update create edit show destroy index] do
       collection do
         put :sort
+      end
+      member do
+        put :ban
+        put :unban
       end
     end
     resources :annual_reviews, only: %i[new create show destroy index edit update]
@@ -118,6 +126,9 @@ Rails.application.routes.draw do
       resource :delete_account
       resources :payment_settings, as: :payment, path: 'payment' do
         patch :make_primary
+        collection do
+          post :apply_coupon
+        end
       end
       resources :notification_settings, as: :notifications, path: 'notifications', only: %i[index update]
       resources :subscription_settings, as: :subscriptions, path: 'subscriptions', only: %i[index update]
@@ -176,7 +187,12 @@ Rails.application.routes.draw do
       post '/personalize' => 'personalize#quiz'
       get '/personalize_book' => 'personalize#book'
       resources :seats, only: %i[index new]
-      resources :compliance_policies, only: %i[new update create edit show destroy index]
+      resources :compliance_policies, only: %i[new update create edit show destroy index] do
+        member do
+          put :ban
+          put :unban
+        end
+      end
       resources :annual_reviews, only: %i[new create show destroy index edit update]
       resources :annual_reports, only: %i[new create index update]
       # resources :teams, only: %i[new create show edit index update]
@@ -189,12 +205,16 @@ Rails.application.routes.draw do
       resource :password
       resource :contact_information, only: %i[show update]
       # resource :referrals, only: :show
+      resources :subscription_settings, as: :subscriptions, path: 'subscriptions', only: %i[index update]
       resource :delete_account
       resources :delete_managed_accounts, only: :destroy
       resource :payment_settings, as: :payment, path: 'payment' do
         get :new_card
         post :create_card
+        post :create_bank
         delete 'delete_card/:id', to: 'payment_settings#delete_card', as: 'delete_card'
+        patch 'make_primary/:id', to: 'payment_settings#make_primary', as: 'make_primary'
+        patch '/specialist/settings/payment/:id/validate', to: 'payment_settings#validate', as: 'validate'
       end
       resource :team
 
