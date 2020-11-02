@@ -2,6 +2,7 @@
 
 class HomeController < ApplicationController
   skip_before_action :verify_authenticity_token
+  before_action :authenticate_user!, only: :q_and_a_forum
 
   PAGES = %w[
     faqs
@@ -37,5 +38,10 @@ class HomeController < ApplicationController
     respond_to do |format|
       format.js
     end
+  end
+
+  def q_and_a_forum
+    @forum_sub = current_business.forum_subscription
+    @forum_sub = OpenStruct.new(billing_type: 'annual') if @forum_sub.nil?
   end
 end

@@ -4,10 +4,8 @@ class ZipFolderWorker
   include Sidekiq::Worker
   sidekiq_options retry: false
 
-  def perform(folder_id)
+  def perform(folder_id, user_id)
     folder = FileFolder.find folder_id
-    filename = folder.name
-    temp_file = Tempfile.new([filename, '.zip'])
-    folder.create_zip(folder, temp_file)
+    folder.create_zip(folder, user_id)
   end
 end
