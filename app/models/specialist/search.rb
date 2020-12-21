@@ -27,7 +27,7 @@ class Specialist::Search
 
   def results
     return @results if @results
-    @results = Specialist.preload_associations.public_profiles.distinct
+    @results = Specialist.preload_association.public_profiles.distinct
     @results = search(@results)
     @results = filter_industry(@results)
     @results = filter_jurisdiction(@results)

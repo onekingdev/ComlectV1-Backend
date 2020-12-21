@@ -5,8 +5,8 @@ require 'validators/url_validator'
 class Business < ApplicationRecord
   belongs_to :user
 
-  has_and_belongs_to_many :jurisdictions
-  has_and_belongs_to_many :industries
+  has_and_belongs_to_many :jurisdictions, optional: true
+  has_and_belongs_to_many :industries, optional: true
   has_many :forum_questions
   has_many :projects, dependent: :destroy
   has_many :job_applications, through: :projects
@@ -440,7 +440,7 @@ class Business < ApplicationRecord
 
   def subscription?
     if forum_subscription && !forum_subscription.suspended
-      forum_subscription[:level]
+      forum_subscription.read_attribute_before_type_cast(:level)
     else
       0
     end
@@ -458,7 +458,7 @@ class Business < ApplicationRecord
 
   def payment_source_type
     payment_source = payment_sources.find_by(primary: true) || payment_sources.first
-    payment_source&.type == 'PaymentSource::ACH' ? :ach : :card
+    payment_source&.type == 'PaymentSource::Ach' ? :ach : :card
   end
 
   def generate_folders_tree(except_id)

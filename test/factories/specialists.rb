@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :specialist do
     association :user, email_prefix: 'specialist'
-    # association :rewards_tier
+    association :rewards_tier
     industries { [create(:industry)] }
     jurisdictions { [create(:jurisdiction)] }
     payment_sources { [create(:specialist_payment_source)] }
@@ -13,6 +13,10 @@ FactoryBot.define do
     time_zone { Faker::Address.time_zone }
     address_1 { Faker::Address.street_address }
     country { Faker::Address.country }
+    state { Faker::Address.country }
+    city { Faker::Address.country }
+    zipcode { '10001' }
+
     sequence(:username) { |n| "UserN#{n + rand(10_000)}" }
     call_booked { true }
     dashboard_unlocked { true }

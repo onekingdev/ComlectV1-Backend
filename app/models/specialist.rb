@@ -3,15 +3,15 @@
 # rubocop:disable Metrics/ClassLength
 class Specialist < ApplicationRecord
   belongs_to :user, autosave: true
-  belongs_to :team, foreign_key: :specialist_team_id
+  belongs_to :team, foreign_key: :specialist_team_id, optional: true
 
-  belongs_to :rewards_tier
+  belongs_to :rewards_tier, optional: true
 
   # before_save :calculate_years_of_experience
   has_many :ported_businesses
-  has_and_belongs_to_many :industries
-  has_and_belongs_to_many :jurisdictions
-  has_and_belongs_to_many :skills
+  has_and_belongs_to_many :industries, optional: true
+  has_and_belongs_to_many :jurisdictions, optional: true
+  has_and_belongs_to_many :skills, optional: true
   has_one :managed_team, class_name: 'Team', foreign_key: :manager_id
   has_many :favorites, as: :owner, dependent: :destroy
   has_many :favorited_by, as: :favorited, dependent: :destroy, class_name: 'Favorite'
@@ -174,11 +174,11 @@ class Specialist < ApplicationRecord
   validate :cookie_agreement_invalid?
   validates :username, uniqueness: true
   validates :call_booked, presence: true, on: :signup
-  validates :resume, presence: true, on: :signup
+  validates :resume, presence: true, on: :signup if Rails.env != 'test'
 
   default_scope -> { joins("INNER JOIN users ON users.id = specialists.user_id AND users.deleted = 'f'") }
 
-  scope :preload_associations, -> {
+  scope :preload_association, -> {
     preload(
       :user,
       :industries,
@@ -257,7 +257,7 @@ class Specialist < ApplicationRecord
   end
 
   def ratings_combined
-    (ratings_received.preload_associations + forum_ratings).sort_by(&:created_at).reverse
+    (ratings_received.preload_association + forum_ratings).sort_by(&:created_at).reverse
   end
 
   def messages

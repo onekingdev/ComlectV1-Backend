@@ -18,8 +18,10 @@ RSpec.describe 'Deleting account', type: :request do
       it 'cannot login anymore' do
         post(
           user_session_path,
-          'user[email]' => business.user.email,
-          'user[password]' => 'password'
+          params: {
+            'user[email]' => business.user.email,
+            'user[password]' => 'password'
+          }
         )
 
         expect(response).to have_http_status(:ok)

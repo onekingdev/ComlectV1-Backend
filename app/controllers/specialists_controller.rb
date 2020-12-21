@@ -20,7 +20,7 @@ class SpecialistsController < ApplicationController
   end
 
   def show
-    @specialist = Specialist.preload_associations.find_by(username: params[:id])
+    @specialist = Specialist.preload_association.find_by(username: params[:id])
   end
 
   def new
