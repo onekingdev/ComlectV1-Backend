@@ -1,17 +1,9 @@
 @import "_vue_utilities.scss";
-@import "../../../node_modules/bootstrap/scss/functions.scss";
-@import "../../../node_modules/bootstrap/scss/mixins.scss";
-@import "../../../node_modules/bootstrap/scss/variables.scss";
 @import "_vue_theme.scss";
-@import "../../../node_modules/bootstrap/scss/bootstrap.scss";
 
 html {
   font-size: 12px;
   background-color: #f6f6f8;
-}
-
-.text-danger {
-  color: plum !important;
 }
 
 #sidebarMenu {
