@@ -71,9 +71,9 @@
       Errors(:errors="errors.repeats || errors.repeat_every || errors.repeat_on || errors.on_type")
 
       label.form-label Description
-      textarea.form-control(rows=3)
+      textarea.form-control(v-model="task.description" rows=3)
+      Errors(:errors="errors.description")
       .form-text.text-muted Optional
-      //- Errors
 
       template(slot="modal-footer")
         button.btn(@click="$bvModal.hide(id)") Cancel
@@ -97,7 +97,8 @@ const initialTask = () => ({
   repeats: REPEAT_NONE,
   repeat_every: null,
   repeat_on: null,
-  on_type: null
+  on_type: null,
+  description: ""
 })
 
 const REPEAT_NONE = '',
