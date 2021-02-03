@@ -150,7 +150,7 @@ class Charge < ApplicationRecord
   def calculate_specialist_fee
     return unless specialist
 
-    self.specialist_fee_in_cents = 0 if PortedBusiness.ported?(business&.id, specialist&.id)
+    self.specialist_fee_in_cents = 0 if specialist&.zero_fee || PortedBusiness.ported?(business&.id, specialist&.id)
 
     self.specialist_fee_in_cents ||= amount_in_cents * COMPLECT_FEE_PCT
   end
