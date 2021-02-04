@@ -2092,7 +2092,8 @@ CREATE TABLE public.specialists (
     annual_revenue_goal numeric,
     risk_tolerance character varying,
     automatching_available boolean DEFAULT false,
-    reminders_mailed_at timestamp without time zone
+    reminders_mailed_at timestamp without time zone,
+    zero_fee boolean DEFAULT false
 );
 
 
@@ -7406,6 +7407,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20201210160135'),
 ('20201225213003'),
 ('20210118192309'),
-('20210128050645');
+('20210128050645'),
+('20210203192622');
 
 
