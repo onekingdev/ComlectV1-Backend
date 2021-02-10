@@ -3,9 +3,9 @@
     h3 {{ project.title }}
     dl.row
       dt.col-sm-3 Location
-      dd.col-sm-9
+      dd.col-sm-9 {{ project.location }}
       dt.col-sm-3 Industry
-      dd.col-sm-9
+      dd.col-sm-9 {{ project.industries | names }}
       dt.col-sm-3 Start Date
       dd.col-sm-9 {{ project.starts_on | asDate }}
       dt.col-sm-3 End Date

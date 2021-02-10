@@ -15,7 +15,7 @@
     li.list-group-item
       | Jurisdiction
       br
-      | -
+      | {{ project.jurisdictions | names }}
 </template>
 
 <script>

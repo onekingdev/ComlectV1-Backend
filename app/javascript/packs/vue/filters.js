@@ -5,7 +5,8 @@ const filters = {
   },
   usdWhole: int => {
     return `$ ${parseInt(int)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  }
+  },
+  names: arr => arr.map(({ name }) => name).join(', ')
 }
 
 export default filters
