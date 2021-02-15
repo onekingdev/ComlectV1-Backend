@@ -1,8 +1,8 @@
 <template lang="pug">
   Get(:applications='apiUrl'): template(v-slot="{applications}")
     .alert.alert-warning(v-if="applications.length")
-      h4.alert-heading {{applications.length}} applications received.
-      p There are currently {{applications.length}} applicants for your project.
+      h4.alert-heading {{ 'application' | plural(applications) }} received.
+      p There are currently {{ 'applicant' | plural(applications) }} for your project.
       a.btn.btn-light(:href="viewApplicantsUrl") View
 </template>
 
