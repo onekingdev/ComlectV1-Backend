@@ -359,6 +359,18 @@ ALTER SEQUENCE public.answers_id_seq OWNED BY public.answers.id;
 
 
 --
+-- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ar_internal_metadata (
+    key character varying NOT NULL,
+    value character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: articles; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2085,7 +2097,9 @@ CREATE TABLE public.users (
     tos_acceptance_ip character varying,
     deleted boolean DEFAULT false NOT NULL,
     deleted_at timestamp without time zone,
-    inactive_for_period boolean DEFAULT false
+    inactive_for_period boolean DEFAULT false,
+    muted_projects text DEFAULT '--- []
+'::text
 );
 
 
@@ -5412,6 +5426,14 @@ ALTER TABLE ONLY public.answers
 
 
 --
+-- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ar_internal_metadata
+    ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
 -- Name: articles articles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7659,4 +7681,7 @@ INSERT INTO schema_migrations (version) VALUES ('20200929162556');
 INSERT INTO schema_migrations (version) VALUES ('20201007134635');
 
 INSERT INTO schema_migrations (version) VALUES ('20201110132337');
+
+INSERT INTO schema_migrations (version) VALUES ('20201210160135');
+
 
