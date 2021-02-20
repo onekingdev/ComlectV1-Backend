@@ -74,7 +74,7 @@ export default {
     this.modalId = 'modal_' + Math.random().toFixed(9) + Math.random().toFixed(7)
   },
   computed: {
-    paymentScheduleReadable: application => FIXED_PAYMENT_SCHEDULE_OPTIONS[application.payment_schedule]
+    paymentScheduleReadable: () => application => FIXED_PAYMENT_SCHEDULE_OPTIONS[application.payment_schedule]
   }
 }
 </script>
