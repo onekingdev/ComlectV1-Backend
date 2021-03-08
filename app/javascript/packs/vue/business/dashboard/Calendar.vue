@@ -21,7 +21,8 @@
             .fc-event-title-container
               .fc-event-title.fc-sticky
                 span(v-for="icon in arg.event.extendedProps.icons")
-                  ion-icon(v-bind:name="icon") &nbsp;
+                  ion-icon(:name="icon")
+                  | &nbsp;
                 span.pointer(@click="openModal(arg.event.extendedProps.taskId, arg.event.extendedProps.oid)" v-if="arg.event.extendedProps.remind_at") {{arg.event.title}}
                 a(v-else :href="arg.event.extendedProps.href" target="_blank") {{arg.event.title}}
 </template>
