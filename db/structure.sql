@@ -1197,7 +1197,8 @@ CREATE TABLE public.projects (
     business_fee_free boolean DEFAULT false,
     color character varying,
     local_project_id integer,
-    role_details text DEFAULT ''::text
+    role_details text DEFAULT ''::text,
+    role integer DEFAULT 0
 );
 
 
@@ -7520,6 +7521,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210211082102'),
 ('20210211121353'),
 ('20210211201513'),
-('20210216123812');
+('20210216123812'),
+('20210305105030');
 
 

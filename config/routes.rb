@@ -264,7 +264,7 @@ Rails.application.routes.draw do
       get '/overdue_reminders' => 'reminders#overdue'
       post '/reminders' => 'reminders#create'
       resources :local_projects, only: %i[index create show]
-      resources :projects, only: %i[index show create] do
+      resources :projects, only: %i[index show create update] do
         resources :job_applications, path: 'applications', only: %i[index] do
           post :shortlist
           post :hide
