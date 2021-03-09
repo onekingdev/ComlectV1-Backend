@@ -12,6 +12,7 @@ if (typeof(annual_report_loop) != "undefined") {
       if (d == "ready") {
         $(".hide_on_change").animate({width: "150px", padding: "10px 20px", "margin-left": "auto", "margin-right": "0px", opacity: "1"}).fadeIn();
       }
+      window.location.href = "/business/annual_reports/new";
       //coolnotify(d, "success");
     }).fail(function(d) {
       coolnotify("Error", "danger");
