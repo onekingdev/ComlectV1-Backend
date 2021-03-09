@@ -33,11 +33,10 @@ const splitReminderOccurenceId = val => {
     ? { taskId: +matches[0][1], oid: +matches[0][2] }
     : { taskId: val, oid: null }
 }
-const badgeClass = project => project.status == "Active" ? 'badge-light'
-                            : project.status == "Pending" ? 'badge-secondary'
-                            : project.status == "In Progress" ? "badge-light"
-                            : project.status == "Complete" ? "badge-success"
-                            : project.status == "Draft" ? 'badge-secondary'
+const badgeClass = project => project.status == "pending" ? 'badge-secondary'
+                            : project.status == "inprogress" ? "badge-light"
+                            : project.status == "complete" ? "badge-success"
+                            : project.status == "draft" ? 'badge-secondary'
                             : isOverdue(project) ? "badge-warning" : ''
 
 export { isProject, isTask, isOverdue, isComplete, toEvent, cssClass, splitReminderOccurenceId, iconArray, badgeClass }
