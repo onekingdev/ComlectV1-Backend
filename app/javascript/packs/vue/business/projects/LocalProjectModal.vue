@@ -25,7 +25,7 @@
 
       template(slot="modal-footer")
         button.btn(@click="$bvModal.hide(modalId)") Cancel
-        button.btn.btn-default Save as Draft
+        button.btn.btn-default(v-if="!projectId" @click="submit(true)") Save as Draft
         button.btn.btn-dark(@click="submit") {{ projectId ? 'Save' : 'Create' }}
 </template>
 
@@ -63,13 +63,13 @@ export default {
     makeToast(title, str) {
       this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
     },
-    submit() {
+    submit(asDraft) {
       this.errors = []
       const toId = this.projectId ? `/${this.projectId}` : ''
       fetch('/api/business/local_projects' + toId, {
         method: this.projectId ? 'PUT' : 'POST',
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
-        body: JSON.stringify(this.project)
+        body: JSON.stringify(asDraft ? {...this.project, status: 'draft'} : this.project)
       }).then(response => {
         if (response.status === 422) {
           response.json().then(errors => {
