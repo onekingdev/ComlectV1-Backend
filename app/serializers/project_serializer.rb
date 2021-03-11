@@ -53,7 +53,6 @@ class ProjectSerializer < ApplicationSerializer
              :business_fee_free,
              :color,
              :local_project_id,
-             :role,
              :skills,
              :jurisdictions,
              :industries,

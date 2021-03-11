@@ -78,7 +78,6 @@ class Api::Business::ProjectsController < ApiController
       :color,
       :specialist_id,
       :rfp_timing,
-      :role,
       jurisdiction_ids: [],
       industry_ids: [],
       skill_names: []
