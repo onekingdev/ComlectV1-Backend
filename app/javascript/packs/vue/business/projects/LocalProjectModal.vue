@@ -25,7 +25,7 @@
 
       template(slot="modal-footer")
         button.btn(@click="$bvModal.hide(modalId)") Cancel
-        button.btn.btn-default(v-if="!projectId" @click="submit(true)") Save as Draft
+        // button.btn.btn-default(v-if="!projectId" @click="submit(true)") Save as Draft
         button.btn.btn-dark(@click="submit()") {{ projectId ? 'Save' : 'Create' }}
 </template>
 

@@ -1,5 +1,5 @@
 <template lang="pug">
-  ul.list-group.list-group-horizontal
+  ul.list-group.list-group-horizontal.project-figures
     li.list-group-item(v-if="project.pricing_type === 'fixed'")
       | Fixed Budget
       br
