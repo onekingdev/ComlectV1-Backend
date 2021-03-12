@@ -1,5 +1,6 @@
 <template lang="pug">
   div
+    ModelLoader(:url="projectId ? endpointUrl : undefined" :default="defaultProject" @loaded="loadProject")
     Breadcrumbs(:items="['Projects', pageTitle]")
     h2 {{ pageTitle }}
     p Tell us more about your project and get connected to our experienced specialists.
@@ -137,6 +138,9 @@ export default {
     }
   },
   methods: {
+    loadProject(project) {
+      this.project = Object.assign({}, this.project, project)
+    },
     next() {
       if (this.nextEnabled) {
         if (this.preValidateStep()) {
@@ -180,8 +184,8 @@ export default {
     },
     submit() {
       this.errors = {}
-      fetch('/api/business/projects', {
-        method: 'POST',
+      fetch(this.endpointUrl, {
+        method: this.projectId ? 'PUT' : 'POST',
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
         body: JSON.stringify(this.project)
       }).then(response => {
@@ -203,6 +207,12 @@ export default {
   computed: {
     pageTitle() {
       return this.projectId ? 'Edit Project' : 'Post Project'
+    },
+    defaultProject() {
+      return () => initialProject(this.localProject)
+    },
+    endpointUrl() {
+      return '/api/business/projects/' + (this.projectId || '')
     },
     steps: () => STEPS,
     pricingTypes: () => PRICING_TYPES,
