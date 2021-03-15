@@ -280,7 +280,9 @@ Rails.application.routes.draw do
       resources :projects, only: [] do
         resources :timesheets, except: %i[new edit], controller: 'timesheets'
       end
+      resources :specialist_roles, only: :update
       resources :specialists, only: :index
+      post '/seats/:seat_id/assign', to: 'seats#assign'
       resources :annual_reports, only: %i[index show create update destroy]
       get '/annual_reports/:id/clone' => 'annual_reports#clone'
       scope 'annual_reports/:report_id' do
