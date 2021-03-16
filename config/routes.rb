@@ -75,6 +75,8 @@ Rails.application.routes.draw do
   resources :flags, only: %i[new create]
 
   namespace :business do
+    get '/policies/create' => 'compliance_policies#create'
+    get '/policies' => 'compliance_policies#index', as: :policies
     get '/personalize' => 'personalize#quiz'
     post '/personalize' => 'personalize#quiz'
     get '/personalize_book' => 'personalize#book'
