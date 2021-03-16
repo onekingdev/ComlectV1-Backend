@@ -9,7 +9,7 @@
       a.m-r-1.btn.btn-default(v-if="project.visible_project" :href='viewHref(project.visible_project)') View Post
       a.m-r-1.btn.btn-default(v-else :href='postHref(project)') Post Project
       button.btn.btn-dark Complete Project
-    b-tabs(content-class="mt-0" v-model="tabIndex" @activate-tab="showingContract = null")
+    b-tabs(content-class="mt-0" v-model="tabIndex")
       b-tab(title="Overview" active)
         .white-card-body.p-y-1
           .container
@@ -26,7 +26,7 @@
                 .card
                   .card-header.d-flex.justify-content-between
                     h3.m-y-0 Collaborators
-                    button.btn.btn-default(@click="tabIndex = 3") View All
+                    button.btn.btn-default(@click="viewContract()") View All
                   .card-body
                     table.rating_table
                       tbody
@@ -36,6 +36,8 @@
                             b {{ contract.specialist.first_name }} {{ contract.specialist.last_name }},
                             |  Specialist
                           td
+                            b-dropdown.float-right(text="..." variant="default")
+                              b-dropdown-item(@click="viewContract(contract)") View Contract
           .container.m-t-1
             .row.p-x-1
               .col-md-12
@@ -149,6 +151,10 @@ export default {
     },
     getContracts(projects) {
       return projects.filter(project => !!project.specialist)
+    },
+    viewContract(collaborator) {
+      this.tabIndex = 3
+      this.showingContract = collaborator || null
     },
     contractDetails: fields,
     readablePaymentSchedule
