@@ -67,7 +67,7 @@
         button.btn.m-r-1(@click.prevent) Exit
         button.btn.btn-outline-dark.m-r-1(v-if="saveDraftEnabled" @click="preValidateStep() && submit(true)") Save as Draft
         button.btn.btn-dark(v-if="nextEnabled" @click="next") Next
-        button.btn.btn-dark(v-else @click="preValidateStep() && submit()") Submit
+        button.btn.btn-dark(v-else @click="preValidateStep() && submit()") Post Project
 </template>
 
 <script>
