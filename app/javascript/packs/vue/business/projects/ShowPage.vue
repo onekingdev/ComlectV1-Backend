@@ -38,11 +38,11 @@
                   .card-body
                     table.rating_table
                       tbody
-                        tr(v-for="collaborator in collaborators(project.visible_project)" :key="collaborator.id")
+                        tr(v-for="contract in getContracts(project.projects)" :key="contract.specialist.id")
                           td
-                            img.m-r-1.userpic_small(v-if="collaborator.photo" :src="collaborator.photo")
-                            b {{ collaborator.first_name }} {{collaborator.last_name }},
-                            | Specialist
+                            img.m-r-1.userpic_small(v-if="contract.specialist.photo" :src="contract.specialist.photo")
+                            b {{ contract.specialist.first_name }} {{ contract.specialist.last_name }},
+                            |  Specialist
                           td
           .container.m-t-1
             .row.p-x-1
@@ -60,26 +60,28 @@
           .container
             .row.p-x-1
               .col-sm-12
-                .card
+                .card(v-if="!showingContract")
                   .card-header.d-flex.justify-content-between
                     h3.m-y-0 Collaborators
                   .card-body
-                    table.rating_table(v-if="!showingContract")
+                    table.rating_table
                       tbody
-                        tr(v-for="collaborator in collaborators(project.visible_project)" :key="collaborator.id")
+                        tr(v-for="contract in getContracts(project.projects)" :key="contract.specialist.id")
                           td
-                            button.btn.btn-default.float-right(@click="showingContract = collaborator") View Contract
-                            img.m-r-1.userpic_small(v-if="collaborator.photo" :src="collaborator.photo")
-                            b {{ collaborator.first_name }} {{collaborator.last_name }},
-                            | Specialist
+                            button.btn.btn-default.float-right(@click="showingContract = contract") View Contract
+                            img.m-r-1.userpic_small(v-if="contract.specialist.photo" :src="contract.specialist.photo")
+                            b {{ contract.specialist.first_name }} {{contract.specialist.last_name }},
+                            |  Specialist
                           td
-                    div(v-else)
-                      Breadcrumbs(:items="['Collaborators', `${showingContract.first_name} ${showingContract.last_name}`]")
+                div(v-else)
+                  Breadcrumbs.m-y-1(:items="['Collaborators', `${showingContract.specialist.first_name} ${showingContract.specialist.last_name}`]")
+                  PropertiesTable(title="Contract Details" :properties="contractDetails(showingContract)")
       b-tab(title="Activity")
         .card-body.white-card-body
 </template>
 
 <script>
+import { fields } from '@/common/ProposalFields'
 import ApplicationsNotice from './ApplicationsNotice'
 import TimesheetsNotice from './TimesheetsNotice'
 import ProjectDetails from './ProjectDetails'
@@ -117,9 +119,10 @@ export default {
     completeErrors(errors) {
       alert('Complete error')
     },
-    collaborators(project) {
-      return [project.specialist]
+    getContracts(projects) {
+      return projects.filter(project => !!project.specialist)
     },
+    contractDetails: fields
   },
   computed: {
     postHref() {
