@@ -8,7 +8,15 @@
         b-dropdown-item Delete Project
       a.m-r-1.btn.btn-default(v-if="project.visible_project" :href='viewHref(project.visible_project)') View Post
       a.m-r-1.btn.btn-default(v-else :href='postHref(project)') Post Project
-      a.btn.btn-dark Complete Project
+      button.btn.btn-dark(v-b-modal.CompleteProjectModal) Complete Project
+        b-modal.fade(id="CompleteProjectModal" title="Complete Project" no-stacking)
+          p ✔ The following project will be marked as complete.
+          p {{ project.title }}
+          p: b Do you want to continue?
+          template(slot="modal-footer")
+            button.btn(@click="$bvModal.hide('CompleteProjectModal')") Cancel
+            Post(:action="completeUrl(project)" :model="{}" @saved="completeSuccess" @errors="completeErrors")
+              button.btn.btn-dark.m-r-1 Confirm
     b-tabs(content-class="mt-0")
       b-tab(title="Overview" active)
         .white-card-body.p-y-1
@@ -77,13 +85,24 @@ export default {
     TimesheetsNotice,
     ProjectDetails
   },
+  methods: {
+    completeSuccess() {
+      alert('Complete success')
+    },
+    completeErrors(errors) {
+      alert('Complete error')
+    },
+  },
   computed: {
     postHref() {
       return project => this.$store.getters.url('URL_POST_LOCAL_PROJECT', project.id)
     },
     viewHref() {
       return project => this.$store.getters.url('URL_PROJECT_POST', project.id)
-    }
+    },
+    completeUrl() {
+      return project => '/api/projects/' + project.id + '/end'
+    },
   }
 }
 </script>
