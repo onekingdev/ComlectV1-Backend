@@ -74,8 +74,11 @@
                             |  Specialist
                           td
                 div(v-else)
-                  Breadcrumbs.m-y-1(:items="['Collaborators', `${showingContract.specialist.first_name} ${showingContract.specialist.last_name}`]")
-                  PropertiesTable(title="Contract Details" :properties="contractDetails(showingContract)")
+                  .row: .col-sm-12
+                    button.btn.btn-dark.float-right End Contract
+                    Breadcrumbs.m-y-1(:items="['Collaborators', `${showingContract.specialist.first_name} ${showingContract.specialist.last_name}`]")
+                  .row: .col-sm-12
+                    PropertiesTable(title="Contract Details" :properties="contractDetails(showingContract)")
       b-tab(title="Activity")
         .card-body.white-card-body
 </template>
