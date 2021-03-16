@@ -63,8 +63,9 @@
 
     .row.no-gutters
       .col-md-6.text-right.m-t-1
+        button.btn.btn-outline-dark.float-left(v-if="prevEnabled" @click="prev") Previous
         button.btn.m-r-1(@click.prevent) Exit
-        button.btn.btn-default.m-r-1(v-if="prevEnabled" @click="prev") Previous
+        button.btn.btn-outline-dark.m-r-1(v-if="saveDraftEnabled" @click="preValidateStep() && submit(true)") Save as Draft
         button.btn.btn-dark(v-if="nextEnabled" @click="next") Next
         button.btn.btn-dark(v-else @click="preValidateStep() && submit()") Submit
 </template>
@@ -182,12 +183,12 @@ export default {
     makeToast(title, str) {
       this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
     },
-    submit() {
+    submit(asDraft) {
       this.errors = {}
       fetch(this.endpointUrl, {
         method: this.projectId ? 'PUT' : 'POST',
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
-        body: JSON.stringify(this.project)
+        body: JSON.stringify(asDraft ? { ...this.project, status: 'draft' } : this.project)
       }).then(response => {
         if (response.status === 422) {
           response.json().then(errors => {
@@ -249,6 +250,9 @@ export default {
     },
     prevEnabled() {
       return this.currentStep > 0
+    },
+    saveDraftEnabled() {
+      return this.project.status !== 'published'
     },
     datepickerOptions() {
       return {
