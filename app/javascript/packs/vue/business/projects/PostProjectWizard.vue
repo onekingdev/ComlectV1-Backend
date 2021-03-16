@@ -114,6 +114,7 @@ const initialProject = (localProject) => ({
   hourly_rate: null,
   fixed_payment_schedule: null,
   hourly_payment_schedule: null,
+  status: null,
 })
 
 export default {
