@@ -34,14 +34,15 @@
                 .card
                   .card-header.d-flex.justify-content-between
                     h3.m-y-0 Collaborators
-                    a.btn View All
+                    a.btn.btn-default View All
                   .card-body
-                    table.rating_table
+                    table
                       tbody
-                        tr
+                        tr(v-for="collaborator in collaborators(project.visible_project)" :key="collaborator.id")
                           td
-                            //img.m-r-1.userpic_small(v-bind:src="project['business']['logo']")
-                          td
+                            UserAvatar(:user="collaborator")
+                            b {{ collaborator.first_name }} {{collaborator.last_name }},
+                            | Specialist
                           td
           .container.m-t-1
             .row.p-x-1
@@ -55,7 +56,22 @@
       b-tab(title="Documents")
         .card-body.white-card-body
       b-tab(title="Collaborators")
-        .card-body.white-card-body
+        .white-card-body.p-y-1
+          .container
+            .row.p-x-1
+              .col-sm-12
+                .card
+                  .card-header.d-flex.justify-content-between
+                    h3.m-y-0 Collaborators
+                  .card-body
+                    table
+                      tbody
+                        tr(v-for="collaborator in collaborators(project.visible_project)" :key="collaborator.id")
+                          td
+                            UserAvatar(:user="collaborator")
+                            b {{ collaborator.first_name }} {{collaborator.last_name }},
+                            | Specialist
+                          td
       b-tab(title="Activity")
         .card-body.white-card-body
 </template>
@@ -91,6 +107,9 @@ export default {
     },
     completeErrors(errors) {
       alert('Complete error')
+    },
+    collaborators(project) {
+      return [project.specialist]
     },
   },
   computed: {
