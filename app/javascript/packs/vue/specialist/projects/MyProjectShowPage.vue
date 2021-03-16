@@ -18,6 +18,8 @@
                   dd.col-sm-9 {{ project.ends_on | asDate }}
                   dt.col-sm-3 Description
                   dd.col-sm-9 {{ project.description }}
+                  dt.col-sm-3 Role Details
+                  dd.col-sm-9 {{ project.role_details }}
           .col-sm
             .card
               .card-header Collaborators
