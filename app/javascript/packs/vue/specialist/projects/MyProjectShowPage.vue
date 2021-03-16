@@ -4,7 +4,7 @@
     h1 {{ project.title }}
     a.btn.btn-outline-dark.float-right(v-if="showTimesheetBtn(project)" :href="timesheetUrl") My Timesheet
     h3 {{ project.business.business_name }}
-    b-tabs
+    b-tabs(v-if="isApproved(project)")
       b-tab(title="Overview" active)
         .row
           .col-sm
@@ -37,15 +37,59 @@
       b-tab(title="Documents")
       b-tab(title="Collaborators")
       b-tab(title="Activity")
+    b-tabs(v-else)
+      b-tab(title="Overview")
+        PropertiesTable(title="Post Details" :properties="overviewProps(project)")
+      b-tab(title="Proposal")
+        PropertiesTable(title="Proposal" :properties="[]")
 </template>
 
 <script>
+import {
+  FIXED_PAYMENT_SCHEDULE_OPTIONS,
+  HOURLY_PAYMENT_SCHEDULE_OPTIONS
+} from '@/common/ProjectInputOptions'
+
+const overviewProps = project => {
+  const readablePaymentSchedule = {
+    ...FIXED_PAYMENT_SCHEDULE_OPTIONS,
+    ...HOURLY_PAYMENT_SCHEDULE_OPTIONS
+  }[project.payment_schedule]
+  return [{ name: 'Owner', value: project.business && project.business.business_name },
+    { name: 'Title', value: project.title },
+    { name: 'Start Date', value: project.starts_on, filter: 'asDate' },
+    { name: 'Due Date', value: project.ends_on, filter: 'asDate' },
+    { name: 'Description', value: project.description },
+    { name: 'Role Details', value: project.role_details },
+    { name: 'Industry', value: project.industries, filter: 'names' },
+    { name: 'Jurisdiction', value: project.jurisdictions, filter: 'names' },
+    { name: 'Minimum Experience', value: project.minimum_experience },
+    { name: 'Former Regulator?', value: project.only_regulators, filter: 'yesNo' },
+    { name: 'Skills', value: project.skills, filter: 'names' },
+    {
+      name: project.pricing_type === 'fixed' ? 'Estimated Budget' : 'Hourly Rate',
+      value: project.pricing_type === 'fixed' ? project.est_budget : project.hourly_rate,
+      filter: 'usdWhole'
+    },
+    { name: 'Payment Schedule', value: readablePaymentSchedule }]
+}
+
 export default {
   props: {
     id: {
       type: Number,
       required: true
+    },
+    specialistId: {
+      type: Number,
+      required: true
     }
+  },
+  methods: {
+    isApproved(project) {
+      return this.specialistId === project.specialist_id
+    },
+    overviewProps
   },
   computed: {
     projectUrl() {
