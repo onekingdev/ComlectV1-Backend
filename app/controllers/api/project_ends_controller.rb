@@ -2,7 +2,7 @@
 
 # frozen_string_literal: true
 
-class Api::ProjectExtensionsController < ApiController
+class Api::ProjectEndsController < ApiController
   before_action :require_someone!
   before_action :find_project
 
