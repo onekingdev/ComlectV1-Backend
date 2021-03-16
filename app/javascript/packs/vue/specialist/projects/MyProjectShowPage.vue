@@ -41,7 +41,8 @@
       b-tab(title="Overview")
         PropertiesTable(title="Post Details" :properties="overviewProps(project)")
       b-tab(title="Proposal")
-        PropertiesTable(title="Proposal" :properties="[]")
+        Get(:application="applicationUrl(project.id, applicationId)"): template(v-slot="{application}")
+          PropertiesTable(title="Proposal" :properties="proposalProps(application)")
 </template>
 
 <script>
@@ -50,11 +51,12 @@ import {
   HOURLY_PAYMENT_SCHEDULE_OPTIONS
 } from '@/common/ProjectInputOptions'
 
+const readablePaymentSchedule = value => ({
+  ...FIXED_PAYMENT_SCHEDULE_OPTIONS,
+  ...HOURLY_PAYMENT_SCHEDULE_OPTIONS
+}[value])
+
 const overviewProps = project => {
-  const readablePaymentSchedule = {
-    ...FIXED_PAYMENT_SCHEDULE_OPTIONS,
-    ...HOURLY_PAYMENT_SCHEDULE_OPTIONS
-  }[project.payment_schedule]
   return [{ name: 'Owner', value: project.business && project.business.business_name },
     { name: 'Title', value: project.title },
     { name: 'Start Date', value: project.starts_on, filter: 'asDate' },
@@ -71,8 +73,22 @@ const overviewProps = project => {
       value: project.pricing_type === 'fixed' ? project.est_budget : project.hourly_rate,
       filter: 'usdWhole'
     },
-    { name: 'Payment Schedule', value: readablePaymentSchedule }]
+    { name: 'Payment Schedule', value: readablePaymentSchedule(project.payment_schedule) }]
 }
+
+const proposalProps = proposal => [
+  { name: 'Start Date', value: proposal.starts_on, filter: 'asDate' },
+  { name: 'Due Date', value: proposal.ends_on, filter: 'asDate' },
+  {
+    name: proposal.pricing_type === 'fixed' ? 'Bid Price' : 'Hourly Rate',
+    value: proposal.pricing_type === 'fixed' ? proposal.fixed_budget : proposal.hourly_rate,
+    filter: 'usdWhole'
+  },
+  { name: 'Payment Schedule', value: readablePaymentSchedule(proposal.payment_schedule) },
+  { name: 'Role Details', value: proposal.role_details },
+  { name: 'Key Deliverables', value: proposal.key_deliverables },
+  { name: 'Attachments', value: '' },
+]
 
 export default {
   props: {
@@ -83,13 +99,21 @@ export default {
     specialistId: {
       type: Number,
       required: true
+    },
+    applicationId: {
+      type: Number,
+      required: true
     }
   },
   methods: {
     isApproved(project) {
       return this.specialistId === project.specialist_id
     },
-    overviewProps
+    overviewProps,
+    proposalProps,
+    applicationUrl(projectId, applicationId) {
+      return '/api/specialist/projects/' + projectId + '/applications/' + applicationId
+    }
   },
   computed: {
     projectUrl() {
