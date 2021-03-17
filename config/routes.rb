@@ -296,6 +296,7 @@ Rails.application.routes.draw do
         resources :review_categories, path: 'review_categories', only: %i[index create update destroy]
       end
       resources :ratings, only: %i[index]
+      post '/upgrade/subscribe' => 'upgrade#subscribe'
     end
     namespace :specialist do
       get '/projects/my' => 'projects#my'
