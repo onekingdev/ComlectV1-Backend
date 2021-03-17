@@ -9,7 +9,6 @@
                                 h2: b Policies and Procedures
                             div
                                 a.btn.btn-default.mr-3(href='#') Export
-                                <!--PoliciesModal(@saved="refetch")-->
                                 PoliciesModal
                                     button.btn.btn-dark.float-end New policy
                     .row
@@ -74,16 +73,4 @@ export default {
 
 <style>
 @import "./styles.css";
-</style>
-
-<style scoped>
-.icon-searh {
-  position: absolute;
-  top: 50%;
-  left: 0.5rem;
-  transform: translateY(-50%);
-}
-.form-control {
-  padding-left: 2rem;
-}
 </style>

@@ -1,47 +1,26 @@
 <template lang="pug">
     div
-        //- DraggableTree(:data="data" draggable crossTree)
-        //-     div(slot-scope="{data, store, vm}")
-        //-         //- data is node
-        //-         //- store is the tree
-        //-         //- vm is node Vue instance, you can get node level by vm.level
-        //-         template(v-if="!data.isDragPlaceHolder")
-        //-             b(v-if="data.children && data.children.length" @click="store.toggleOpen(data)") {{data.open ? '-' : '+'}}&nbsp;
-        //-             span {{data.text}}
-        .table
-            .table__row
-                .table__cell.table__cell_title Name
-                .table__cell.table__cell_title Status
-                .table__cell.table__cell_title Last Modified
-                .table__cell.table__cell_title Date Created
-                .table__cell.table__cell_title Risk Level
-                .table__cell
-        DraggableTree.table(:data="data" draggable crossTree)
-            .table(slot-scope="{data, store, vm}")
+      .table
+        .table__row(v-for="(policy, i) in policies" :key="i")
+          .table__cell.table__cell_name {{ policy.title }}
+            ul.dropdow-items.d-block(v-if="policy.sections")
+              .li(v-for="(policySection, i) in policy.sections" :key="i") {{ policySection.title }}
+                ul.dropdow-items.d-block(v-if="policySection.children")
+                  .li(v-for="(policySectionChild, i) in policySection.children" :key="i") {{ policySectionChild.title }}
+        DraggableTree(:data="data" draggable crossTree)
+            div(slot-scope="{data, store, vm}")
                 //- data is node
                 //- store is the tree
                 //- vm is node Vue instance, you can get node level by vm.level
                 template(v-if="!data.isDragPlaceHolder")
-                    .table__row
-                        .table__cell.table__cell_name
-                            b(v-if="data.children && data.children.length" @click="store.toggleOpen(data)") {{data.open ? '-' : '+'}}&nbsp;
-                            span {{data.text}}
-                        .table__cell
-                            .status.status__published Published
-                        .table__cell 1/20/2021
-                        .table__cell 1/20/2021
-                        .table__cell N/A
-                        .table__cell
-                            .actions
-                                button.btn
-                                    b-icon(icon="three-dots")
-
+                    b(v-if="data.children && data.children.length" @click="store.toggleOpen(data)") {{data.open ? '-' : '+'}}&nbsp;
+                    span {{data.text}}
 </template>
 <script>
 import { DraggableTree } from "vue-draggable-nested-tree";
 
 export default {
-  props: ["policy"],
+  props: ["policies"],
   components: {
     DraggableTree,
   },
@@ -86,6 +65,19 @@ export default {
       ],
     };
   },
+  computed: {
+    policiesForDragDrop() {
+      const newArr =  this.policies.map((el) => {
+        console.log(el);
+        const temp = el.sections
+        el.sections = el.children
+        el.children = temp
+        return el
+      })
+      console.log(newArr);
+      return newArr;
+    }
+  },
   methods: {
     log(event) {
       console.log(event);
@@ -94,21 +86,21 @@ export default {
 };
 </script>
 
-<style>
-@import "./styles.css";
-</style>
+<!--<style>-->
+<!--@import "./styles.css";-->
+<!--</style>-->
 
-<style scoped>
-.table__cell {
-  width: 20%;
-}
-.icon-searh {
-  position: absolute;
-  top: 50%;
-  left: 0.5rem;
-  transform: translateY(-50%);
-}
-.form-control {
-  padding-left: 2rem;
-}
-</style>
+<!--<style scoped>-->
+<!--.table__cell {-->
+  <!--width: 20%;-->
+<!--}-->
+<!--.icon-searh {-->
+  <!--position: absolute;-->
+  <!--top: 50%;-->
+  <!--left: 0.5rem;-->
+  <!--transform: translateY(-50%);-->
+<!--}-->
+<!--.form-control {-->
+  <!--padding-left: 2rem;-->
+<!--}-->
+<!--</style>-->
