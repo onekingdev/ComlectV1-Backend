@@ -17,12 +17,17 @@ export default {
     createPolicy(state, payload) {
       state.policies.push(payload);
     },
+    updatePolicy(state, payload) {
+      state.policies[payload.id].sections.push(payload);
+    },
     createSections(state, payload) {
       state.sections.push(payload);
     },
-    updatePolicy(state, payload) {
-      state.policies[payload.id].sections.push(payload);
-    }
+    createSectionsChilds(state, payload) {
+      state.sections.forEach((section) => {
+        if (section[payload.id] === payload.parentSectionID) section[payload.parentSectionID].children.push(payload)
+      })
+    },
   },
   actions: {
     createPolicy({ commit, getters }, payload) {
@@ -74,6 +79,35 @@ export default {
           //   //   id: policy.key,
           // });
           commit('updatePolicy', { ...newSection })
+        }, 3000);
+      } catch (error) {
+        commit("setError", error.message);
+        commit("setLoading", false);
+        throw error;
+      }
+    },
+    createSectionChild({ commit, getters }, payload) {
+      console.log('payload', payload);
+      commit("clearError");
+      commit("setLoading", true);
+
+      try {
+        const newSection = {
+          id: payload.id,
+          title: payload.title,
+          description: payload.description,
+          parentSectionID: payload.parentSectionID,
+          //   getters.user.id,
+        };
+        console.log('newSection', newSection);
+
+        setTimeout(() => {
+          commit("setLoading", false);
+          // commit("createPolicy", {
+          //   ...newSection,
+          //   //   id: policy.key,
+          // });
+          commit('createSectionsChilds', { ...newSection })
         }, 3000);
       } catch (error) {
         commit("setError", error.message);

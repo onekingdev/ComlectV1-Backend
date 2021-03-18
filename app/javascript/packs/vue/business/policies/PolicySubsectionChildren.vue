@@ -1,10 +1,10 @@
 <template lang="pug">
     div
         .policy-details-subsection
-            .policy-details__name.mb-0 subSectionChild Name
+            .policy-details__name.mb-0 Sub Section Child Name
             .d-flex.align-items-center
                 b-icon.mr-2(icon='chevron-compact-right')
-                input.policy-details__input.mb-0(:value="subSectionChildId")
+                input.policy-details__input.mb-0(:value="subSectionChildName")
                 .actions
                     button.policy-details__btn.mr-3.btn.btn-default
                         b-icon.mr-2(icon='plus-circle-fill')
@@ -32,6 +32,10 @@
                 type: Object,
                 required: false,
             },
+            subSectionID: {
+                type: Number,
+                required: true,
+            }
         },
         components: {
             VueEditor,
@@ -43,11 +47,13 @@
                 toggleVueEditor: false,
                 isActive: false,
                 subSections: [],
+                count: 0,
+                parentSection: 0,
             }
         },
         computed: {
-            subSectionChildId () {
-                return `Sub Section Child Name New Policy ${this.subSectionChild.id}`
+            subSectionChildName () {
+                return `Sub Section Child Name New Policy ${this.subSectionID}`
             }
         },
         methods: {
@@ -71,26 +77,27 @@
                 console.log(event)
             },
             saveSubSectionChild () {
-                this.toggleVueEditor = !this.toggleVueEditor;
-
                 const datasubSectionChildToSend = {
-                    title: this.subSectionChildId,
-                    description: this.content
+                    id: this.count++,
+                    parentSectionID: this.subSectionID,
+                    title: this.subSectionChildName,
+                    description: this.content,
+                    children: [],
                 };
                 console.log(datasubSectionChildToSend);
 
                 this.$emit('clickedSaveIt', datasubSectionChildToSend)
 
                 // Save data to current Policy
-                // this.$store
-                //     .dispatch("createSection", dataToSend)
-                //     .then(() => {
-                //         // this.$router.push("/list");
-                //         console.log("success");
-                //     })
-                //     .catch((err) => {
-                //         console.log(err);
-                //     });
+                this.$store
+                    .dispatch("createSectionChild", datasubSectionChildToSend)
+                    .then(() => {
+                        // this.$router.push("/list");
+                        console.log("Sub Section Children successfully saved!");
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
             }
         },
     };

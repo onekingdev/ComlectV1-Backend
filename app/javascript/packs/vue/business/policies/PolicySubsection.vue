@@ -4,7 +4,7 @@
             .policy-details__name.mb-0 Subsection Name
             .d-flex.align-items-center
                 b-icon.mr-2(icon='chevron-compact-right')
-                input.policy-details__input.mb-0(:value="subSectionId")
+                input.policy-details__input.mb-0(:value="subSectionName")
                 .actions
                     button.policy-details__btn.mr-3.btn.btn-default(@click="addSectionChild")
                         b-icon.mr-2(icon='plus-circle-fill')
@@ -18,7 +18,7 @@
             .policy-details__name.mb-0 Description
             .policy-details__text-editor(@click="toggleVueEditorHandler", v-if="!toggleVueEditor") {{ content }}
             vue-editor.policy-details__text-editor(v-if="toggleVueEditor", v-model="content")
-            component(v-for="subSectionChild in subSectionsChildrens", v-bind:is="subSectionChild.component", :key="subSectionChild.id", :subSectionChild="subSectionChild", @clicked="onClickButton", @clickedSaveIt="onClickSaveSubsection")
+            component(v-for="subSectionChild in subSectionsChildrens", v-bind:is="subSectionChild.component", :key="subSectionChild.id", :subSectionChild="subSectionChild", :subSectionID="subSectionChild.id" @clicked="onClickButton", @clickedSaveIt="onClickSaveSubsection")
         button.policy-details__btn.mr-3.btn.btn-default(@click="addSection") Add Section
 </template>
 
@@ -32,6 +32,10 @@ export default {
             type: Object,
             required: false,
         },
+        policyId: {
+            type: Number,
+            required: true,
+        }
     },
     components: {
         VueEditor,
@@ -43,11 +47,11 @@ export default {
             toggleVueEditor: false,
             isActive: false,
             subSectionsChildrens: [],
-            count: 0
+            count: 0,
         }
     },
     computed: {
-        subSectionId () {
+        subSectionName () {
             return `Subsection Name New Policy ${this.subSection.id}`
         }
     },
@@ -66,7 +70,8 @@ export default {
             if(event) event.target.style.display = 'none';
             this.subSectionsChildrens.push({
                 component: PolicySubsectionChildren,
-                id: this.count++
+                id: this.count++,
+                subSectionId: this.count,
             })
         },
         onClickButton (event) {
@@ -78,11 +83,12 @@ export default {
             console.log(event)
         },
         saveSubsection () {
-
             const dataSubsectionToSend = {
                 id: this.count,
-                title: this.subSectionId,
-                description: this.content
+                idPolicy: this.policyId,
+                title: this.subSectionName,
+                description: this.content,
+                children: [],
             };
             console.log(dataSubsectionToSend);
 

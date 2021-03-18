@@ -50,7 +50,7 @@
                                                         button.policy-details__btn.mr-3.btn.btn-default(@click="addSection")
                                                             b-icon.mr-2(icon='plus-circle-fill')
                                                             | Add Section
-                                                    component(v-for="subSection in subSections", v-bind:is="subSection.component", :key="subSection.id", :subSection="subSection", @clicked="onClickButton", @clickedSaveIt="onClickSaveSubsection")
+                                                    component(v-for="subSection in subSections", v-bind:is="subSection.component", :key="subSection.id", :subSection="subSection", :policyId="policyId" @clicked="onClickButton", @clickedSaveIt="onClickSaveSubsection")
                                             HistoryPolicy
                                         b-tab(title="Risks")
                                             .policy-details
@@ -95,6 +95,8 @@ export default {
             subSections: [],
             count: 0,
             subSection: {},
+            policyId: 0,
+            ownerId: 13,
         };
     },
     computed: {
@@ -139,8 +141,8 @@ export default {
         createPolicy() {
             if (this.title && this.content) {
                 const dataToSend = {
-                    id: 0,
-                    ownerId: 13,
+                    id: this.policyId,
+                    ownerId: this.ownerId,
                     title: this.title,
                     description: this.content,
                     sections: [
@@ -168,6 +170,7 @@ export default {
                         },
                     ],
                 };
+                console.log(dataToSend);
 
                 // Save data to store
                 this.$store
