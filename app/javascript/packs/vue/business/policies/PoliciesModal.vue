@@ -40,7 +40,11 @@
             return {
                 modalId: `modal_${rnd()}`,
                 policy: {
-                    title: '',
+                    id: +rnd(),
+                    ownerId: 1,
+                    title: 'Your policy name - rattattatttaaa' + rnd(),
+                    description: 'text DNA',
+                    sections: [],
                 },
                 errors: []
             }
@@ -49,9 +53,8 @@
             makeToast(title, str) {
                 this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
             },
-            submit(e) {
-                e.preventDefault();
-                console.log('test');
+            submit(asDraft) {
+                asDraft.preventDefault();
 
                 this.errors = []
 
@@ -65,27 +68,27 @@
 
                 window.location.href = `${window.location.href}/create`;
 
-                // const toId = this.projectId ? `/${this.projectId}` : '', draftParam = asDraft ? '?draft=1' : ''
-                // fetch('/api/business/local_projects' + toId + draftParam, {
-                //     method: this.projectId ? 'PUT' : 'POST',
-                //     headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
-                //     body: JSON.stringify(this.project)
-                // }).then(response => {
-                //     if (response.status === 422) {
-                //         response.json().then(errors => {
-                //             this.errors = errors
-                //             Object.keys(this.errors)
-                //                 .map(prop => this.errors[prop].map(err => this.makeToast(`Error`, `${prop}: ${err}`)))
-                //         })
-                //     } else if (response.status === 201 || response.status === 200) {
-                //         this.$emit('saved')
-                //         this.makeToast('Success', 'The project has been saved')
-                //         this.$bvModal.hide(this.modalId)
-                //         this.resetProject()
-                //     } else {
-                //         this.makeToast('Error', 'Couldn\'t submit form')
-                //     }
-                // })
+                const toId = this.policy.id ? `/${this.policy.id}` : '', draftParam = asDraft ? '?draft=1' : ''
+                fetch('/api/business/compliance_policies' + toId + draftParam, {
+                    method: this.policy.id ? 'PUT' : 'POST',
+                    headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+                    body: JSON.stringify(this.policy)
+                }).then(response => {
+                    if (response.status === 422) {
+                        response.json().then(errors => {
+                            this.errors = errors
+                            Object.keys(this.errors)
+                                .map(prop => this.errors[prop].map(err => this.makeToast(`Error`, `${prop}: ${err}`)))
+                        })
+                    } else if (response.status === 201 || response.status === 200) {
+                        this.$emit('saved')
+                        this.makeToast('Success', 'The project has been saved')
+                        this.$bvModal.hide(this.modalId)
+                        this.resetProject()
+                    } else {
+                        this.makeToast('Error', 'Couldn\'t submit form')
+                    }
+                })
             },
             resetProject() {
                 if (this.projectId) {

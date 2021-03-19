@@ -195,9 +195,9 @@ export default {
         },
     },
     mounted() {
-        this.createPolicy();
+        // this.createPolicy();
         this.$store.dispatch('getPolicies', {})
-            .then((response) => { console.log('response', response) })
+            .then((response) => { console.log('response getPolicies', response) })
             .catch((err) => { console.log(err) });
     }
 };

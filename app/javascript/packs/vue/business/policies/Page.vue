@@ -9,7 +9,7 @@
                                 h2: b Policies and Procedures
                             div
                                 a.btn.btn-default.mr-3(href='#') Export
-                                PoliciesModal
+                                PoliciesModal(@saved="refetch")
                                     button.btn.btn-dark.float-end New policy
                     .row
                         .col-12
@@ -17,7 +17,26 @@
                                 b-tab(title="Compilance Manual" active)
                                     .card-body.white-card-body
                                         .container
-                                            PolicyTable
+                                            //PolicyTable
+                                            Get(policies="/api/business/compliance_policies/" :etag="etag" :callback="getContacts"): template(v-slot="{policies}"): table.table
+                                                thead
+                                                    tr
+                                                        th Name
+                                                        th Status
+                                                        th Last Modified
+                                                        th Date Created
+                                                        th Risk Level
+                                                        th
+                                                tbody
+                                                    tr(v-for="policy in policies" :key="policy.id")
+                                                        td {{ policy.name }}
+                                                        td: .badge.badge-success {{ policy.status }}
+                                                        td
+                                                        td
+                                                        td &hellip;
+                                                        td
+                                                    tr(v-if="!policies.length")
+                                                        td.text-center(colspan=6) No policies
                                             // DragDropComponent(policy="policy")
                                 b-tab(title="Archive")
                                     .card-body.white-card-body
@@ -39,8 +58,10 @@
 import PolicyTable from "./PolicyTable";
 import PoliciesModal from "./PoliciesModal";
 import DragDropComponent from "./DragDropComponent";
+import EtaggerMixin from '@/mixins/EtaggerMixin'
 
 export default {
+    mixins: [EtaggerMixin],
     components: {
         PolicyTable,
         PoliciesModal,
@@ -60,6 +81,24 @@ export default {
             this.policiesList = this.policy.compliance_policy.find((pol) => {
                 pol.name === this.searchInput;
             });
+        },
+        getContacts(projects) {
+            console.log(projects)
+            return projects.reduce((result, project) => {
+                for (const p in project.projects) {
+                    const spec = project.projects[p].specialist
+                    if (spec && !result.find(s => s.id === spec.id)) {
+                        result.push({
+                            id: spec.id,
+                            name: spec.first_name + ' ' + spec.last_name,
+                            location: [spec.country, spec.state, spec.city].filter(a => a).join(', '),
+                            status: spec.visibility,
+                            rating: 5
+                        })
+                    }
+                }
+                return result
+            }, [])
         },
     },
     computed: {

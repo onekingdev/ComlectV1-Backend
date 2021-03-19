@@ -39,13 +39,36 @@ export default {
             //   getters.user.id,
         );
 
-        setTimeout(() => {
-          commit("setLoading", false);
-          commit("createPolicy", {
-            ...newPolicy,
-            //   id: policy.key,
-          });
-        }, 3000);
+        commit("setLoading", false);
+        commit("createPolicy", {
+          ...newPolicy,
+          //   id: policy.key,
+        });
+
+        const data = await fetch('/api/business/compliance_policies', {
+          method: 'POST',
+          headers: {
+            'Authorization': this.token,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            compliance_policy: newPolicy
+          })
+        }).then(response => {
+          console.log(response)
+          if (!response.ok)
+            throw new Error(`Could't create policy (${response.status})`);
+          return response.json()
+        }).then(response => {
+          console.log(response)
+          return response
+        }).catch (error => {
+          console.error(error)
+          throw error;
+        })
+
+        console.log('data', data)
+
       } catch (error) {
         commit("setError", error.message);
         commit("setLoading", false);
