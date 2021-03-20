@@ -10,13 +10,13 @@
               | Job Type
               ion-icon(name='chevron-down-outline')
             b-collapse#collapse_pricing_type(visible)
-              b-form-checkbox(v-for="(option, i) in pricingTypeOptions" v-model="filter.pricing_type[i]") {{option.label}}
+              b-form-checkbox(v-for="(option, i) in pricingTypeOptions" v-model="filter.pricing_type[i]" :key="'p'+i") {{option.label}}
             hr
             h3.d-flex.justify-content-between(role="button" v-b-toggle.collapse_experience)
               | Experience Level
               ion-icon(name='chevron-down-outline')
             b-collapse#collapse_experience(visible)
-              b-form-checkbox(v-for="(option, i) in experienceOptions" v-model="filter.experience[i]") {{option.label}}
+              b-form-checkbox(v-for="(option, i) in experienceOptions" v-model="filter.experience[i]" :key="'e'+i") {{option.label}}
             hr
             //h3.d-flex.justify-content-between(@click="refetch" role="button" v-b-toggle.collapse_budget)
               | Budget
@@ -28,7 +28,7 @@
               | Estimated Duration
               ion-icon(name='chevron-down-outline')
             b-collapse#collapse_duration(visible)
-              b-form-checkbox(v-for="(option, i) in durationOptions" v-model="filter.duration[i]") {{option.label}}
+              b-form-checkbox(v-for="(option, i) in durationOptions" v-model="filter.duration[i]" :key="'d'+i") {{option.label}}
 
       .col-md-10.m-t-2
         .card
