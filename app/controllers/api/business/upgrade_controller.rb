@@ -51,7 +51,7 @@ class Api::Business::UpgradeController < ApiController
   end
 
   def payment_source
-    current_business.payment_profile.default_payment_source
+    @payment_source ||= current_business.payment_profile.payment_sources.find(params[:payment_source_id])
   end
 
   def stripe_customer

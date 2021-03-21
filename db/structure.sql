@@ -4562,7 +4562,9 @@ CREATE TABLE public.subscriptions (
     billing_period_ends integer,
     payment_source_id integer,
     auto_renew boolean DEFAULT false,
-    status integer DEFAULT 0
+    status integer DEFAULT 0,
+    specialist_id bigint,
+    specialist_payment_source_id bigint
 );
 
 
@@ -6890,6 +6892,19 @@ CREATE INDEX index_time_logs_on_timesheet_id ON public.time_logs USING btree (ti
 
 
 --
+-- Name: index_subscriptions_on_specialist_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_subscriptions_on_specialist_id ON public.subscriptions USING btree (specialist_id);
+
+
+--
+-- Name: index_subscriptions_on_specialist_payment_source_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_subscriptions_on_specialist_payment_source_id ON public.subscriptions USING btree (specialist_payment_source_id);
+
+--
 -- Name: index_timesheets_on_first_submitted_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -7148,9 +7163,16 @@ ALTER TABLE ONLY public.local_projects_specialists
 -- Name: tos_agreements fk_rails_6e25fd106a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
+
 ALTER TABLE ONLY public.tos_agreements
     ADD CONSTRAINT fk_rails_6e25fd106a FOREIGN KEY (user_id) REFERENCES public.users(id);
+--
+-- Name: subscriptions fk_rails_61927ae2df; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
 
+
+ALTER TABLE ONLY public.subscriptions
+    ADD CONSTRAINT fk_rails_61927ae2df FOREIGN KEY (specialist_payment_source_id) REFERENCES public.specialist_payment_sources(id);
 
 --
 -- Name: business_specialists_roles fk_rails_77436698dd; Type: FK CONSTRAINT; Schema: public; Owner: -
@@ -7183,6 +7205,12 @@ ALTER TABLE ONLY public.project_issues
 ALTER TABLE ONLY public.business_specialists_roles
     ADD CONSTRAINT fk_rails_a4e1c0f49f FOREIGN KEY (business_id) REFERENCES public.businesses(id);
 
+--
+-- Name: subscriptions fk_rails_dafea693de; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subscriptions
+    ADD CONSTRAINT fk_rails_dafea693de FOREIGN KEY (specialist_id) REFERENCES public.specialists(id);
 
 --
 -- PostgreSQL database dump complete
@@ -7544,6 +7572,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210311184928'),
 ('20210312165913'),
 ('20210315233431'),
-('20210316121459');
+('20210316121459'),
+('20210317135216'),
+('20210321120504');
 
 

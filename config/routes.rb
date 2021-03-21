@@ -297,6 +297,8 @@ Rails.application.routes.draw do
       end
       resources :ratings, only: %i[index]
       post '/upgrade/subscribe' => 'upgrade#subscribe'
+      resources :payment_settings, only: [:create, :update, :destroy]
+      put '/payment_settings/make_primary/:id' => 'payment_settings#make_primary'
     end
     namespace :specialist do
       get '/projects/my' => 'projects#my'
@@ -306,6 +308,13 @@ Rails.application.routes.draw do
       resources :projects, only: %i[index show] do
         resources :job_applications, path: 'applications', only: %i[show update create destroy]
       end
+      post '/upgrade/subscribe' => 'upgrade#subscribe'
+      delete '/upgrade/cancel' => 'upgrade#cancel'
+      post '/payment_settings/create_card' => 'payment_settings#create_card'
+      post '/payment_settings/create_bank' => 'payment_settings#create_bank'
+      delete '/payment_settings/delete_source/:id' => 'payment_settings#delete_source'
+      put '/payment_settings/make_primary/:id' => 'payment_settings#make_primary'
+      put '/payment_settings/validate/:id' => 'payment_settings#validate'
     end
   end
 end
