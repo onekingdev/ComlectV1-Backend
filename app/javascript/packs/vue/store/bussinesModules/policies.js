@@ -31,11 +31,11 @@ export default {
 
       try {
         const newPolicy = new Policy(
-            payload.id,
-            payload.ownerId,
-            payload.title,
-            payload.description,
-            payload.sections,
+          payload.id,
+          payload.ownerId,
+          payload.title,
+          payload.description,
+          payload.sections,
         );
 
         commit("setLoading", false);
@@ -110,16 +110,16 @@ export default {
     // },
     async getPolicies ({commit, getters}, payload) {
       console.log(payload)
-        const endpointUrl = '/api/business/compliance_policies/'
+      const endpointUrl = '/api/business/compliance_policies/'
 
-        const data = await fetch(`${endpointUrl}`, { headers: {'Accept': 'application/json'}})
-            .then(response => {
-                console.log(response)
-                response.json()
-            })
-            .then(result => console.log(result))
-            .catch(error => console.log(error))
-        return data;
+      const data = await fetch(`${endpointUrl}`, { headers: {'Accept': 'application/json'}})
+        .then(response => {
+          console.log(response)
+          response.json()
+        })
+        .then(result => console.log(result))
+        .catch(error => console.log(error))
+      return data;
     },
   },
   getters: {
