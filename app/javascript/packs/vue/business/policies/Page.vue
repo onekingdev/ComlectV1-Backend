@@ -49,8 +49,8 @@
             .col-12
               div {{ policiesListComputed }}
               .test-block block
-                .test-block__module element
-                .test-block__module.test-block__module_modificator modificator
+                .test-block__element element
+                .test-block__element.test-block__element_modificator modificator
 
 </template>
 
@@ -124,6 +124,10 @@
 
 <style>
   @import "./styles.css";
+</style>
+
+<style>
+  @import "./styles.scss";
 </style>
 
 <style lang="scss">

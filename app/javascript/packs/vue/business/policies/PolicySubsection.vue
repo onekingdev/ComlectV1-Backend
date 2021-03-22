@@ -3,7 +3,8 @@
     .policy-details-subsection
       .policy-details__name.mb-0 Subsection Name
       .d-flex.align-items-center
-        b-icon.mr-2(icon='chevron-compact-right')
+        b-icon.mr-2(v-if="section.children && section.children.length > 0" icon="chevron-compact-down")
+        b-icon.mr-2(v-else icon="chevron-compact-right")
         input.policy-details__input.mb-0(:value="section.title")
         .actions
           button.policy-details__btn.mr-3.btn.btn-default(@click="addSubSection")
@@ -12,11 +13,11 @@
           button.px-0.actions__btn(@click="isActive = !isActive", :class="{ active: isActive }")
             b-icon(icon="three-dots")
             ul.actions-dropdown(:class="{ active: isActive }")
-              li.actions-dropdown__item.save(@click="saveSubsection") Save it
+              <!--li.actions-dropdown__item.save(@click="saveSubsection") Save it-->
               li.actions-dropdown__item.move-up(@click="moveUpSubsection") Move up
               li.actions-dropdown__item.delete(@click="deleteSubSection") Delete
       .policy-details__name.mb-0 Description
-      .policy-details__text-editor(@click="toggleVueEditorHandler", v-if="!toggleVueEditor") {{ section.description }}
+      .policy-details__text-editor(@click="toggleVueEditorHandler", v-if="!toggleVueEditor") {{ content }}
       vue-editor.policy-details__text-editor(v-if="toggleVueEditor", v-model="content", @blur="handleBlur")
       div(v-if="section.children && section.children.length > 0")
         PolicySubsection(
@@ -74,6 +75,10 @@
     },
     methods: {
       deleteSubSection() {
+        if (!this.parentSection) {
+          this.deleteSection()
+          return
+        }
         this.parentSection.children.splice(this.index, 1)
       },
       deleteSection() {
@@ -97,14 +102,15 @@
           })
         }
       },
-      addSubSection() {
+      addSubSection(event) {
+        if(event) event.target.closest('.policy-details__btn').style.display = 'none';
         const id = Math.floor(Math.random() * 100)
 
         this.section.children.push({
           // component: SubsectionPolicy,
           id: this.count++,
           title: `${this.title}-№-${this.count}-${id}`,
-          description: this.content,
+          description: 'N/A',
           children: [],
         })
 
@@ -121,20 +127,20 @@
         this.$emit('clickedmoveUpSection', 'someValue')
       },
 
-      saveSubsection () {
-        // SAVE DATA TO POLICY
-        this.$store
-          .dispatch("createSection", this.section)
-          .then((response) => {
-            // this.$router.push("/list");
-            // console.log("Section is successfull saved!");
-            console.log('response', response)
-          })
-          .catch((error) => {
-            console.log('from PolicySubSection');
-            console.error(error);
-          });
-      }
+      // saveSubsection () {
+      //   // SAVE DATA TO POLICY
+      //   this.$store
+      //     .dispatch("createSection", this.section)
+      //     .then((response) => {
+      //       // this.$router.push("/list");
+      //       // console.log("Section is successfull saved!");
+      //       console.log('response', response)
+      //     })
+      //     .catch((error) => {
+      //       console.log('from PolicySubSection');
+      //       console.error(error);
+      //     });
+      // }
     },
   };
 </script>

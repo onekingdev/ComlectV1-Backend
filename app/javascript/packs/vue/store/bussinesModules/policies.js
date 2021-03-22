@@ -1,6 +1,6 @@
 class Policy {
-  constructor(id = null, ownerId = null, title, description, sections = null) {
-    this.id = id;
+  constructor(policyID = null, ownerId = null, title, description, sections = null) {
+    this.policyID = policyID;
     this.ownerId = ownerId;
     this.title = title;
     this.description = description;
@@ -18,7 +18,9 @@ export default {
       state.policies.push(payload);
     },
     updatePolicy(state, payload) {
-      state.policies[0].sections.push(payload);
+      const index = state.policies.findIndex(record => record.policyID === payload.policyID);
+      state.policies[index] = payload;
+      // state.policies.map(record => (record.policyID === payload.policyID) ? payload : record)
     },
     createSections(state, payload) {
       state.sections.push(payload);
@@ -31,7 +33,7 @@ export default {
 
       try {
         const newPolicy = new Policy(
-          payload.id,
+          payload.policyID,
           payload.ownerId,
           payload.title,
           payload.description,
@@ -43,6 +45,7 @@ export default {
           ...newPolicy,
         });
 
+        /*
         const data = await fetch('/api/business/compliance_policies', {
           method: 'POST',
           headers: {
@@ -65,7 +68,31 @@ export default {
           throw error;
         })
 
-        console.log('data', data)
+        console.log('data', data) */
+
+      } catch (error) {
+        commit("setError", error.message);
+        commit("setLoading", false);
+        throw error;
+      }
+    },
+    async updatePolicy({ commit, getters }, payload) {
+      commit("clearError");
+      commit("setLoading", true);
+
+      try {
+        const updatePolicy = new Policy(
+          payload.policyID,
+          payload.ownerId,
+          payload.title,
+          payload.description,
+          payload.sections,
+        );
+
+        commit("setLoading", false);
+        commit("updatePolicy", {
+          ...updatePolicy,
+        });
 
       } catch (error) {
         commit("setError", error.message);

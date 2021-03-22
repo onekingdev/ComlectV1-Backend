@@ -11,7 +11,7 @@ environment.plugins.prepend(
 environment.loaders.prepend('vue', {
     test: /\.vue$/,
     use: [{
-        loader: 'vue-loader'
+        loader: 'vue-loader',
     }]
 })
 

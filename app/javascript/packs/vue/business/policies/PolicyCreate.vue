@@ -4,7 +4,7 @@
       .row
         .col-12.col-lg-3.px-0(v-if="leftMenu && policiesComputed.length")
           .card-body.white-card-body
-            button.btn.btn-dark.mb-3.mr-3 New Policy
+            button.btn.btn-dark.mb-3.mr-3(@click="createPolicy('new')") New Policy
             DragDropComponent(:policies="policiesComputed")
         .col
           .row
@@ -18,7 +18,7 @@
                     h3.policy__main-title.m-y-0 {{ title }}
                   .d-flex.justify-content-end.align-items-center
                     a.link.btn.mr-3(@click="saveDraft") Save Draft
-                    button.btn.btn.btn-default.mr-3 Download
+                    button.btn.btn.btn-default.mr-3(@click="download") Download
                     button.btn.btn-dark.mr-3(@click="publish") Publish
                     button.btn.btn__close.mr-3
                       b-icon(icon='x')
@@ -99,57 +99,35 @@
         title: "New Policy",
         toggleVueEditor: false,
         component: "",
+        policyID: 0,
         sections: [],
         count: 0,
-        policyID: Math.floor(Math.random() * 100),
         ownerId: 13,
       };
     },
-    computed: {
-      loading() {
-        return this.$store.getters.loading;
-      },
-      policiesComputed() {
-        return this.$store.getters.policies;
-      }
-    },
     methods: {
-      addSection(event) {
-        if(event) event.target.style.display = 'none';
-        const id = Math.floor(Math.random() * 100)
-
-        this.sections.push({
-          id: this.count++,
-          title: `${this.title}-№-${this.count}-${id}`,
-          description: this.content,
-          children: [],
-        })
+      saveDraft () {
+        this.updatePolicy()
       },
-      deleteSection(index) {
-        this.sections.splice(index, 1)
-      },
+      download () {
 
-      saveDraft: function() {
+      },
+      publish () {
         // You have the content to save
-        console.log(this.content);
-        this.createPolicy();
-      },
-      publish: function() {
-        // You have the content to save
-        console.log(this.content);
-        this.createPolicy();
-      },
-      toggleVueEditorHandler() {
-        this.toggleVueEditor = !this.toggleVueEditor;
-      },
-      handleBlur() {
-        this.toggleVueEditorHandler()
+        // console.log(this.content);
+        // this.createPolicy();
       },
 
-      createPolicy() {
+      createPolicy(newPolicy) {
+        this.policyID = Math.floor(Math.random() * 100)
+
+        if (newPolicy) {
+          this.sections = [];
+          document.querySelector('.policy-details__btn').style.display = 'block';
+        }
         if (this.title && this.content) {
           const dataToSend = {
-            id: this.policyID,
+            policyID: this.policyID,
             ownerId: this.ownerId,
             title: this.title,
             description: this.content,
@@ -163,19 +141,77 @@
             .then((response) => {
               // this.$router.push("/list");
               // console.log("Policy successfull saved!");
-              console.log('response', response)
+              // console.log('response', response)
             })
             .catch((err) => {
-              console.log(err)
+              // console.log(err)
             });
         }
       },
+      updatePolicy() {
+        const dataToSend = {
+          policyID: this.policyID,
+          ownerId: this.ownerId,
+          title: this.title,
+          description: this.content,
+          sections: this.sections,
+        };
+        console.log(dataToSend);
+
+        // UPDATE STORE
+        this.$store
+          .dispatch("updatePolicy", dataToSend)
+          .then((response) => {
+            // this.$router.push("/list");
+            // console.log("Policy successfull saved!");
+            // console.log('response', response)
+          })
+          .catch((err) => {
+            console.log(err)
+          });
+      },
+
+      addSection(event) {
+        if(event) event.target.closest('.policy-details__btn').style.display = 'none';
+        const id = Math.floor(Math.random() * 100)
+
+        this.sections.push({
+          id: this.count++,
+          title: `${this.title}-№-${this.count}-${id}`,
+          description: this.content,
+          children: [],
+        })
+      },
+      deleteSection(index) {
+        this.sections.splice(index, 1)
+        if (this.sections.length === 0) document.querySelector('.policy-details__btn').style.display = 'block';
+      },
+      toggleVueEditorHandler() {
+        this.toggleVueEditor = !this.toggleVueEditor;
+      },
+      handleBlur() {
+        this.toggleVueEditorHandler()
+      },
+    },
+    computed: {
+      loading() {
+        return this.$store.getters.loading;
+      },
+      policiesComputed() {
+        return this.$store.getters.policies;
+      }
     },
     mounted() {
-      // this.createPolicy();
+      this.createPolicy();
+      /*
       this.$store.dispatch('getPolicies', {})
-        .then((response) => { console.log('response getPolicies', response) })
-        .catch((err) => { console.log(err) });
-    }
+        .then((response) => {
+          console.log('response getPolicies', response)
+        })
+        .catch((err) => {
+          console.log(err)
+        });
+        */
+    },
   };
 </script>
