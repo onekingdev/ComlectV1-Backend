@@ -44,9 +44,9 @@
                 ul.actions-dropdown(:id="'#action-'+policy.id")
                   li.actions-dropdown__item.edit
                     a.link(:href="'/business/compliance_policies/'+policy.id") Edit
-                    <!--a.link(href="/business/policies/create", policyID="policy.id") Edit-->
-                  li.actions-dropdown__item.move-up Move up
-                  li.actions-dropdown__item.delete Delete
+                  li.actions-dropdown__item.move-up(@click="moveUp(policy.id)") Move up
+                  li.actions-dropdown__item.delete
+                    PoliciesModalDelete(@saved="updateList", :policyId="policy.id") Delete
         .table(v-else)
           .table__row
             .table__cell.text-center
@@ -54,10 +54,14 @@
 </template>
 
 <script>
+  import PoliciesModalDelete from './PoliciesModalDelete'
   import { DateTime } from 'luxon'
 
   export default {
     props: ['policies'],
+    components: {
+      PoliciesModalDelete
+    },
     data() {
       return {
         searchInput: '',
@@ -85,6 +89,23 @@
         document.getElementById(`#section-${value}`).classList.toggle('active');
         document.getElementById(`#sectionIcon-${value}`).classList.toggle('active');
       },
+      moveUp(policyId) {
+        console.log(policyId)
+      },
+      deletePolicy(policyId) {
+        console.log(policyId)
+      },
+      updateList () {
+        this.$store
+          .dispatch("getPolicies")
+          .then((response) => {
+            // console.log(response);
+          })
+          .catch((err) => {
+            console.error(err);
+            this.makeToast('Error', err.message)
+          });
+      }
     },
     computed: {
     }
