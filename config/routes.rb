@@ -75,8 +75,6 @@ Rails.application.routes.draw do
   resources :flags, only: %i[new create]
 
   namespace :business do
-    get '/policies/create' => 'compliance_policies#create'
-    get '/policies' => 'compliance_policies#index', as: :policies
     get '/personalize' => 'personalize#quiz'
     post '/personalize' => 'personalize#quiz'
     get '/personalize_book' => 'personalize#book'
@@ -275,7 +273,7 @@ Rails.application.routes.draw do
         end
         resources :hires, only: %i[create]
       end
-      resources :compliance_policies, only: %i[index show create update]
+      resources :compliance_policies, only: %i[index show create update destroy]
       get '/compliance_policies/:id/publish' => 'compliance_policies#publish'
       get '/compliance_policies/:id/download' => 'compliance_policies#download'
       resources :projects, only: [] do

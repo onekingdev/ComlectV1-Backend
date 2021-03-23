@@ -27,9 +27,9 @@ class Business::CompliancePoliciesController < ApplicationController
     redirect_to business_compliance_policies_path
   end
 
-  def create
-    render html: content_tag('business-policies-create-page', '').html_safe, layout: 'vue_business'
-  end
+  # def create
+  #   render html: content_tag('business-policies-create-page', '').html_safe, layout: 'vue_business'
+  # end
 
   def update
     if (@compliance_policy.business_id == current_business.id) && @compliance_policy.update(compliance_policy_params)
@@ -47,25 +47,7 @@ class Business::CompliancePoliciesController < ApplicationController
   end
 
   def show
-    if current_business == @compliance_policy.business
-      @preview_doc = @compliance_policy.compliance_policy_docs.where(id: params[:docid]) if params[:docid]
-      @preview_doc = if !@preview_doc.nil?
-                       @preview_doc.first
-                     else
-                       @compliance_policy.compliance_policy_docs.first
-                     end
-      respond_to do |format|
-        format.json do
-          preview_out = @preview_doc.pdf ? @preview_doc.pdf_url : false
-          render json: { "preview": preview_out }
-        end
-        format.html do
-          # poof
-        end
-      end
-    else
-      redirect_to '/business'
-    end
+    render html: content_tag('business-policies-create-page', '', ':policy-id': params[:id]).html_safe, layout: 'vue_business'
   end
 
   def sort

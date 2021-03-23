@@ -81,6 +81,10 @@
 
   export default {
     props: {
+      policyId: {
+        type: Number,
+        required: true
+      },
       policy: {
         type: Object,
         required: false,
@@ -99,7 +103,7 @@
         title: "New Policy",
         toggleVueEditor: false,
         component: "",
-        policyID: 0,
+        // policyID: 0,
         sections: [],
         count: 0,
         ownerId: 13,
@@ -117,7 +121,7 @@
       },
 
       createPolicy(newPolicy) {
-        this.policyID = Math.floor(Math.random() * 100)
+        // this.policyID = Math.floor(Math.random() * 100)
 
         if (newPolicy) {
           this.sections = [];
@@ -125,7 +129,7 @@
         }
         if (this.title && this.content) {
           const dataToSend = {
-            policyID: this.policyID,
+            policyID: this.policyId,
             ownerId: this.ownerId,
             title: this.title,
             description: this.content,
@@ -148,7 +152,7 @@
       },
       updatePolicy() {
         const dataToSend = {
-          policyID: 1,
+          policyID: this.policyId,
           ownerId: this.ownerId,
           title: this.title,
           description: this.content,
@@ -164,8 +168,9 @@
             // console.log("Policy successfull saved!");
             // console.log('response', response)
           })
-          .catch((err) => {
-            console.log(err)
+          .catch((error) => {
+            console.log(error)
+            this.makeToast('Error', error)
           });
       },
 
@@ -189,6 +194,10 @@
       },
       handleBlur() {
         this.toggleVueEditorHandler()
+      },
+
+      makeToast(title, str) {
+        this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
       },
     },
     computed: {

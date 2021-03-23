@@ -9,7 +9,7 @@
                 h2: b Policies and Procedures
               div
                 a.btn.btn-default.mr-3(href='#') Export
-                PoliciesModal(@saved="refetch")
+                PoliciesModal(@saved="updateList")
                   button.btn.btn-dark.float-end New policy
           .row
             .col-12
@@ -87,6 +87,17 @@
       },
       searching (value) {
         this.searchInput = value;
+      },
+      updateList () {
+        this.$store
+          .dispatch("getPolicies")
+          .then((response) => {
+            // console.log(response);
+          })
+          .catch((err) => {
+            console.error(err);
+            this.makeToast('Error', err.message)
+          });
       }
     },
     computed: {

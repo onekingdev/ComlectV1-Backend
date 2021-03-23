@@ -310,9 +310,9 @@
 }
 
 /* ---------- Modal ---------- */
-/*.modal-dialog {*/
-/*top: 15%;*/
-/*}*/
+.modal-dialog {
+  top: 15%;
+}
 
 /* ---------- Buttons ---------- */
 button.btn {

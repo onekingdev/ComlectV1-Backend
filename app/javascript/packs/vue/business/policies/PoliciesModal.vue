@@ -47,20 +47,20 @@
           this.makeToast('Error', 'Name is required.')
           return;
         }
-        console.log(this.policy);
+        if (this.policy.name.length <= 3) {
+          this.errors.push('Name is very short, must be more 3 characters.');
+          this.makeToast('Error', 'Name is very short, must be more 3 characters.')
+          return;
+        }
 
         // this.$router.push('BusinessPoliciesCreatePage')
         // console.log(this.$router)
-
-        window.location.href = `${window.location.href}/create`;
-        return;
 
         fetch('/api/business/compliance_policies', {
           method: 'POST',
           headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
           body: JSON.stringify(this.policy)
         }).then(response => {
-          console.log(response)
           if (response.status === 422) {
             response.json().then(errors => {
               this.errors = errors
@@ -71,6 +71,8 @@
             this.$emit('saved')
             this.makeToast('Success', 'The project has been saved')
             this.$bvModal.hide(this.modalId)
+
+            // window.location.href = `${window.location.href}/create`;
           } else {
             this.makeToast('Error', 'Couldn\'t submit form')
           }

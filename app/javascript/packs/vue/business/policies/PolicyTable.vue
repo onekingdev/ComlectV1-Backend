@@ -43,7 +43,8 @@
                   b-icon(icon="three-dots")
                 ul.actions-dropdown(:id="'#action-'+policy.id")
                   li.actions-dropdown__item.edit
-                    a.link(:href="'/policies/create/'+policy.id") Edit
+                    a.link(:href="'/business/compliance_policies/'+policy.id") Edit
+                    <!--a.link(href="/business/policies/create", policyID="policy.id") Edit-->
                   li.actions-dropdown__item.move-up Move up
                   li.actions-dropdown__item.delete Delete
         .table(v-else)
