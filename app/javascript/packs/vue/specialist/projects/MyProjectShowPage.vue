@@ -28,6 +28,61 @@
       b-tab(title="Tasks")
       b-tab(title="Documents")
       b-tab(title="Collaborators")
+        .white-card-body.p-y-1
+          .container
+            .row.p-x-1
+              .col-sm-12
+                .card(v-if="!showingContract")
+                  .card-header.d-flex.justify-content-between
+                    h3.m-y-0 Collaborators
+                  .card-body
+                    table.rating_table
+                      tbody
+                        tr(v-for="contract in getContracts(project)" :key="contract.specialist.id")
+                          td
+                            button.btn.btn-default.float-right(@click="showingContract = contract") View Contract
+                            img.m-r-1.userpic_small(v-if="contract.specialist.photo" :src="contract.specialist.photo")
+                            b {{ contract.specialist.first_name }} {{contract.specialist.last_name }},
+                            |  Specialist
+                          td
+                div(v-else)
+                  .row: .col-sm-12
+                    button.btn.btn-dark.float-right(v-b-modal.EndContractModal) End Contract
+                      b-modal.fade(id="EndContractModal" title="End Contract")
+                        p ℹ️ Ending this contract will remove you as a collaborator to the project, revoke any permissions granted due to the project, and payout the full contract price.
+                        p: b Do you want to continue?
+                        .card
+                          .card-header
+                            .row
+                              .col-sm
+                                img.m-r-1.userpic_small(v-if="showingContract.specialist.photo" :src="showingContract.specialist.photo")
+                                h3 {{ showingContract.specialist.first_name }} {{showingContract.specialist.last_name }}
+                                p Specialist
+                              .col-sm
+                                span.float-right Outstanding Due <br> {{ 500 | usdWhole }}
+                          .card-header
+                            p
+                              b Project name
+                              span.float-right {{ showingContract.title }}
+                            p
+                              b Payment method
+                              span.float-right {{ readablePaymentSchedule(showingContract.payment_schedule) }}
+                            p
+                              b Date Issued
+                              span.float-right
+                            p
+                              b Payment Method
+                              span.float-right Transfer to Visa
+                          .card-header
+                            p.text-right.text-muted *Transactional fees lorem ipsum dolor.
+                        template(slot="modal-footer")
+                          button.btn(@click="$bvModal.hide('EndContractModal')") Cancel
+                          Post(:action="completeUrl(showingContract)" :model="{}" @saved="completeSuccess" @errors="completeErrors")
+                            button.btn.btn-dark.m-r-1 Confirm
+                    Breadcrumbs.m-y-1(:items="['Collaborators', `${showingContract.specialist.first_name} ${showingContract.specialist.last_name}`]")
+                  .row
+                    .col-sm-12
+                      PropertiesTable(title="Contract Details" :properties="proposalProps(showingContract)")
       b-tab(title="Activity")
     b-tabs(v-else)
       b-tab(title="Overview")
@@ -96,12 +151,23 @@ export default {
     },
     overviewProps,
     acceptedOverviewProps,
+    readablePaymentSchedule,
     proposalProps: fields,
     applicationUrl(projectId, applicationId) {
       return '/api/specialist/projects/' + projectId + '/applications/' + applicationId
     },
-    getContracts() {
-      return []
+    completeUrl(project) {
+      return '/api/projects/' + project.id + '/end'
+    },
+    getContracts(project) {
+      return [project]
+    },
+    completeSuccess() {
+      this.$bvModal.hide('EndContractModal')
+      this.$bvToast.toast('Project End has been requested', { title: 'Success', autoHideDelay: 5000 })
+    },
+    completeErrors(errors) {
+      errors.length && this.$bvToast.toast('Cannot request End project', { title: 'Error', autoHideDelay: 5000 })
     },
     viewContract(collaborator) {
       this.tab = 3
