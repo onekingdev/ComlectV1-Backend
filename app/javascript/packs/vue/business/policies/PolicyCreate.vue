@@ -20,7 +20,7 @@
                     a.link.btn.mr-3(@click="saveDraft") Save Draft
                     button.btn.btn.btn-default.mr-3(@click="download") Download
                     button.btn.btn-dark.mr-3(@click="publish") Publish
-                    button.btn.btn__close.mr-3
+                    button.btn.btn__close.mr-3(@click="deletePolicy")
                       b-icon(icon='x')
           .row
             .col-12.px-0
@@ -59,7 +59,7 @@
                           @addSection="addSection"
                           @deleteSection="deleteSection")
                           <!--component(v-for="subSection in subSections", v-bind:is="subSection.component", :key="subSection.id", :subSection="subSection", :policyID="policyID", @clickedAddSection="addSectionFromChild", @clickedDeleteSection="deleteSection", @clickedSaveIt="onClickSaveSubsection")-->
-                      HistoryPolicy
+                      HistoryPolicy(:policy="policy")
                     b-tab(title="Risks")
                       .policy-details
                         h3.policy-details__title Risks
@@ -129,10 +129,31 @@
         this.updatePolicy()
       },
       download () {
-
+        this.$store
+          .dispatch("downloadPolicy", { policyId: this.policyId })
+          .then((response) => {
+            console.log('response', response)
+            this.makeToast('Success', 'Policy succesfully downloaded.')
+          })
+          .catch((err) => {
+            console.log(err)
+            this.makeToast('Error', err.message)
+          });
       },
       publish () {
-
+        this.$store
+          .dispatch("publishPolicy", { policyId: this.policyId })
+          .then((response) => {
+            console.log('response', response)
+            this.makeToast('Success', 'Policy succesfully published.')
+          })
+          .catch((err) => {
+            console.log(err)
+            this.makeToast('Error', err.message)
+          });
+      },
+      deletePolicy() {
+        console.log(`delete${this.policyId}`)
       },
 
       createPolicy(newPolicy) {

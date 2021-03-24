@@ -141,23 +141,69 @@ export default {
         throw error;
       }
     },
-    async createSection({ commit, getters }, payload) {
-      console.log(payload)
+    async downloadPolicy({ commit, getters }, payload) {
       commit("clearError");
       commit("setLoading", true);
 
       try {
-        const newSection = {
-          id: payload.id,
-          title: payload.title,
-          description: payload.description,
-          children: payload.children
-        };
+        const endpointUrl = '/api/business/compliance_policies/'
+        const data = await fetch(`${endpointUrl}${payload.policyId}/download`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'},
+        }).then(response => {
+          console.log(response)
+          if (!response.ok)
+            throw new Error(`Could't download policy (${response.status})`);
+          return response.json()
+        }).then(response => {
+          console.log(response)
+          return response
+        }).catch (error => {
+          console.error(error)
+          throw error;
+        }).finally(() => commit("setLoading", false))
 
-        setTimeout(() => {
-          commit("setLoading", false);
-          commit('updatePolicy', { ...newSection })
-        }, 3000);
+        console.log('data', data)
+
+      } catch (error) {
+        commit("setError", error.message);
+        commit("setLoading", false);
+        throw error;
+      }
+    },
+    async publishPolicy({ commit, getters }, payload) {
+      commit("clearError");
+      commit("setLoading", true);
+
+      try {
+        const endpointUrl = '/api/business/compliance_policies/'
+        const data = await fetch(`${endpointUrl}${payload.policyId}/publish`, {
+          method: 'GET',
+          headers: {
+            // 'Authorization': 'Bearer test',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'},
+        }).then(response => {
+          console.log(response)
+          if (!response.ok)
+            throw new Error(`Could't publish policy (${response.status})`);
+          return response.json()
+        }).then(response => {
+          console.log(response)
+          commit("updatePolicy", {
+            policyID: response.id,
+            ...response,
+          });
+          return response
+        }).catch (error => {
+          console.error(error)
+          throw error;
+        }).finally(() => commit("setLoading", false))
+
+        console.log('data', data)
+
       } catch (error) {
         commit("setError", error.message);
         commit("setLoading", false);
@@ -167,7 +213,6 @@ export default {
     async getPolicies ({commit, getters}, payload) {
       commit("clearError");
       commit("setLoading", true);
-
 
       try {
         const endpointUrl = '/api/business/compliance_policies'

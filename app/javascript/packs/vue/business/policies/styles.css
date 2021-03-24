@@ -294,7 +294,11 @@
   position: absolute;
   top: 50%;
   left: 2rem;
-  padding: .8rem 1rem;
+  padding: .8rem .8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
   text-transform: uppercase;
   transform: translateY(-50%);
 
