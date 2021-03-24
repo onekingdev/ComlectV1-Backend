@@ -96,7 +96,6 @@ export default {
 
         console.log('updatePolicy', updatePolicy)
 
-
         console.log(JSON.stringify({
           compliance_policy: {
             name: updatePolicy.title,
@@ -165,18 +164,6 @@ export default {
         throw error;
       }
     },
-    // async getPolicyById ({commit, getters}, payload) {
-    //     const endpointUrl = '/api/business/compliance_policies/'
-    //
-    //     const data = await fetch(`${endpointUrl}1`, { headers: {'Accept': 'application/json'}})
-    //         .then(response => {
-    //             console.log(response)
-    //             response.json()
-    //         })
-    //         .then(result => console.log(result))
-    //         .catch(error => console.log(error))
-    //     return data;
-    // },
     async getPolicies ({commit, getters}, payload) {
       commit("clearError");
       commit("setLoading", true);
@@ -190,6 +177,31 @@ export default {
           })
           .then(response => {
             commit('getPoliciesListFromDB', response)
+            return response
+          })
+          .catch(error => {
+            console.error(error)
+            throw error
+          })
+          .finally(() => commit("setLoading", false))
+
+        return data;
+
+      } catch (error) {
+        commit("setError", error.message);
+        commit("setLoading", false);
+        throw error;
+      }
+    },
+    async getPolicyById ({commit, getters}, payload) {
+      commit("clearError");
+      commit("setLoading", true);
+
+      try {
+        const endpointUrl = '/api/business/compliance_policies/'
+        const data = await fetch(`${endpointUrl}${payload.policyId}`, { headers: {'Accept': 'application/json'}})
+          .then(response => response.json())
+          .then(response => {
             return response
           })
           .catch(error => {

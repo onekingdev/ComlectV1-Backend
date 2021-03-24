@@ -2,10 +2,10 @@
   div.policy
     .container-fluid
       .row
-        .col-12.col-lg-3.px-0(v-if="leftMenu && policiesComputed.length")
+        .col-12.col-lg-3.px-0(v-if="leftMenu")
           .card-body.white-card-body
             button.btn.btn-dark.mb-3.mr-3(@click="createPolicy('new')") New Policy
-            DragDropComponent(:policies="policiesComputed")
+            DragDropComponent(:policy="policyComputed")
         .col
           .row
             .col-md-12.px-0
@@ -14,8 +14,8 @@
                   .d-flex.align-items-center
                     button.btn.btn__menu.mr-3(@click="leftMenu = !leftMenu")
                       b-icon(icon='list')
-                    button.btn.btn-default.mr-3 Draft
-                    h3.policy__main-title.m-y-0 {{ title }}
+                    button.btn.btn-default.mr-3 {{ policy.status }}
+                    h3.policy__main-title.m-y-0 {{ policy.name }}
                   .d-flex.justify-content-end.align-items-center
                     a.link.btn.mr-3(@click="saveDraft") Save Draft
                     button.btn.btn.btn-default.mr-3(@click="download") Download
@@ -43,17 +43,18 @@
                           .policy-details-section
                             .policy-details__name Name
                             .d-flex
-                              input.policy-details__input(v-model="title")
+                              input.policy-details__input(v-model="policy.name")
                             .policy-details__name Description
-                            .policy-details__text-editor(@click="toggleVueEditorHandler", v-if="!toggleVueEditor", v-b-tooltip.hover.left title="Click to edit text") {{ content }}
-                            vue-editor.policy-details__text-editor(v-if="toggleVueEditor", v-model="content", @blur="handleBlur")
-                            button.policy-details__btn.mr-3.btn.btn-default(@click="addSection")
+                            .policy-details__text-editor(@click="toggleVueEditorHandler", v-if="!toggleVueEditor", v-b-tooltip.hover.left title="Click to edit text") {{ policy.description }}
+                            vue-editor.policy-details__text-editor(v-if="toggleVueEditor", v-model="policy.description", @blur="handleBlur")
+                            button.policy-details__btn.mr-3.btn.btn-default(v-if="policy.sections.length === 0" @click="addSection")
                               b-icon.mr-2(icon='plus-circle-fill')
                               | Add Section
                           SubsectionPolicy(
                           :section="section"
                           :index="index"
-                          v-for="(section, index) in sections"
+                          :length = "policy.sections.length"
+                          v-for="(section, index) in policy.sections"
                           :key="section.id"
                           @addSection="addSection"
                           @deleteSection="deleteSection")
@@ -71,6 +72,8 @@
                       .policy-details
                         h3.policy-details__title Activity
                         .policy-details__body Activity
+            .col-12
+              pre {{ policy }}
 </template>
 
 <script>
@@ -85,10 +88,10 @@
         type: Number,
         required: true
       },
-      policy: {
-        type: Object,
-        required: false,
-      },
+      // policy: {
+      //   type: Object,
+      //   required: false,
+      // },
     },
     components: {
       DragDropComponent,
@@ -107,7 +110,19 @@
         sections: [],
         count: 0,
         ownerId: 13,
-      };
+        policy: {
+          "id": this.policyId,
+          "name": "New Policy",
+          "created_at": "",
+          "updated_at": "",
+          "position": 0,
+          "description": "N/A",
+          "src_id": null,
+          "status": "draft",
+          "sections": [],
+          "versions": []
+        }
+      }
     },
     methods: {
       saveDraft () {
@@ -152,11 +167,11 @@
       },
       updatePolicy() {
         const dataToSend = {
-          policyID: this.policyId,
+          policyID: this.policy.id,
           ownerId: this.ownerId,
-          title: this.title,
-          description: this.content,
-          sections: this.sections,
+          title: this.policy.title,
+          description: this.policy.description,
+          sections: this.policy.sections,
         };
         console.log(dataToSend);
 
@@ -178,16 +193,16 @@
         if(event) event.target.closest('.policy-details__btn').style.display = 'none';
         const id = Math.floor(Math.random() * 100)
 
-        this.sections.push({
-          id: this.count++,
-          title: `${this.title}-№-${this.count}-${id}`,
-          description: this.content,
+        this.policy.sections.push({
+          id: id,
+          title: `${this.title}-№-${this.count++}-${id}`,
+          description: this.description,
           children: [],
         })
       },
       deleteSection(index) {
-        this.sections.splice(index, 1)
-        if (this.sections.length === 0) document.querySelector('.policy-details__btn').style.display = 'block';
+        this.policy.sections.splice(index, 1)
+        if (this.policy.sections.length === 0) document.querySelector('.policy-details__btn').style.display = 'block';
       },
       toggleVueEditorHandler() {
         this.toggleVueEditor = !this.toggleVueEditor;
@@ -204,16 +219,14 @@
       loading() {
         return this.$store.getters.loading;
       },
-      policiesComputed() {
-        const policies = this.$store.getters.policies
+      policyComputed() {
         let tmp
-        const newPolicies = policies.map(el => {
-          tmp = el['sections']
-          el['children'] = tmp;
-          return el
-        });
-        return newPolicies;
-      }
+        tmp = this.policy.name
+        this.policy.title = tmp
+        tmp = this.policy.sections
+        this.policy.children = tmp
+        return this.policy
+      },
     },
     watch: {
       // policiesComputed (oldVal, newVal) {
@@ -222,16 +235,16 @@
       // }
     },
     mounted() {
-      // this.createPolicy();
-      /*
-      this.$store.dispatch('getPolicies', {})
+      this.$store
+        .dispatch("getPolicyById", { policyId: this.policyId })
         .then((response) => {
-          console.log('response getPolicies', response)
+          this.policy = response;
+          console.log(response);
         })
         .catch((err) => {
-          console.log(err)
+          console.error(err);
+          this.makeToast('Error', err.message)
         });
-        */
     },
   };
 </script>
