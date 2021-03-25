@@ -82,9 +82,9 @@
 
 <script>
 import { fields, readablePaymentSchedule } from '@/common/ProposalFields'
-import ApplicationsNotice from './ApplicationsNotice'
-import TimesheetsNotice from './TimesheetsNotice'
-import EndContractNotice from './EndContractNotice'
+import ApplicationsNotice from './alerts/ApplicationsNotice'
+import TimesheetsNotice from './alerts/TimesheetsNotice'
+import EndContractNotice from './alerts/EndContractNotice'
 import ProjectDetails from './ProjectDetails'
 import EtaggerMixin from '@/mixins/EtaggerMixin'
 import LocalProjectModal from './LocalProjectModal'
