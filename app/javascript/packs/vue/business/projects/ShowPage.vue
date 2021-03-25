@@ -111,6 +111,7 @@ export default {
   },
   components: {
     ApplicationsNotice,
+    ExtendDeadlineNotice,
     LocalProjectModal,
     TimesheetsNotice,
     EndContractNotice,
@@ -142,9 +143,6 @@ export default {
     viewHref() {
       return project => this.$store.getters.url('URL_PROJECT_POST', project.id)
     },
-  },
-  components: {
-    ExtendDeadlineNotice
   }
 }
 </script>
