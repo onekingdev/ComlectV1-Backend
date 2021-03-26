@@ -1,13 +1,13 @@
 <template lang="pug">
   div
-    .policy-details-subsection
+    .policy-details-subsection(:data-section-id="index")
       .policy-details__name.mb-0 Subsection Name
       .d-flex.align-items-center
         b-icon.mr-2(v-if="section.children && section.children.length > 0" icon="chevron-compact-down")
         b-icon.mr-2(v-else icon="chevron-compact-right")
-        input.policy-details__input.mb-0(:value="section.title")
+        input.policy-details__input.mb-0(v-model="section.title", @blur="handleBlur")
         .actions
-          button.policy-details__btn.mr-3.btn.btn-default(@click="addSubSection")
+          button.policy-details__btn.mr-3.btn.btn-default(v-if="section.children.length === 0", @click="addSubSection")
             b-icon.mr-2(icon='plus-circle-fill')
             | Add Subsection
           button.px-0.actions__btn(@click="isActive = !isActive", :class="{ active: isActive }")
@@ -17,8 +17,8 @@
               li.actions-dropdown__item.move-up(@click="moveUpSubsection") Move up
               li.actions-dropdown__item.delete(@click="deleteSubSection") Delete
       .policy-details__name.mb-0 Description
-      .policy-details__text-editor(@click="toggleVueEditorHandler", v-if="!toggleVueEditor", v-b-tooltip.hover.left title="Click to edit text") {{ content }}
-      vue-editor.policy-details__text-editor(v-if="toggleVueEditor", v-model="content", @blur="handleBlur")
+      .policy-details__text-editor(@click="toggleVueEditorHandler", v-if="!toggleVueEditor", v-b-tooltip.hover.left title="Click to edit text", v-html="section.description ? section.description : description")
+      vue-editor.policy-details__text-editor(v-if="toggleVueEditor", v-model="section.description", @blur="handleBlur")
       div(v-if="section.children && section.children.length > 0")
         PolicySubsection(
         v-for="(child, subIndex) in section.children"
@@ -26,10 +26,11 @@
         :index="subIndex"
         :key="child.id"
         :parentSection="section"
+        :length = "section.children.length"
         @addSection="addSection"
         @deleteSubSection="deleteSubSection")
       <!--component(v-for="subSectionChild in subSectionsChildrens", v-bind:is="subSectionChild.component", :key="subSectionChild.id", :subSectionChild="subSectionChild", :subSectionsID="subSectionsID" @clicked="onClickButton", @clickedSaveIt="onClickSaveSubsection")-->
-    button.policy-details__btn.mr-3.btn.btn-default(@click="addSection") Add Section
+    button.policy-details__btn.mr-3.btn.btn-default(v-if="index + 1 === length",  @click="addSection") Add Section
 </template>
 
 <script>
@@ -42,7 +43,10 @@
         type: Number,
         required: false,
       },
-
+      length: {
+        type: Number,
+        required: false,
+      },
       section: {
         type: Object,
         required: true,
@@ -60,18 +64,15 @@
     },
     data() {
       return {
-        content: "N/A",
+        description: "N/A",
         title: "New Policy",
         toggleVueEditor: false,
         isActive: false,
-        subSectionID: Math.floor(Math.random() * 100),
         count: 0,
       }
     },
     computed: {
-      subSectionName () {
-        return `Subsection Name New Policy ${this.subSection.id}`
-      }
+
     },
     methods: {
       deleteSubSection() {
@@ -95,9 +96,9 @@
           const id = Math.floor(Math.random() * 100)
 
           this.parentSection.children.push({
-            id: this.count++ + id,
+            id: id,
             title: `${this.title}-№-${this.count}-${id}`,
-            description: this.content,
+            description: this.description,
             children: [],
           })
         }
@@ -109,18 +110,28 @@
         this.section.children.push({
           // component: SubsectionPolicy,
           id: this.count++,
-          title: `${this.title}-№-${this.count}-${id}`,
-          description: 'N/A',
+          title: `${this.title}-№-${this.count++}-${id}`,
+          description: this.description,
           children: [],
         })
-
       },
 
       toggleVueEditorHandler() {
         this.toggleVueEditor = !this.toggleVueEditor;
       },
-      handleBlur() {
-        this.toggleVueEditorHandler()
+      handleBlur(e) {
+        console.log(e)
+        if (e.target.nodeName !== "INPUT")
+          this.toggleVueEditorHandler()
+
+        if (this.parentSection) {
+          this.parentSection.children[this.index] = {
+            title: this.section.title,
+            description: this.section.description,
+            children: this.section.children
+          }
+          console.log(this.parentSection.children)
+        }
       },
       moveUpSubsection () {
         console.log('moveUpSubsection')

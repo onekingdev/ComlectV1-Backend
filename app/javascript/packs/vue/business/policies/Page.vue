@@ -110,7 +110,9 @@
         // return this.$store.dispach('getPolicyById', this.id)
       },
       policiesListComputed() {
-        return this.$store.getters.policies;
+        const policies = this.$store.getters.policies;
+        policies.sort((a, b) => a.position - b.position)
+        return policies;
       },
     },
     beforeCreate() { // or mounted?

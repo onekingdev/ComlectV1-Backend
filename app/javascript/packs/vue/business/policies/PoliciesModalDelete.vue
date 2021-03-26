@@ -3,14 +3,17 @@
     div(v-b-modal="modalId" :class="{'d-inline-block':inline}")
       slot
 
-    b-modal.fade(:id="modalId" title="New policy")
-      label.form-label New policy name
-      input.form-control(v-model="policy.name" type="text" placeholder="Enter the name of your policy" @keyup.enter="submit" autofocus)
+    b-modal.fade(:id="modalId" title="Delete policy")
+      .d-flex
+        b-icon.mr-3(icon="x-circle" scale="2" variant="danger")
+        p Removing this policy will permanently delete any items populated within it.
+      p
+        b Do you want to continue?
       Errors(:errors="errors.title")
 
       template(slot="modal-footer")
         button.btn(@click="$bvModal.hide(modalId)") Cancel
-        button.btn.btn-dark(@click="submit") Create
+        button.btn.btn-dark(@click="submit") Confirm
 </template>
 
 <script>
@@ -20,7 +23,11 @@
       inline: {
         type: Boolean,
         default: true
-      }
+      },
+      policyId: {
+        type: Number,
+        default: true
+      },
     },
     data() {
       return {
@@ -39,27 +46,12 @@
       },
       submit(e) {
         e.preventDefault();
-
         this.errors = [];
 
-        if (!this.policy.name) {
-          this.errors.push('Name is required.');
-          this.makeToast('Error', 'Name is required.')
-          return;
-        }
-        if (this.policy.name.length <= 3) {
-          this.errors.push('Name is very short, must be more 3 characters.');
-          this.makeToast('Error', 'Name is very short, must be more 3 characters.')
-          return;
-        }
-
-        // this.$router.push('BusinessPoliciesCreatePage')
-        // console.log(this.$router)
-
-        fetch('/api/business/compliance_policies', {
-          method: 'POST',
+        fetch('/api/business/compliance_policies/' + this.policyId, {
+          method: 'DELETE',
           headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
-          body: JSON.stringify(this.policy)
+          // body: JSON.stringify(this.policy)
         }).then(response => {
           if (response.status === 422) {
             response.json().then(errors => {
@@ -69,10 +61,15 @@
             })
           } else if (response.status === 201 || response.status === 200) {
             this.$emit('saved')
-            this.makeToast('Success', 'The project has been saved')
+            this.makeToast('Success', 'The project has been removed')
             this.$bvModal.hide(this.modalId)
+            this.policy.name = ''
 
             // window.location.href = `${window.location.href}/create`;
+            console.log(window.location)
+            if (window.location.href === `${window.location.origin}/business/compliance_policies/${this.policyId}`) {
+              window.location.href = `${window.location.origin}/business/compliance_policies/`
+            }
           } else {
             this.makeToast('Error', 'Couldn\'t submit form')
           }
@@ -92,6 +89,6 @@
           errors: Array
         }
       }
-    },
+    }
   }
 </script>
