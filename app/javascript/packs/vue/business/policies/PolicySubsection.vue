@@ -1,11 +1,11 @@
 <template lang="pug">
   div
-    .policy-details-subsection
+    .policy-details-subsection(:data-section-id="index")
       .policy-details__name.mb-0 Subsection Name
       .d-flex.align-items-center
         b-icon.mr-2(v-if="section.children && section.children.length > 0" icon="chevron-compact-down")
         b-icon.mr-2(v-else icon="chevron-compact-right")
-        input.policy-details__input.mb-0(:value="section.title")
+        input.policy-details__input.mb-0(v-model="section.title", @blur="handleBlur")
         .actions
           button.policy-details__btn.mr-3.btn.btn-default(v-if="section.children.length === 0", @click="addSubSection")
             b-icon.mr-2(icon='plus-circle-fill')
@@ -17,8 +17,8 @@
               li.actions-dropdown__item.move-up(@click="moveUpSubsection") Move up
               li.actions-dropdown__item.delete(@click="deleteSubSection") Delete
       .policy-details__name.mb-0 Description
-      .policy-details__text-editor(@click="toggleVueEditorHandler", v-if="!toggleVueEditor", v-b-tooltip.hover.left title="Click to edit text") {{ description }}
-      vue-editor.policy-details__text-editor(v-if="toggleVueEditor", v-model="description", @blur="handleBlur")
+      .policy-details__text-editor(@click="toggleVueEditorHandler", v-if="!toggleVueEditor", v-b-tooltip.hover.left title="Click to edit text", v-html="section.description ? section.description : description")
+      vue-editor.policy-details__text-editor(v-if="toggleVueEditor", v-model="section.description", @blur="handleBlur")
       div(v-if="section.children && section.children.length > 0")
         PolicySubsection(
         v-for="(child, subIndex) in section.children"
@@ -45,7 +45,7 @@
       },
       length: {
         type: Number,
-        required: true,
+        required: false,
       },
       section: {
         type: Object,
@@ -111,17 +111,27 @@
           // component: SubsectionPolicy,
           id: this.count++,
           title: `${this.title}-№-${this.count++}-${id}`,
-          description: 'N/A',
+          description: this.description,
           children: [],
         })
-
       },
 
       toggleVueEditorHandler() {
         this.toggleVueEditor = !this.toggleVueEditor;
       },
-      handleBlur() {
-        this.toggleVueEditorHandler()
+      handleBlur(e) {
+        console.log(e)
+        if (e.target.nodeName !== "INPUT")
+          this.toggleVueEditorHandler()
+
+        if (this.parentSection) {
+          this.parentSection.children[this.index] = {
+            title: this.section.title,
+            description: this.section.description,
+            children: this.section.children
+          }
+          console.log(this.parentSection.children)
+        }
       },
       moveUpSubsection () {
         console.log('moveUpSubsection')

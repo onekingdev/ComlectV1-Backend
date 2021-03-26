@@ -5,6 +5,7 @@
   left: 0.5rem;
   transform: translateY(-50%);
 }
+
 .form-control {
   padding-left: 2rem;
 }
@@ -14,10 +15,11 @@
   display: table;
 }
 
-.table__row{
+.table__row {
   display: table-row;
 
 }
+
 .table__cell {
   display: table-cell;
   padding: .8rem 1.5rem;
@@ -50,13 +52,16 @@
   align-items: center;
   cursor: pointer;
 }
+
 .dropdown-toggle::after {
   display: none;
 }
+
 .dropdown-toggle svg {
   fill: #000;
   transition: all 200ms ease-in;
 }
+
 .dropdown-toggle.active svg {
   transform: rotate(90deg);
 }
@@ -66,6 +71,7 @@
   margin: 0;
   padding: 0;
 }
+
 .dropdown-items.active {
   display: block;
   cursor: pointer;
@@ -75,6 +81,7 @@
   padding: .8rem 1.5rem;
   border-bottom: solid 1px #ced4da;
 }
+
 .dropdown-items .dropdown-item:last-child {
   border-bottom: none;
 }
@@ -89,6 +96,7 @@
 .status__draft {
   border: solid 1px #ced4da;
 }
+
 .status__published {
   color: rgba(40, 167, 69, 1);
   background-color: rgba(40, 167, 69, .2);
@@ -120,6 +128,7 @@
   background-color: white;
   border-top: 1px solid #dee2e6;
 }
+
 .policy .nav-tabs .nav-item .nav-link,
 .policy .nav-tabs .nav-item .nav-link.active {
   padding-top: 1rem;
@@ -151,22 +160,27 @@
 .policy-details {
   margin-bottom: 0;
 }
+
 .policy-details__title {
   padding: 2rem 2.5rem;
   border-bottom: solid 1px #e9ebee;
 }
+
 .policy-details__title_no-border {
   border: none;
 }
+
 .policy-details__body {
   margin-bottom: 1rem;
   padding: 2rem 2.5rem;
   border-bottom: solid 1px #e9ebee;
 }
+
 .policy-details__body_border {
   border: solid 1px #e9ebee;
   border-radius: 5px;
 }
+
 .policy-details-section {
   margin-bottom: 1rem;
 }
@@ -176,24 +190,29 @@
 .policy-details__text-editor {
   margin-bottom: 1rem;
 }
+
 .policy-details__name {
   color: #919396;
 }
+
 .policy-details__input {
   flex-grow: 1;
   margin-right: 1rem;
   border: solid 1px transparent;
   transition: all 200ms ease-in;
 }
+
 .policy-details__input:hover,
 .policy-details__input:active {
   border-color: #ced4da;
 }
+
 .policy-details__text-editor {
   border: solid 1px transparent;
   cursor: pointer;
   transition: all 200ms ease-in;
 }
+
 .policy-details__text-editor:hover,
 .policy-details__text-editor:active {
   border: solid 1px #e9ebee;
@@ -240,11 +259,13 @@
   background-color: var(--white);
   border: solid 1px #e9ebee;
   border-radius: 3px;
-  box-shadow: 3px 3px 5px rgba(0,0,0,.3)
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, .3)
 }
+
 .actions-dropdown.active {
   display: block;
 }
+
 .actions-dropdown__item {
   display: flex;
   padding: .7rem 1.5rem;
@@ -253,6 +274,7 @@
   cursor: pointer;
   transition: all 200ms ease-in;
 }
+
 .actions-dropdown__item:hover,
 .actions-dropdown__item:active {
   /*color: var(--white);*/
@@ -277,6 +299,7 @@
   margin-bottom: 2rem;
   /*border-top: solid 1px #e9ebee;*/
 }
+
 .policy-history__title {
   margin: 0 2.5rem;
   padding: 2rem 0;
@@ -290,6 +313,7 @@
   border: solid 1px #e9ebee;
   border-radius: 3px;
 }
+
 .policy-history__version {
   position: absolute;
   top: 50%;
@@ -305,14 +329,79 @@
   background-color: #d2d2d2;
   border-radius: 50%;
 }
+
 .policy-history__version-info,
 .policy-history__author {
   margin-bottom: .5rem;
   font-weight: 600;
 }
+
 .policy-history__date {
   color: #919396;
 }
+
+/* ---------- Left Tree ---------- */
+.left-tree {
+  height: 100%;
+  min-height: calc(100vh - 68px);
+  border-right: solid 1px #ced4da;
+}
+
+/*.left-tree .link {*/
+  /*padding: 1rem 1.5rem;*/
+  /*width: 100%;*/
+  /*border-bottom: solid 1px #ced4da;*/
+/*}*/
+
+.he-tree {
+  border: 1px solid #ccc;
+  padding: 20px;
+}
+
+.tree-node {
+}
+
+.tree-node-inner {
+  padding: 5px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.draggable-placeholder {
+}
+
+.draggable-placeholder-inner {
+  border: 1px dashed #0088F8;
+  box-sizing: border-box;
+  background: rgba(0, 136, 249, 0.09);
+  color: #0088f9;
+  text-align: center;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.tree3 .tree-node-inner {
+    border: none;
+    padding: 0px;
+  }
+
+.tree3 .tree-node-inner-back:hover {
+    background: #ddd;
+  }
+
+
+.tree4 .tree-node-inner {
+  border: none;
+  border-bottom: 1px solid #ccc;
+  padding: 5px 10px;
+  backgroud: #ccc;
+}
+
+.tree4 .draggable-placeholder-inner {
+  background-color: orangered;
+}
+
 
 /* ---------- Modal ---------- */
 .modal-dialog {
@@ -325,18 +414,21 @@ button.btn {
   font-weight: 600;
   transition: all 200ms ease-in;
 }
+
 button.btn:hover,
 button.btn:active {
   opacity: .6;
   transform: translateY(3px);
   box-shadow: 0 3px rgba(255, 193, 7, 1)
 }
+
 button.btn__menu,
 button.btn__close {
   padding: 0;
   font-size: 1.5rem;
   font-weight: 600;
 }
-.link{
+
+.link {
   color: var(--blue);
 }

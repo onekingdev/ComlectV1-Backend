@@ -186,12 +186,10 @@ export default {
             'Accept': 'application/json',
             'Content-Type': 'application/json'},
         }).then(response => {
-          console.log(response)
           if (!response.ok)
             throw new Error(`Could't publish policy (${response.status})`);
           return response.json()
         }).then(response => {
-          console.log(response)
           commit("updatePolicy", {
             policyID: response.id,
             ...response,
@@ -201,8 +199,6 @@ export default {
           console.error(error)
           throw error;
         }).finally(() => commit("setLoading", false))
-
-        console.log('data', data)
 
       } catch (error) {
         commit("setError", error.message);
@@ -277,7 +273,7 @@ export default {
                 'Content-Type': 'application/json'},
               body: JSON.stringify({
                 compliance_policy: {
-                  id: record.policyId,
+                  // id: record.policyId,
                   position: record.position,
                 }
               })
