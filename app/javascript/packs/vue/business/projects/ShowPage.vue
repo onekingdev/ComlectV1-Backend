@@ -121,10 +121,10 @@ export default {
   methods: {
     completeSuccess() {
       this.newEtag()
-      this.$bvToast.toast('Project End has been requested', { title: 'Success', autoHideDelay: 5000 })
+      this.toast('Success', 'Project End has been requested')
     },
     completeErrors(errors) {
-      errors.length && this.$bvToast.toast('Cannot request End project', { title: 'Error', autoHideDelay: 5000 })
+      errors.length && this.toast('Error', 'Cannot request End project')
     },
     getContracts(projects) {
       return projects.filter(project => !!project.specialist)

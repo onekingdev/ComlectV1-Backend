@@ -177,10 +177,10 @@ export default {
     },
     completeSuccess() {
       this.$bvModal.hide('EndContractModal')
-      this.$bvToast.toast('Project End has been requested', { title: 'Success', autoHideDelay: 5000 })
+      this.toast('Success', 'Project End has been requested')
     },
     completeErrors(errors) {
-      errors.length && this.$bvToast.toast('Cannot request End project', { title: 'Error', autoHideDelay: 5000 })
+      errors.length && this.toast('Error', 'Cannot request End project')
     },
     viewContract(collaborator) {
       this.tab = 3
