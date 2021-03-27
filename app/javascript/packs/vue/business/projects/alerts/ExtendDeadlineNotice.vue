@@ -35,7 +35,7 @@ export default {
   },
   computed: {
     isVisible() {
-      return DateTime.local().plus({ days: 1 }).toSQLDate() === this.project.ends_on
+      return this.project.specialist_id && DateTime.local().plus({ days: 1 }).toSQLDate() === this.project.ends_on
     },
     datepickerOptions() {
       return {
