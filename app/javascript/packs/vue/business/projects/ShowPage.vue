@@ -19,7 +19,7 @@
                 Get(v-if="project.visible_project" :etag="etag" :project="`/api/business/projects/${project.visible_project.id}`"): template(v-slot="{project}")
                   TimesheetsNotice(:project="project")
                   EndContractNotice(:project="project" @saved="completeSuccess" @errors="completeErrors")
-                  ExtendDeadlineNotice(:project="project")
+                  ExtendDeadlineNotice(:project="project" @saved="newEtag")
             .row.p-x-1
               .col-md-7.col-sm-12
                 .card
