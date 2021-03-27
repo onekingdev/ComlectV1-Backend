@@ -7,6 +7,8 @@
         .white-card-body.p-y-1
           .container
             .row.p-x-1
+              .col-sm-12
+                ExtensionRequestedAlert(:project="project")
               .col-md-7.col-sm-12
                 PropertiesTable(title="Project Details" :properties="acceptedOverviewProps(localProject)")
               .col-md-5.col-sm-12.pl-0
@@ -105,6 +107,7 @@
 <script>
 import { readablePaymentSchedule, fields } from '@/common/ProposalFields'
 import EditProposalModal from '@/specialist/projects/EditProposalModal'
+import ExtensionRequestedAlert from './alerts/ExtensionRequestedAlert'
 
 const overviewProps = project => {
   return [{ name: 'Owner', value: project.business && project.business.business_name },
@@ -196,6 +199,7 @@ export default {
     }
   },
   components: {
+    ExtensionRequestedAlert,
     EditProposalModal
   }
 }
