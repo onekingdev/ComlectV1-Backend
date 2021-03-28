@@ -48,32 +48,34 @@
         e.preventDefault();
         this.errors = [];
 
-        fetch('/api/business/compliance_policies/' + this.policyId, {
-          method: 'DELETE',
-          headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
-          // body: JSON.stringify(this.policy)
-        }).then(response => {
-          if (response.status === 422) {
-            response.json().then(errors => {
-              this.errors = errors
-              Object.keys(this.errors)
-                .map(prop => this.errors[prop].map(err => this.makeToast(`Error`, `${prop}: ${err}`)))
-            })
-          } else if (response.status === 201 || response.status === 200) {
-            this.$emit('saved')
-            this.makeToast('Success', 'The project has been removed')
-            this.$bvModal.hide(this.modalId)
-            this.policy.name = ''
+        this.$emit('deleteConfirmed')
+        this.$bvModal.hide(this.modalId)
 
-            // window.location.href = `${window.location.href}/create`;
-            console.log(window.location)
-            if (window.location.href === `${window.location.origin}/business/compliance_policies/${this.policyId}`) {
-              window.location.href = `${window.location.origin}/business/compliance_policies/`
-            }
-          } else {
-            this.makeToast('Error', 'Couldn\'t submit form')
-          }
-        })
+        // fetch('/api/business/compliance_policies/' + this.policyId, {
+        //   method: 'DELETE',
+        //   headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+        //   // body: JSON.stringify(this.policy)
+        // }).then(response => {
+        //   if (response.status === 422) {
+        //     response.json().then(errors => {
+        //       this.errors = errors
+        //       Object.keys(this.errors)
+        //         .map(prop => this.errors[prop].map(err => this.makeToast(`Error`, `${prop}: ${err}`)))
+        //     })
+        //   } else if (response.status === 201 || response.status === 200) {
+        //     this.$emit('saved')
+        //     this.makeToast('Success', 'The project has been removed')
+        //     this.$bvModal.hide(this.modalId)
+        //     this.policy.name = ''
+        //
+        //     // window.location.href = `${window.location.href}/create`;
+        //     if (window.location.href === `${window.location.origin}/business/compliance_policies/${this.policyId}`) {
+        //       window.location.href = `${window.location.origin}/business/compliance_policies/`
+        //     }
+        //   } else {
+        //     this.makeToast('Error', 'Couldn\'t submit form')
+        //   }
+        // })
       },
     },
     computed: {
@@ -83,12 +85,7 @@
 
     },
     components: {
-      Errors: {
-        template: `<div v-if="errors && errors[0]" v-text="errors[0]" class="d-block invalid-feedback" role="alert" aria-live="assertive" aria-atomic="true"/>`,
-        props: {
-          errors: Array
-        }
-      }
+
     }
   }
 </script>

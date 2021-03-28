@@ -46,7 +46,7 @@
                     a.link(:href="'/business/compliance_policies/'+policy.id") Edit
                   li.actions-dropdown__item.move-up(@click="moveUp(policy.id)") Move up
                   li.actions-dropdown__item.delete
-                    PoliciesModalDelete(@saved="updateList", :policyId="policy.id") Delete
+                    PoliciesModalDelete(@saved="updateList", :policyId="policy.id", @deleteConfirmed="deletePolicy(policy.id)") Delete
         .table(v-else)
           .table__row
             .table__cell.text-center
@@ -122,7 +122,14 @@
           });
       },
       deletePolicy(policyId) {
-        console.log(policyId)
+        this.$store
+          .dispatch('deletePolicyById', { policyId })
+          .then(response => {
+            this.makeToast('Success', `Policy successfully deleted!`)
+          })
+          .catch(error => {
+            this.makeToast('Error', `Couldn't submit form! ${error}`)
+          })
       },
       updateList () {
         this.$store

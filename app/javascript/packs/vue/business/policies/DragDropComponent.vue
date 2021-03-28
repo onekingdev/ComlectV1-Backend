@@ -2,10 +2,10 @@
   div
     h3 Simple table without drag'n'drop
     .table
-      .table__row
-        .table__cell.table__cell_name {{ policyComputed[0].title }}
-          ul.dropdow-items.d-block(v-if="policyComputed[0].sections")
-            .li(v-for="(policySection, i) in policyComputed[0].sections" :key="i") {{ policySection.title }}
+      .table__row(v-for="(policy, i) in policies" :key="i")
+        .table__cell.table__cell_name {{ policy.title }}
+          ul.dropdow-items.d-block(v-if="policy.children")
+            .li(v-for="(policySection, i) in policy.children" :key="i") {{ policySection.title }}
               ul.dropdow-items.d-block(v-if="policySection.children")
                 .li(v-for="(policySectionChild, i) in policySection.children" :key="i") {{ policySectionChild.title }}
     h3 DraggableTree
@@ -22,25 +22,25 @@
     .row
       .col-12
         h3 Nested draggable
-        nested-draggable(:policies='policyComputed')
-          rawdisplayer(:value='policyComputed' title='List')
+        nested-draggable(:policies='policies')
+          rawdisplayer(:value='policies' title='List')
 </template>
 <script>
-  import { DraggableTree } from "vue-draggable-nested-tree";
+  // import { DraggableTree } from "vue-draggable-nested-tree";
   // import VueDragula from "vue-dragula";
   import nestedDraggable from "./infra/nested";
 
   export default {
-    props: ["policy"],
+    props: ["policies"],
     components: {
-      DraggableTree,
+      // DraggableTree,
       // VueDragula
       nestedDraggable,
-      display: "Nested",
-      order: 15,
     },
     data() {
       return {
+        display: "Nested",
+        order: 15,
         list: [
           {
             name: "task 1",
@@ -107,34 +107,46 @@
       };
     },
     computed: {
-      policyComputed() {
-        const newPolicyComputed = this.policy;
-        let tmp;
-        tmp = newPolicyComputed.name;
-        newPolicyComputed.title = tmp;
-        tmp = newPolicyComputed.sections;
-        newPolicyComputed.children = tmp;
-
-        console.log('newPolicyComputed', newPolicyComputed);
-
-        return [newPolicyComputed]
-      }
+      // policyComputed() {
+      //   const newPolicyComputed = this.policy;
+      //   let tmp;
+      //   tmp = newPolicyComputed.name;
+      //   newPolicyComputed.title = tmp;
+      //   tmp = newPolicyComputed.sections;
+      //   newPolicyComputed.children = tmp;
+      //
+      //   console.log('newPolicyComputed', newPolicyComputed);
+      //
+      //   return [newPolicyComputed]
+      // }
+      // policiesComputed() {
+      //   const policies = this.policies
+      //   let tmp
+      //   const newPolicies = policies.map(el => {
+      //     tmp = el['name'];
+      //     el['title'] = tmp;
+      //     tmp = el['sections']
+      //     el['children'] = tmp;
+      //     return el
+      //   });
+      //   return newPolicies;
+      // }
     },
     methods: {
-      treeChange(node, nodeVm, store) {
-        console.log(node)
-        console.log(nodeVm)
-        console.log(store)
-        this.treeJson = nodeVm.pure(nodeVm.rootData, true).children
-        console.log('this.treeJson', this.treeJson)
-      },
-      testFunc(node, nodeVm, store) {
-        console.log(node)
-        console.log(nodeVm)
-        console.log(store)
-        console.log("dragged id", node.id, node.title)
-        console.log("new parent id", node.parent.id, node.parent.title)
-      },
+      // treeChange(node, nodeVm, store) {
+      //   console.log(node)
+      //   console.log(nodeVm)
+      //   console.log(store)
+      //   this.treeJson = nodeVm.pure(nodeVm.rootData, true).children
+      //   console.log('this.treeJson', this.treeJson)
+      // },
+      // testFunc(node, nodeVm, store) {
+      //   console.log(node)
+      //   console.log(nodeVm)
+      //   console.log(store)
+      //   console.log("dragged id", node.id, node.title)
+      //   console.log("new parent id", node.parent.id, node.parent.title)
+      // },
     },
   };
 </script>

@@ -1,10 +1,5 @@
 <template lang="pug">
   draggable.dragArea(tag='ul' :list='policies' :group="{ name: 'g1' }")
-    <!--.table-->
-      <!--.table__row(v-for='el in policies' :key='el.title')-->
-        <!--.table__cell.table__cell_name {{ el.title }}-->
-          <!--nested-draggable(:policies='el.children')-->
-
     li(v-for='el in policies' :key='el.title')
       p.link
         b-icon.mr-2(v-if="el.children.length !== 0" icon="chevron-compact-down")

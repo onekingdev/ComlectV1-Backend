@@ -121,7 +121,7 @@
       },
       handleBlur(e) {
         console.log(e)
-        if (e.target.nodeName !== "INPUT")
+        if (e?.target?.nodeName !== "INPUT")
           this.toggleVueEditorHandler()
 
         if (this.parentSection) {

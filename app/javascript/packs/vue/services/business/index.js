@@ -1,5 +1,5 @@
 import axios from '@/services/axios'
-import store from 'store'
+import store from '@/store'
 
 export async function createPolicy(email, password, name) {
   return axios

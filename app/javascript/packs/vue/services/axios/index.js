@@ -1,5 +1,5 @@
-import axios from 'axios'
-import store from 'store'
+import axios from '@/axios'
+import store from '@/store'
 
 const axios = axios.create({
   baseURL: '/api/business/',

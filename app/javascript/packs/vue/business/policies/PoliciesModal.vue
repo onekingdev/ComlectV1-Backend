@@ -5,7 +5,7 @@
 
     b-modal.fade(:id="modalId" title="New policy")
       label.form-label New policy name
-      input.form-control(v-model="policy.name" type="text" placeholder="Enter the name of your policy" @keyup.enter="submit" autofocus)
+      input.form-control(v-model="policy.name" type="text" placeholder="Enter the name of your policy" @keyup.enter="submit" ref="input")
       Errors(:errors="errors.title")
 
       template(slot="modal-footer")
@@ -34,6 +34,9 @@
       }
     },
     methods: {
+      focusInput() {
+        this.$refs.input.focus();
+      },
       makeToast(title, str) {
         this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
       },
@@ -92,6 +95,9 @@
           errors: Array
         }
       }
+    },
+    mounted() {
+      // this.focusInput()
     },
   }
 </script>

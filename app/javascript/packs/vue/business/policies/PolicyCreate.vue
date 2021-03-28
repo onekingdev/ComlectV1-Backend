@@ -5,7 +5,7 @@
         .col-12.col-lg-3.px-0(v-if="leftMenu")
           .card-body.white-card-body.left-tree
             button.btn.btn-dark.mb-3.mr-3(@click="createPolicy('new')") New Policy
-            DragDropComponent(:policy="policy")
+            DragDropComponent(:policies="policiesComputed")
         .col
           .row
             .col-md-12.px-0
@@ -14,7 +14,7 @@
                   .d-flex.align-items-center
                     button.btn.btn__menu.mr-3(@click="leftMenu = !leftMenu")
                       b-icon(icon='list')
-                    button.btn.btn-default.mr-3 {{ policy.status }}
+                    button.btn.mr-3(:class="policy.status === 'published' ? 'btn-success' : 'btn-default'") {{ policy.status }}
                     h3.policy__main-title.m-y-0 {{ policy.name }}
                   .d-flex.justify-content-end.align-items-center
                     a.link.btn.mr-3(@click="saveDraft") Save Draft
@@ -247,18 +247,20 @@
       loading() {
         return this.$store.getters.loading;
       },
-      // policiesComputed() {
-      //   const policies = this.$store.getters.policies
-      //   console.log('policies', policies)
-      //   let tmp
-      //   const newPolicies = policies.map(el => {
-      //     tmp = el['sections']
-      //     el['children'] = tmp;
-      //     return el
-      //   });
-      //   console.log('newPolicies', newPolicies)
-      //   return newPolicies;
-      // }
+      policiesComputed() {
+        const policies = this.$store.getters.policies
+        console.log('policies', policies)
+        let tmp
+        const newPolicies = policies.map(el => {
+          tmp = el['name'];
+          el['title'] = tmp;
+          tmp = el['sections']
+          el['children'] = tmp;
+          return el
+        });
+        console.log('newPolicies', newPolicies)
+        return newPolicies;
+      }
     },
     watch: {
       // policiesComputed (oldVal, newVal) {
@@ -268,15 +270,26 @@
     },
     mounted() {
       this.$store
-        .dispatch("getPolicyById", { policyId: this.policyId })
+        .dispatch("getPolicies")
         .then((response) => {
-          this.policy = response;
-          console.log('response', response);
+          console.log('response 1', response);
+          this.policies = response
+          this.policy = response.find(el => el.id === this.policyId)
         })
         .catch((err) => {
           console.error(err);
           this.makeToast('Error', err.message)
         });
+      // this.$store
+      //   .dispatch("getPolicyById", { policyId: this.policyId })
+      //   .then((response) => {
+      //     this.policy = response;
+      //     console.log('response', response);
+      //   })
+      //   .catch((err) => {
+      //     console.error(err);
+      //     this.makeToast('Error', err.message)
+      //   });
     },
   };
 </script>

@@ -22,8 +22,9 @@ export default {
       state.policies[index] = payload;
       // state.policies.map(record => (record.policyID === payload.policyID) ? payload : record)
     },
-    createSections(state, payload) {
-      state.sections.push(payload);
+    deletePolicy(state, payload) {
+      const index = state.policies.findIndex(record => record.policyID === payload.policyID);
+      state.policies.splice(index, 1)
     },
     getPoliciesListFromDB(state, payload) {
       state.policies = payload;
@@ -291,6 +292,32 @@ export default {
             })
               .finally(() => commit("setLoading", false))
         })
+
+      } catch (error) {
+        commit("setError", error.message);
+        commit("setLoading", false);
+        throw error;
+      }
+    },
+    async deletePolicyById ({commit, getters}, payload) {
+      commit("clearError");
+      commit("setLoading", true);
+
+      try {
+        const endpointUrl = '/api/business/compliance_policies/'
+        const data = await fetch(`${endpointUrl}${payload.policyId}`, { method: 'DELETE', headers: {'Accept': 'application/json'}})
+          .then(response => response.json())
+          .then(response => {
+            commit('deletePolicy', {id: response.id})
+            return response
+          })
+          .catch(error => {
+            console.error(error)
+            throw error
+          })
+          .finally(() => commit("setLoading", false))
+
+        return data;
 
       } catch (error) {
         commit("setError", error.message);
