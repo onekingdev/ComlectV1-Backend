@@ -1,5 +1,5 @@
 <template lang="pug">
-  Get(:project="projectUrl"): template(v-slot="{project}")
+  Get(:project="projectUrl" :etag="etag"): template(v-slot="{project}")
     CommonHeader(:title="project.title" :sub="project.business.business_name" :breadcrumbs="['Projects', project.title]")
       a.btn.btn-outline-dark.float-right(v-if="showTimesheetBtn(project)" :href="timesheetUrl") My Timesheet
     Get(v-if="isApproved(project)" :localProject="projectUrl + '/local'"): template(v-slot="{localProject}"): b-tabs(v-model="tab" content-class="mt-0")
@@ -8,7 +8,7 @@
           .container
             .row.p-x-1
               .col-sm-12
-                ExtensionRequestedAlert(:project="project")
+                ExtensionRequestedAlert(:project="project" @saved="newEtag")
               .col-md-7.col-sm-12
                 PropertiesTable(title="Project Details" :properties="acceptedOverviewProps(localProject)")
               .col-md-5.col-sm-12.pl-0
@@ -108,6 +108,7 @@
 import { readablePaymentSchedule, fields } from '@/common/ProposalFields'
 import EditProposalModal from '@/specialist/projects/EditProposalModal'
 import ExtensionRequestedAlert from './alerts/ExtensionRequestedAlert'
+import EtaggerMixin from '@/mixins/EtaggerMixin'
 
 const overviewProps = project => {
   return [{ name: 'Owner', value: project.business && project.business.business_name },
@@ -138,6 +139,7 @@ const acceptedOverviewProps = project => [
 ]
 
 export default {
+  mixins: [EtaggerMixin],
   props: {
     id: {
       type: Number,
