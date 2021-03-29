@@ -111,7 +111,7 @@
       return {
         leftMenu: true,
         description: "N/A",
-        title: "New Policy",
+        title: "New Policy Sutitle",
         toggleVueEditor: false,
         sections: [],
         count: 0,
@@ -220,12 +220,19 @@
         if(event) event.target.closest('.policy-details__btn').style.display = 'none';
         const id = Math.floor(Math.random() * 100)
 
-        this.policy.sections.push({
+        // this.policy.sections.push({
+        //   id: id,
+        //   title: `${this.title}-№-${this.count++}-${id}`,
+        //   description: this.description,
+        //   children: [],
+        // })
+        this.policiesComputed = {
           id: id,
           title: `${this.title}-№-${this.count++}-${id}`,
           description: this.description,
           children: [],
-        })
+        }
+        console.log('this.policy.sections')
         console.log(this.policy.sections)
       },
       deleteSection(index) {
@@ -273,18 +280,44 @@
       loading() {
         return this.$store.getters.loading;
       },
-      policiesComputed() {
-        const policies = this.$store.getters.policiesList
-        let tmp;
-        const newPoliciesList = policies.map(el => {
-          tmp = el['name'];
-          el['title'] = tmp;
-          tmp = el['sections']
-          el['children'] = tmp;
-          if(!el['sections']) el['sections'] = []
-          return el
-        });
-        return newPoliciesList;
+      // policiesComputed() {
+      //   const policies = this.$store.getters.policiesList
+      //   let tmp;
+      //   const newPoliciesList = policies.map(el => {
+      //     tmp = el['name'];
+      //     el['title'] = tmp;
+      //     tmp = el['sections']
+      //     el['children'] = tmp;
+      //     if (!el['sections']) el['sections'] = []
+      //     return el
+      //   });
+      //   return newPoliciesList;
+      // },
+      policiesComputed: {
+        get() {
+          const policies = this.$store.getters.policiesList
+          let tmp;
+          const newPoliciesList = policies.map(el => {
+            tmp = el['name'];
+            el['title'] = tmp;
+            tmp = el['sections']
+            el['children'] = tmp;
+            if (!el['sections']) el['sections'] = []
+            return el
+          });
+          return newPoliciesList;
+        },
+        set(value) {
+          console.log(value)
+          this.$store.dispatch("updatePolicyById", {
+            id: this.policy.id,
+            sections: value
+          });
+        }
+      },
+      policyById() {
+        const id = this.policyId
+        return this.$store.getters.policyById(id)
       }
     },
     watch: {

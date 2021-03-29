@@ -27,7 +27,6 @@ class Policy {
 export default {
   state: {
     policies: [],
-    sections: [],
   },
   mutations: {
     createPolicy(state, payload) {
@@ -44,6 +43,10 @@ export default {
     },
     updatePoliciesList(state, payload) {
       state.policies = payload;
+    },
+    updatePolicyById(state, payload) {
+      const index = state.policies.findIndex(record => record.id === payload.id);
+      state.policies[index].sections.push(payload.sections);
     }
   },
   actions: {
@@ -247,6 +250,12 @@ export default {
         throw error;
       }
     },
+    updatePolicyById ({commit, getters}, payload) {
+      console.log('payload', payload)
+      commit('updatePolicyById', {
+        ...payload
+      })
+    },
     async getPolicyById ({commit, getters}, payload) {
       commit("clearError");
       commit("setLoading", true);
@@ -342,5 +351,10 @@ export default {
     policiesList(state) {
       return state.policies;
     },
+    policyById (state) {
+      return policyId => {
+        return state.policies.find(policy => policy.id === policyId)
+      }
+    }
   },
 };
