@@ -175,7 +175,7 @@ export default {
       return '/api/projects/' + project.id + '/end'
     },
     getContracts(project) {
-      return [project.visible_project]
+      return [project.projects[0]]
     },
     completeSuccess() {
       this.$bvModal.hide('EndContractModal')

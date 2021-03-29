@@ -9,7 +9,7 @@
         button.btn.btn-default.float-right(v-b-modal="'ExtendDeadlineModal'") Extend
         | Do you want to extend the deadline?
         b-modal(id="ExtendDeadlineModal" title="Extend Deadline")
-          InputDate(v-model="form.new_end_date" :errors="errors.new_end_date" :options="datepickerOptions") New Due Date
+          InputDate(v-model="form.ends_on" :errors="errors.ends_on" :options="datepickerOptions") New Due Date
           template(#modal-footer="{ hide }")
             button.btn.btn-default.float-right(@click="hide") Cancel
             Post(:action="submitUrl" :model="form" @errors="errors = $event" @saved="saved")
@@ -28,7 +28,7 @@ export default {
   },
   data() {
     return {
-      form: { new_end_date: null },
+      form: { ends_on: null },
       errors: {}
     }
   },
@@ -46,7 +46,7 @@ export default {
       return this.project.extension
     },
     isSuggestionVisible() {
-      return this.project.specialist_id && DateTime.local().plus({ days: 1 }).toSQLDate() === this.project.ends_on
+      return true
     },
     datepickerOptions() {
       return {

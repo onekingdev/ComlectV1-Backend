@@ -76,6 +76,8 @@
                     Breadcrumbs.m-y-1(:items="['Collaborators', `${showingContract.specialist.first_name} ${showingContract.specialist.last_name}`]")
                   .row: .col-sm-12
                     PropertiesTable(title="Contract Details" :properties="contractDetails(showingContract)")
+                      EditContractModal(:project-id="showingContract.id")
+                        button.btn.btn-outline-dark.float-right Edit
       b-tab(title="Activity")
         .card-body.white-card-body
 </template>
@@ -90,6 +92,7 @@ import EtaggerMixin from '@/mixins/EtaggerMixin'
 import LocalProjectModal from './LocalProjectModal'
 import EndContractModal from './EndContractModal'
 import ExtendDeadlineNotice from './alerts/ExtendDeadlineNotice'
+import EditContractModal from '@/business/projects/EditContractModal'
 
 export default {
   mixins: [EtaggerMixin],
@@ -116,7 +119,8 @@ export default {
     TimesheetsNotice,
     EndContractNotice,
     EndContractModal,
-    ProjectDetails
+    ProjectDetails,
+    EditContractModal
   },
   methods: {
     completeSuccess() {
