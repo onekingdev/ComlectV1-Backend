@@ -1,12 +1,17 @@
 <template lang="pug">
-  draggable.table.mb-0.dragArea(tag='div' :list='policies' :group="{ name: 'g1' }")
-    .table__row(v-for='el in policies' :key='el.title')
-      .table__cell.table__cell_name.px-0.pl-1.w-100
-        .dropdown-toggle(:class="[el.sections && el.sections.length !== 0 || el.children && el.children.length !== 0 ? 'active' : '']")
-          b-icon.mr-2(v-if="el.sections && el.sections.length !== 0 || el.children && el.children.length !== 0" icon="chevron-compact-down")
-          b-icon.mr-2(v-else icon="chevron-compact-right")
-          | {{ el.title }}
+  draggable.dragArea(tag='div' :list='policies' :group="{ name: 'g1' }")
+      .table(v-for='el in policies' :key='el.title')
+        .table__row
+          .table__cell.table__cell_name.px-0.pl-1.w-100
+            .dropdown-toggle(:class="[el.sections && el.sections.length !== 0 || el.children && el.children.length !== 0 ? 'active' : '']")
+              b-icon.mr-2(v-if="el.sections && el.sections.length !== 0 || el.children && el.children.length !== 0" icon="chevron-compact-down")
+              b-icon.mr-2(v-else icon="chevron-compact-right")
+              | {{ el.title }}
         nested-draggable(:policies='el.children ? el.children : el.sections')
+  <!--draggable.dragArea(tag='ul' :list='policies' :group="{ name: 'g1' }")-->
+    <!--li(v-for='el in policies' :key='el.title')-->
+      <!--p {{ el.title }}-->
+      <!--nested-draggable(:tasks='el.sections ? el.sections : el.children')-->
 </template>
 <script>
   import draggable from "vuedraggable";

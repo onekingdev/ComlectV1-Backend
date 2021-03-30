@@ -6,8 +6,10 @@
           .card-body.white-card-body.left-tree
             PoliciesModalCreate(@saved="updateList")
               button.btn.btn-dark.mb-3.mr-3 New Policy
-            nested-draggable(:policies='policiesComputed')
-              rawdisplayer(:value='policiesComputed' title='List')
+            .row
+              .col-12
+                nested-draggable(:policies='policiesComputed', :move="checkMove")
+            rawdisplayer(:value='policiesComputed' title='List')
         .col
           .row
             .col-md-12.px-0
@@ -82,6 +84,7 @@
 
 <script>
   import nestedDraggable from "./infra/nested";
+  import rawdisplayer from "./infra/raw-displayer";
   import { VueEditor } from "vue2-editor";
   import SubsectionPolicy from "./PolicySubsection";
   import HistoryPolicy from "./PolicyHistory";
@@ -101,6 +104,7 @@
     },
     components: {
       nestedDraggable,
+      rawdisplayer,
       VueEditor,
       SubsectionPolicy,
       HistoryPolicy,
@@ -278,6 +282,14 @@
       makeToast(title, str) {
         this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
       },
+
+      checkMove: function(evt){
+        console.log('checkMove')
+        console.log(evt)
+        console.log(evt.draggedContext)
+        console.log(evt.draggedContext.element)
+        return (evt.draggedContext.element.name!=='apple');
+      },
     },
     computed: {
       loading() {
@@ -324,8 +336,8 @@
       }
     },
     watch: {
-      policiesComputed (record) {
-        console.log('record', record)
+      policiesComputed (oldArr, newArr) {
+        console.log('record', oldArr, newArr)
       }
     },
     mounted() {

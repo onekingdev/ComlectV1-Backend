@@ -67,7 +67,7 @@
     components: {
       PolicyTable,
       PoliciesModalCreate,
-      // Loading
+      // Loading,
     },
     data() {
       return {
@@ -106,10 +106,33 @@
       policyById () {
         // return this.$store.dispach('getPolicyById', this.id)
       },
-      policiesListComputed() {
-        const policies = this.$store.getters.policiesList;
-        policies.sort((a, b) => a.position - b.position)
-        return policies;
+      // policiesListComputed() {
+      //   const policies = this.$store.getters.policiesList;
+      //   policies.sort((a, b) => a.position - b.position)
+      //   return policies;
+      // },
+      policiesListComputed: {
+        get() {
+          const policies = this.$store.getters.policiesList
+          let tmp;
+          const newPoliciesList = policies.map(el => {
+            tmp = el['name'];
+            el['title'] = tmp;
+            tmp = el['sections']
+            el['children'] = tmp;
+            if (!el['sections']) el['sections'] = []
+            return el
+          });
+          newPoliciesList.sort((a, b) => a.position - b.position)
+          return newPoliciesList;
+        },
+        set(value) {
+          console.log(value)
+          this.$store.dispatch("updatePolicyById", {
+            id: this.policy.id,
+            sections: value
+          });
+        }
       },
     },
     beforeCreate() { // or mounted?

@@ -63,7 +63,7 @@
     props: ['policies'],
     components: {
       Loading,
-      PoliciesModalDelete
+      PoliciesModalDelete,
     },
     data() {
       return {
