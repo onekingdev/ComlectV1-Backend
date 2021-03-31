@@ -1,6 +1,6 @@
 <template lang="pug">
-  draggable.table.dragArea(tag='div' :list='policies' :group="{ name: 'g1' }" :move="checkMove")
-    .table__row(v-for='(el, indexEl) in policies' :key='el.title')
+  draggable.dragArea(tag='tbody' :list='policies' :group="{ name: 'g1' }" :move="checkMove" @end="onEnd")
+    .table__row(v-for='(el, indexEl) in policies' :key='el.title ? el.title : el.name')
       .table__cell.table__cell_name(v-if="el.sections && el.sections.length !== 0")
         .dropdown-toggle(
           :id="`#nested-sectionIcon-${el.id ? el.id : el.indexEl}`", @click="toogleSections(el.id ? el.id : el.indexEl)"
@@ -8,9 +8,9 @@
           )
           b-icon.mr-2(v-if="el.sections && el.sections.length !== 0 || el.children && el.children.length !== 0" icon="chevron-compact-down")
           b-icon.mr-2(v-else icon="chevron-compact-right")
-          | {{ el.title }}
-        nested-draggable(:policies='el.children ? el.children : el.sections')
-      .table__cell.table__cell_name(v-else) {{ el.title }}
+          | {{ el.title ? el.title : el.name }}
+        nested-draggable(:policies='el.children ? el.children : el.sections' :policyTitle="el.title")
+      .table__cell.table__cell_name(v-else) {{ el.title ? el.title : el.name }}
       .table__cell(v-if="el.status")
         .status.status__draft {{ el.status }}
       .table__cell(v-if="el.updated_at") {{ dateToHuman(el.updated_at) }}
@@ -32,11 +32,18 @@
   import { DateTime } from 'luxon'
   import PoliciesModalDelete from "../PoliciesModalDelete";
   export default {
-    props: ['policies'],
+    props: ['policies', 'policyTitle'],
     name: "nested-draggable",
     components: {
       draggable,
       PoliciesModalDelete
+    },
+    data() {
+      return {
+        sections: [],
+        oldIndex: -1,
+        newIndex: -1,
+      }
     },
     methods: {
       makeToast(title, str) {
@@ -53,13 +60,77 @@
             this.makeToast('Error', err.message)
           });
       },
+      movePolicy(oldIndex, newIndex) {
+        const oldPos = this.policiesList[oldIndex].position
+        const newPos = this.policiesList[newIndex].position
+
+        const oldPolicy = {
+          id: this.policiesList[oldIndex].id,
+          position: newPos
+        }
+
+        const newPolicy = {
+          id: this.policiesList[newIndex].id,
+          position: oldPos
+        }
+
+        const arrToChange = [ oldPolicy, newPolicy ]
+
+        this.$store
+          .dispatch("moveUpPolicy", arrToChange)
+          .then((response) => {
+            console.log('response in nested', response)
+            this.makeToast('Success', 'Policy succesfully moved.')
+          })
+          .catch((err) => {
+            // console.error(err)
+            this.makeToast('Error', err.message)
+          });
+      },
       checkMove: function(evt){
-        console.log('checkMove')
+        if(evt.draggedContext.element.id && !evt.relatedContext.element.id) {
+          return false;
+        }
+        if(evt.draggedContext.element.id && evt.relatedContext.element.id) {
+          // const oldIndex = evt.draggedContext.element.id
+          // const newIndex = evt.relatedContext.element.id
+          // this.movePolicy(oldIndex, newIndex)
+          // return
+        }
+        console.log('relatedContext')
         console.log(evt.relatedContext)
-        console.log(evt)
+        console.log('draggedContext:')
         console.log(evt.draggedContext)
-        console.log(evt.draggedContext.element)
-        return (evt.draggedContext.element.name!=='apple');
+
+        if(this.policyTitle) {
+          this.sections = evt.relatedContext.list
+        }
+        if(!this.policyTitle) {
+          this.oldIndex = evt.draggedContext.index
+          this.newIndex = evt.relatedContext.index
+        }
+      },
+      onEnd(evt){
+        console.log('event', evt)
+
+        if (!this.policyTitle) {
+          this.movePolicy(this.oldIndex, this.newIndex)
+          return
+        }
+
+        if(this.policyTitle && this.sections) {
+          const policy = this.policiesList.find(policy => policy['title'] === this.policyTitle)
+          // console.log('policy')
+          // console.log(policy)
+          // console.log({
+          //   id: policy.id,
+          //   sections: this.sections
+          // })
+          this.$store.dispatch("updatePolicy", {
+            id: policy.id,
+            sections: this.sections
+          });
+        }
       },
       dateToHuman(value) {
         const date = DateTime.fromJSDate(new Date(value))
@@ -82,10 +153,10 @@
         // console.log(policyId)
         const index = this.policies.findIndex(record => record.id === policyId);
         // policies[index] = payload;
-        const curPos = this.policies[index].position
+        const oldPos = this.policies[index].position
         const newPos = this.policies[index - 1].position
 
-        this.policies[index - 1].position = curPos
+        this.policies[index - 1].position = oldPos
         this.policies[index].position = newPos
 
         const arrToChange = [
@@ -121,6 +192,11 @@
           })
       },
     },
+    computed: {
+      policiesList() {
+        return this.$store.getters.policiesList
+      }
+    }
   };
 </script>
 <style scoped>

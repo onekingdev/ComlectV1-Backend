@@ -40,8 +40,43 @@
                             <!--td.text-center(colspan=6) No policies-->
                       .row
                         .col-12
-                          nested-draggable(:policies='policiesListComputed')
-                      rawdisplayer(:value='policiesListComputed' title='List')
+                          .table(v-if="policiesListComputed.length !== 0")
+                            .table__row
+                              .table__cell.table__cell_title Name
+                              .table__cell.table__cell_title.table__cell_clickable
+                                | Status
+                                b-icon.ml-2(icon='chevron-expand')
+                              .table__cell.table__cell_title.table__cell_clickable
+                                | Last Modified
+                                b-icon.ml-2(icon='chevron-expand')
+                              .table__cell.table__cell_title.table__cell_clickable
+                                | Date Created
+                                b-icon.ml-2(icon='chevron-expand')
+                              .table__cell.table__cell_title.table__cell_clickable
+                                | Risk Level
+                                b-icon.ml-2(icon='chevron-expand')
+                              .table__cell
+                            nested-draggable(:policies='filteredList')
+                          .table(v-else)
+                            .table__row
+                              .table__cell.text-center
+                                h3 Policies not exist
+                      <!--rawdisplayer(:value='policiesListComputed' title='List')-->
+                      <!--.row-->
+                        <!--.col-12-->
+                          <!--h3 Draggable table-->
+                          <!--table.table.table-striped-->
+                            <!--thead.thead-dark-->
+                              <!--tr-->
+                                <!--th(scope='col') Id-->
+                                <!--th(scope='col') Name-->
+                                <!--th(scope='col') Sport-->
+                            <!--draggable(v-model='policiesListComputed' tag='tbody')-->
+                              <!--tr(v-for='item in policiesListComputed' :key='item.title')-->
+                                <!--td(scope='row') {{ item.id }}-->
+                                <!--td {{ item.name }}-->
+                                <!--td {{ item.status }}-->
+                        <!--rawdisplayer.col-3(:value='policiesListComputed' title='List')-->
                 b-tab(title="Archive")
                   .card-body.white-card-body
                     .container
@@ -52,7 +87,7 @@
                       div Setup
             .col-12
               <!--pre {{ filteredList }}-->
-              pre {{ policiesListComputed }}
+              <!--pre {{ policiesListComputed }}-->
               <!--.test-block block-->
                 <!--.test-block__element element-->
                 <!--.test-block__element.test-block__element_modificator modificator-->
@@ -62,11 +97,12 @@
 
 <script>
   import PolicyTable from "./PolicyTable";
-  import PoliciesModalCreate from "./PoliciesModalCreate";
+  import PoliciesModalCreate from "./PoliciesModalCreate"
   import EtaggerMixin from '@/mixins/EtaggerMixin'
   // import Loading from '@/common/Loading/Loading'
-  import nestedDraggable from "./infra/nestedMain";
-  import rawdisplayer from "./infra/raw-displayer";
+  import nestedDraggable from "./infra/nestedMain"
+  import rawdisplayer from "./infra/raw-displayer"
+  // import draggable from "vuedraggable"
 
   export default {
     mixins: [EtaggerMixin],
@@ -76,6 +112,7 @@
       // Loading,
       nestedDraggable,
       rawdisplayer,
+      // draggable
     },
     data() {
       return {
@@ -132,6 +169,7 @@
             return el
           });
           newPoliciesList.sort((a, b) => a.position - b.position)
+          console.log('newPoliciesList', newPoliciesList)
           return newPoliciesList;
         },
         set(value) {

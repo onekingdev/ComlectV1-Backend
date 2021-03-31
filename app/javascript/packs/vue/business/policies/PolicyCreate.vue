@@ -8,8 +8,9 @@
               button.btn.btn-dark.mb-3.mr-3 New Policy
             .row
               .col-12
-                nested-draggable(:policies='policiesComputed', :move="checkMove")
-            rawdisplayer(:value='policiesComputed' title='List')
+                .table
+                  nested-draggable(:policies='policiesComputed' @movePolicy="movePolicy")
+            <!--rawdisplayer(:value='policiesComputed' title='List')-->
         .col
           .row
             .col-md-12.px-0
@@ -78,8 +79,8 @@
                       .policy-details
                         h3.policy-details__title Activity
                         .policy-details__body Activity
-            .col-12
-              pre {{ policy }}
+            <!--.col-12-->
+              <!--pre {{ policy }}-->
 </template>
 
 <script>
@@ -277,6 +278,36 @@
           .catch(error => {
             this.makeToast('Error', `Couldn't submit form! ${error}`)
           })
+      },
+
+      movePolicy(event) {
+        const curPos = this.policies[event.oldIndex].position
+        const newPos = this.policies[event.newIndex].position
+
+        this.policies[event.newIndex].position = curPos
+        this.policies[event.oldIndex].position = newPos
+
+        const arrToChange = [
+          {
+            id: this.policies[event.newIndex].id,
+            position: this.policies[event.newIndex].position
+          },
+          {
+            id: this.policies[event.oldIndex].id,
+            position: this.policies[event.oldIndex].position
+          }
+        ]
+
+        this.$store
+          .dispatch("moveUpPolicy", arrToChange)
+          .then((response) => {
+            console.log('response', response)
+            this.makeToast('Success', 'Policy succesfully moved.')
+          })
+          .catch((err) => {
+            // console.error(err)
+            this.makeToast('Error', err.message)
+          });
       },
 
       makeToast(title, str) {

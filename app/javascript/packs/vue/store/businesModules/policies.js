@@ -307,7 +307,6 @@ export default {
                 throw new Error(`Could't update policy (${response.status})`);
               return response.json()
             }).then(response => {
-              // console.log(response)
               return response
             }).catch (error => {
               // console.error(error)
