@@ -91,7 +91,7 @@ import EtaggerMixin from '@/mixins/EtaggerMixin'
 import LocalProjectModal from './LocalProjectModal'
 import EndContractModal from './EndContractModal'
 import ExtendDeadlineNotice from './alerts/ExtendDeadlineNotice'
-import EditContractModal from '@/business/projects/EditContractModal'
+import EditContractModal from '@/common/projects/EditContractModal'
 
 export default {
   mixins: [EtaggerMixin],
