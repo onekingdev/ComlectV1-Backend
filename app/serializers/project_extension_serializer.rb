@@ -5,6 +5,7 @@ class ProjectExtensionSerializer < ApplicationSerializer
              :project_id,
              :requester,
              :ends_on,
+             :ends_on_only,
              :expires_at,
              :status,
              :requester,

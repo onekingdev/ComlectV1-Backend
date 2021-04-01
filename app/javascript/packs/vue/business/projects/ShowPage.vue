@@ -19,7 +19,7 @@
                 Get(v-for="marketProject in project.projects" :etag="etag" :marketProject="`/api/business/projects/${marketProject.id}`" :key="marketProject.id"): template(v-slot="{marketProject}")
                   TimesheetsNotice(:project="marketProject")
                   EndContractNotice(:project="marketProject" @saved="completeSuccess" @errors="completeErrors")
-                  ExtendDeadlineNotice(:project="marketProject" @saved="newEtag")
+                  ChangeContractAlerts(:project="marketProject" @saved="newEtag" for="Business")
             .row.p-x-1
               .col-md-7.col-sm-12
                 .card
@@ -90,7 +90,7 @@ import ProjectDetails from './ProjectDetails'
 import EtaggerMixin from '@/mixins/EtaggerMixin'
 import LocalProjectModal from './LocalProjectModal'
 import EndContractModal from './EndContractModal'
-import ExtendDeadlineNotice from './alerts/ExtendDeadlineNotice'
+import ChangeContractAlerts from '@/common/projects/ChangeContractAlerts'
 import EditContractModal from '@/common/projects/EditContractModal'
 
 export default {
@@ -139,7 +139,7 @@ export default {
   },
   components: {
     ApplicationsNotice,
-    ExtendDeadlineNotice,
+    ChangeContractAlerts,
     LocalProjectModal,
     TimesheetsNotice,
     EndContractNotice,

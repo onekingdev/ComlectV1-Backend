@@ -8,7 +8,7 @@
           .container
             .row.p-x-1
               .col-sm-12
-                ChangeContractAlerts(:project="project" @saved="newEtag")
+                ChangeContractAlerts(:project="project" @saved="newEtag" for="Specialist")
               .col-md-7.col-sm-12
                 PropertiesTable(title="Project Details" :properties="acceptedOverviewProps(localProject)")
               .col-md-5.col-sm-12.pl-0
