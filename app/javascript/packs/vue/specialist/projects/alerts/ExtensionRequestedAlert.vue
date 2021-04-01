@@ -27,7 +27,8 @@ export default {
   },
   computed: {
     isVisible() {
-      return this.project.extension
+      return this.project.extension && this.project.extension.requester
+          && this.project.extension.requester.startsWith('Business')
     },
     onlyDeadlineChanged() {
       return !this.project.extension.hourly_rate && !this.project.extension.fixed_budget
