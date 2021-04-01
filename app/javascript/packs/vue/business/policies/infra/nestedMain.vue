@@ -25,7 +25,7 @@
               a.link(:href="'/business/compliance_policies/'+el.id") Edit
             li.actions-dropdown__item.move-up(@click="moveUp(el.id)") Move up
             li.actions-dropdown__item.archive
-              PoliciesModalArchive(@saved="updateList", :policyId="el.id", @archiveConfirmed="archivePolicy(el.id)") Archive
+              PoliciesModalArchive(@saved="updateList", :policyId="el.id", @archiveConfirmed="archivePolicy(el.id, !el.archived)") {{ !el.archived ? 'Archive' : 'Unarchive' }}
             li.actions-dropdown__item.delete
               PoliciesModalDelete(@saved="updateList", :policyId="el.id", @deleteConfirmed="deletePolicy(el.id)") Delete
 </template>
@@ -57,7 +57,7 @@
         this.$store
           .dispatch("getPolicies")
           .then((response) => {
-            // console.log(response);
+            console.log(response);
           })
           .catch((err) => {
             console.error(err);
@@ -159,19 +159,23 @@
         this.$store
           .dispatch('deletePolicyById', { policyId })
           .then(response => {
+            console.log('response', response)
             this.makeToast('Success', `Policy successfully deleted!`)
           })
           .catch(error => {
+            console.error(err)
             this.makeToast('Error', `Couldn't submit form! ${error}`)
           })
       },
-      archivePolicy(policyId) {
+      archivePolicy(policyId, archiveStatus) {
         this.$store
-          .dispatch('archivePolicyById', { policyId, archived: true })
+          .dispatch('archivePolicyById', { policyId, archived: archiveStatus })
           .then(response => {
+            console.log('response', response)
             this.makeToast('Success', `Policy successfully archived!`)
           })
           .catch(error => {
+            console.error(err)
             this.makeToast('Error', `Couldn't submit form! ${error}`)
           })
       },

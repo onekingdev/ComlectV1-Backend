@@ -69,12 +69,15 @@
     },
     computed: {
       filteredList () {
-        return this.policiesListComputed.filter(policy => {
+        return this.unArchivedList.filter(policy => {
             return policy.name?.toLowerCase().includes(this.searchInput.toLowerCase())
         })
       },
       archivedList () {
         return this.policiesListComputed.filter(policy => policy.archived)
+      },
+      unArchivedList () {
+        return this.policiesListComputed.filter(policy => !policy.archived)
       },
       policyById () {
         // return this.$store.dispach('getPolicyById', this.id)
