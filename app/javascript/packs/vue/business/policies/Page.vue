@@ -17,11 +17,11 @@
                 b-tab(title="Compilance Manual" active)
                   .card-body.white-card-body
                     .container
-                      PolicyTable(:policies="filteredList", @searching="searching")
+                      PolicyTable(:policies="filteredUnArchivedList", @searching="searching")
                 b-tab(title="Archive")
                   .card-body.white-card-body
                     .container
-                      PolicyTable(:policies="archivedList", @searching="searching")
+                      PolicyTable(:policies="filteredArchivedList", @searching="searchingArchived")
                 b-tab(title="Setup")
                   .card-body.white-card-body
                     .container
@@ -43,6 +43,7 @@
       return {
         title: "test123",
         searchInput: "",
+        searchInputArchived: "",
         policies: [],
         id: 1,
         policy: {},
@@ -54,6 +55,9 @@
       },
       searching (value) {
         this.searchInput = value;
+      },
+      searchingArchived (value) {
+        this.searchInputArchived = value;
       },
       updateList () {
         this.$store
@@ -68,9 +72,14 @@
       },
     },
     computed: {
-      filteredList () {
+      filteredUnArchivedList () {
         return this.unArchivedList.filter(policy => {
             return policy.name?.toLowerCase().includes(this.searchInput.toLowerCase())
+        })
+      },
+      filteredArchivedList () {
+        return this.archivedList.filter(policy => {
+          return policy.name?.toLowerCase().includes(this.searchInputArchived.toLowerCase())
         })
       },
       archivedList () {
