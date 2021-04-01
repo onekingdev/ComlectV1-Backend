@@ -1,6 +1,6 @@
 <template lang="pug">
   div(v-if="isVisible")
-    .alert.alert-warning(v-if="onlyDeadlineChanged")
+    .alert.alert-warning(v-if="project.extension.ends_on_only")
       h4.alert-heading {{ project.business.business_name }} has requested to extend the deadline to {{ project.extension.ends_on | asDate }}
       p
         Post(:action="apiUrl" method="PUT" :model="{confirm:true}" @saved="saved(true)")
@@ -35,10 +35,6 @@ export default {
     isVisible() {
       return this.project.extension && this.project.extension.requester
           && this.project.extension.requester.startsWith('Business')
-    },
-    onlyDeadlineChanged() {
-      return !this.project.extension.hourly_rate && !this.project.extension.fixed_budget
-          && !this.project.extension.key_deliverables && !this.project.extension.role_details
     },
     apiUrl() {
       return '/api/projects/' + this.project.id + '/extension/' + 1
