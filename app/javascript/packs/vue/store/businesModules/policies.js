@@ -405,7 +405,7 @@ export default {
       try {
         const endpointUrl = '/api/business/compliance_policies/'
         const data = await fetch(`${endpointUrl}${payload.policyId}`, {
-          method: 'POST',
+          method: 'PATCH',
           headers: {'Accept': 'application/json'},
           body: JSON.stringify({
             archived: payload.archived
