@@ -25,11 +25,12 @@
                 b-tab(title="Setup")
                   .card-body.white-card-body
                     .container
-                      div Setup
+                      PolicySetup
 </template>
 
 <script>
   import PolicyTable from "./PolicyTable";
+  import PolicySetup from "./PolicySetup";
   import EtaggerMixin from '@/mixins/EtaggerMixin'
   import PoliciesModalCreate from "./Modals/PoliciesModalCreate"
 
@@ -37,6 +38,7 @@
     mixins: [EtaggerMixin],
     components: {
       PolicyTable,
+      PolicySetup,
       PoliciesModalCreate,
     },
     data() {
