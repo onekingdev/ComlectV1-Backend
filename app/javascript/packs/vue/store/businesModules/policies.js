@@ -290,6 +290,8 @@ export default {
     async movePolicy({ commit, getters }, payload) {
       commit("clearError");
       commit("setLoading", true);
+      console.log('payload')
+      console.log(payload)
 
       try {
         const data = fetch('/api/business/compliance_policies/' + payload.id, {

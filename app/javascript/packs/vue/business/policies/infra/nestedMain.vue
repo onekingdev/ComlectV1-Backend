@@ -45,8 +45,8 @@
     data() {
       return {
         sections: [],
-        oldIndex: -1,
-        newIndex: -1,
+        draggedContext: {},
+        relatedContext: {},
       }
     },
     methods: {
@@ -64,12 +64,14 @@
             this.makeToast('Error', err.message)
           });
       },
-      movePolicy(oldIndex, newIndex) {
-        const newPos = this.policiesList[oldIndex].position - 0.01
+      movePolicy() {
+        const policy = this.policiesList.find(policy => {
+          if (policy.id === this.relatedContext.element.id) return policy
+        })
         this.$store
           .dispatch("movePolicy", {
-            id: this.policiesList[newIndex].id,
-            position: newPos
+            id: this.draggedContext.element.id,
+            position: policy.position - 0.01
           })
           .then((response) => {
             console.log('response in nested', response)
@@ -94,15 +96,15 @@
           this.sections = evt.relatedContext.list
         }
         if(!this.policyTitle) {
-          this.oldIndex = evt.draggedContext.index
-          this.newIndex = evt.relatedContext.index
+          this.draggedContext = evt.draggedContext
+          this.relatedContext = evt.relatedContext
         }
       },
       onEnd(evt){
         console.log('event', evt)
 
-        if (!this.policyTitle && this.oldIndex && this.newIndex) {
-          this.movePolicy(this.oldIndex, this.newIndex)
+        if (!this.policyTitle) {
+          this.movePolicy()
           return
         }
 
