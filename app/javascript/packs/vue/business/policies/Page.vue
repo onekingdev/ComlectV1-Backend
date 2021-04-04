@@ -93,16 +93,8 @@
       policyById () {
         // return this.$store.dispach('getPolicyById', this.id)
       },
-      policiesListComputed: {
-        get() {
-          return this.$store.getters.policiesListNested
-        },
-        set(value) {
-          this.$store.dispatch("updatePolicySectionsById", {
-            id: this.policy.id,
-            sections: value
-          });
-        }
+      policiesListComputed () {
+        return this.$store.getters.policiesListNested
       },
     },
     // beforeCreate() { // or mounted?

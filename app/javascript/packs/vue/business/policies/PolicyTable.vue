@@ -7,12 +7,12 @@
           input.form-control(type="text" placeholder="Search" v-model="searchInput", @keyup="searching")
           button.btn-clear(v-if="isActive" @click="clearInput")
             b-icon.icon-clear(icon='x-circle')
-      .col-4(v-if="policies.length !== 0 && searchInput")
-        p Found {{ policies.length }} {{ policies.length === 1 ? 'result' : 'results' }}
+      .col-4(v-if="policiesComputed.length !== 0 && searchInput")
+        p Found {{ policiesComputed.length }} {{ policiesComputed.length === 1 ? 'result' : 'results' }}
     .row
       .col-12
         Loading
-        .table(v-if="!loading && policies && policies.length !== 0")
+        .table(v-if="!loading && policiesComputed && policiesComputed.length !== 0")
           .table__row
             .table__cell.table__cell_title Name
             .table__cell.table__cell_title.table__cell_clickable
@@ -28,12 +28,12 @@
               | Risk Level
               b-icon.ml-2(icon='chevron-expand')
             .table__cell
-          nested-draggable(:policies='policies', :policiesList="policies")
-        .table(v-if="!loading && policies.length === 0")
+          nested-draggable(v-model='policiesComputed', :policiesList="policies")
+        .table(v-if="!loading && policiesComputed.length === 0")
           .table__row
             .table__cell.text-center
               h3 Policies not exist
-    <!--rawdisplayer(:value='policies' title='List')-->
+    rawdisplayer(:value='policiesComputed' title='List')
 </template>
 
 <script>
@@ -67,6 +67,19 @@
     computed: {
       loading() {
         return this.$store.getters.loading;
+      },
+      policiesComputed: {
+        get() {
+          return this.policies
+        },
+        set(value) {
+          console.log('set value', value)
+          // this.$store.commit("updatePoliciesList", value)
+          // this.$store.dispatch("updatePolicySectionsById", {
+          //   id: this.policy.id,
+          //   sections: value
+          // });
+        }
       },
     }
   }

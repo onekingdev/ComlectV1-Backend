@@ -1,6 +1,7 @@
 <template lang="pug">
-  draggable.dragArea(tag='tbody' :list='policies' :group="{ name: 'g1' }" :move="checkMove" @end="onEnd")
-    .table__row(v-for='el in policies' :key='el.title')
+  <!--draggable.dragArea(tag='tbody' :list='policies' :group="{ name: 'g1' }" :move="checkMove" @end="onEnd")-->
+  draggable.dragArea(v-bind="dragOptions" tag="tbody" :list="list" :value="value" :move="checkMove" @end="onEnd" @input="emitter")
+    .table__row(v-for='el in realValue' :key='el.title')
       .table__cell.table__cell_name(v-if="el.children && el.children.length !== 0")
         .dropdown-toggle(
           :id="`#nested-sectionIcon-${el.id}`", @click="toogleSections(el.id)"
@@ -9,7 +10,7 @@
           b-icon.mr-2(v-if="el.children && el.children.length !== 0" icon="chevron-compact-down")
           b-icon.mr-2(v-else icon="chevron-compact-right")
           | {{ el.title }}
-        nested-draggable(:policies="el.children" :policyTitle="el.title" :policiesList="policiesList")
+        nested-draggable(:id="`#nested-section-${el.id}`" :list="el.children", :policiesList="policiesList", :policy="el", :policyTitle="el.title")
       .table__cell.table__cell_name(v-else) {{ el.title }}
       .table__cell(v-if="el.status")
         .status.status__draft {{ el.status }}
@@ -35,7 +36,33 @@
   import PoliciesModalDelete from "../Modals/PoliciesModalDelete";
   import PoliciesModalArchive from "../Modals/PoliciesModalArchive";
   export default {
-    props: ['policies', 'policyTitle', 'policiesList'],
+    props: {
+      value: {
+        required: false,
+        type: Array,
+        default: null
+      },
+      list: {
+        required: false,
+        type: Array,
+        default: null
+      },
+      policiesList: {
+        required: false,
+        type: Array,
+        default: null
+      },
+      policy: {
+        required: false,
+        type: Object,
+        default: null
+      },
+      policyTitle: {
+        required: false,
+        type: String,
+        default: null
+      },
+    },
     name: "nested-draggable",
     components: {
       draggable,
@@ -45,6 +72,7 @@
     data() {
       return {
         sections: [],
+        children: [],
         draggedContext: {},
         relatedContext: {},
       }
@@ -83,8 +111,8 @@
           });
       },
       checkMove: function(evt){
-        console.log('relatedContext', evt.relatedContext)
-        console.log('draggedContext:', evt.draggedContext)
+        // console.log('relatedContext', evt.relatedContext)
+        // console.log('draggedContext:', evt.draggedContext)
 
         // 1. MOVE ROOT POLICY TO ANOTHER PLACE
         if(!this.policyTitle) {
@@ -98,12 +126,17 @@
         }
 
         // 3. MOVE Section of POLICY INSIDE this POLICY
-        if(this.policyTitle) {
+        if(this.policyTitle && this.policy.id) {
           this.sections = evt.relatedContext.list
         }
 
         // 4. MOVE Section of POLICY INSIDE another POLICY
         // 5. MOVE Section Child of POLICY INSIDE this POLICY
+        if(!evt.draggedContext.element.id) {
+          this.draggedContext = evt.draggedContext
+          this.relatedContext = evt.relatedContext
+          this.children = evt.relatedContext.list
+        }
         // 6. MOVE Section Child of POLICY INSIDE another POLICY
         // 7. MOVE UP Section POLICY INSIDE this POLICY
         // 8. MOVE DOWN Section POLICY INSIDE this POLICY
@@ -111,7 +144,9 @@
         // 10. MOVE DOWN Section Child POLICY INSIDE this POLICY
       },
       onEnd(evt){
-        console.log('event', evt)
+        // console.log('event', evt)
+        console.log('relatedContext', this.relatedContext)
+        console.log('draggedContext:', this.draggedContext)
 
         if (!this.policyTitle) {
           this.movePolicy()
@@ -141,6 +176,8 @@
         document.getElementById(`#nested-actionIcon-${value}`).classList.toggle('active');
       },
       toogleSections(value) {
+        console.log(value)
+        console.log(document.getElementById(`#nested-section-${value}`))
         document.getElementById(`#nested-section-${value}`).classList.toggle('active');
         document.getElementById(`#nested-sectionIcon-${value}`).classList.toggle('active');
       },
@@ -186,9 +223,25 @@
             this.makeToast('Error', `Couldn't submit form! ${error}`)
           })
       },
+      emitter(value) {
+        console.log('emit value', value)
+        this.$emit("input", value);
+      },
     },
     computed: {
-
+      dragOptions() {
+        return {
+          animation: 0,
+          group: "description",
+          disabled: false,
+          ghostClass: "ghost"
+        };
+      },
+      // this.value when input = v-model
+      // this.list  when input != v-model
+      realValue() {
+        return this.value ? this.value : this.list;
+      }
     }
   };
 </script>
