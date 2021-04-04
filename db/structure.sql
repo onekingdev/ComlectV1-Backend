@@ -2229,7 +2229,9 @@ CREATE TABLE public.users (
     deleted_at timestamp without time zone,
     inactive_for_period boolean DEFAULT false,
     muted_projects text DEFAULT '--- []
-'::text
+'::text,
+    otp_secret character varying,
+    otp_counter integer
 );
 
 
@@ -7698,6 +7700,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210323180130'),
 ('20210326130422'),
 ('20210329160613'),
-('20210329192005');
-
-
+('20210329192005'),
+('20210404131222');
