@@ -8,7 +8,7 @@ class Api::AuthenticationController < ApiController
     if user&.valid_password?(params[:user][:password])
       unless params[:otp_secret]
         user.email_otp
-        render json: { message: 'You have received one time passcode on your email to verify login' } and return
+        render(json: { message: 'You have received one time passcode on your email to verify login' }) && return
       end
       if user.verify_otp(params[:otp_secret])
         render json: { token: JsonWebToken.encode(sub: user.id) }
