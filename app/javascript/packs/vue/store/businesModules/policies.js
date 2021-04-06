@@ -27,6 +27,7 @@ class Policy {
 export default {
   state: {
     policies: [],
+    policiesClone: [],
     risks: [],
   },
   mutations: {

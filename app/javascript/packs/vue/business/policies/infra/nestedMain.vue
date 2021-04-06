@@ -175,8 +175,9 @@
         console.log('realValue:', this.realValue)
         console.log('this.policy:', this.policy)
         console.log('this.policyId:', this.policyId)
+        console.log('this.policyTitle:', this.policyTitle)
         console.log('this.parentSection:', this.parentSection)
-        console.log('this.parentSection:', this.parentSection.parentSection)
+        console.log('this.parentSection:', this.parentSection?.parentSection)
 
         if (!this.policyTitle) {
           this.movePolicy()
@@ -356,7 +357,12 @@
       realValue() {
         return this.value ? this.value : this.list;
       },
-    }
+    },
+    watch: {
+      policiesList (value) {
+        console.log('watch policies', value)
+      },
+    },
   };
 </script>
 <style scoped>

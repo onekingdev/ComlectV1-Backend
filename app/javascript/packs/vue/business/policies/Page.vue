@@ -85,16 +85,16 @@
         })
       },
       archivedList () {
-        return this.policiesListComputed.filter(policy => policy.archived)
+        return this.$store.getters.policiesListArchived
       },
       unArchivedList () {
-        return this.policiesListComputed.filter(policy => !policy.archived)
-      },
-      policyById () {
-        // return this.$store.dispach('getPolicyById', this.id)
+        return this.$store.getters.policiesListUnArchived
       },
       policiesListComputed () {
         return this.$store.getters.policiesListNested
+      },
+      policyById () {
+        // return this.$store.dispach('getPolicyById', this.id)
       },
     },
     // beforeCreate() { // or mounted?

@@ -393,8 +393,12 @@
     },
     watch: {
       policiesComputed (oldArr, newArr) {
-        console.log('record', oldArr, newArr)
-      }
+        console.log('watch record', oldArr, newArr)
+      },
+      // $route (to, from){
+      //   console.log(to, from)
+      //   this.show = false;
+      // }
     },
     mounted() {
       this.updateList ()
