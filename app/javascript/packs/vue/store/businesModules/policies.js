@@ -441,6 +441,74 @@ export default {
         throw error;
       }
     },
+
+    // CONFIG PAGE (SETUP)
+    async getPolicyConfig({ commit, getters }, payload) {
+      commit("clearError");
+      commit("setLoading", true);
+
+      try {
+        const data = await fetch('/api/business/compliance_policy_configuration', {
+          method: 'GET',
+          headers: {
+            // 'Authorization': 'Bearer test',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'}
+        }).then(response => {
+          if (!response.ok)  throw new Error(`Could't create Policy Config (${response.status})`)
+          return response.json()
+        }).then(response => {
+          if (response.errors) return response
+          console.log('getPolicyConfig', response)
+          return response
+        }).catch (error => {
+          throw error;
+        })
+          .finally(() => commit("setLoading", false))
+        return data
+      } catch (error) {
+        commit("setError", error.message);
+        commit("setLoading", false);
+        throw error;
+      }
+    },
+    async postPolicyConfig({ commit, getters }, payload) {
+      commit("clearError");
+      commit("setLoading", true);
+
+      try {
+        const data = await fetch('/api/business/compliance_policy_configuration', {
+          method: 'PATCH',
+          headers: {
+            // 'Authorization': 'Bearer test',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            logo_data: payload.logo,
+            address: payload.address,
+            phone: payload.phone,
+            email: payload.email,
+            disclosure: payload.disclosure,
+            body: payload.body
+          })
+        }).then(response => {
+          if (!response.ok)  throw new Error(`Could't create policy config (${response.status})`)
+          return response.json()
+        }).then(response => {
+          if (response.errors) return response
+          console.log('postPolicyConfig', response)
+          return response
+        }).catch (error => {
+          throw error;
+        })
+          .finally(() => commit("setLoading", false))
+        return data
+      } catch (error) {
+        commit("setError", error.message);
+        commit("setLoading", false);
+        throw error;
+      }
+    },
   },
   getters: {
     policiesList(state) {

@@ -109,8 +109,8 @@
           .then((response) => {
             console.log(response);
           })
-          .catch((err) => {
-            console.error(err);
+          .catch((error) => {
+            console.error(error);
             this.makeToast('Error', err.message)
           });
       },
@@ -127,8 +127,8 @@
             console.log('response in nested', response)
             this.makeToast('Success', 'Policy succesfully moved.')
           })
-          .catch((err) => {
-            console.error(err)
+          .catch((error) => {
+            console.error(error)
             this.makeToast('Error', err.message)
           });
       },
@@ -333,7 +333,7 @@
             this.makeToast('Success', `Policy successfully deleted!`)
           })
           .catch(error => {
-            console.error(err)
+            console.error(error)
             this.makeToast('Error', `Couldn't submit form! ${error}`)
           })
       },
@@ -345,7 +345,7 @@
             this.makeToast('Success', `Policy successfully archived!`)
           })
           .catch(error => {
-            console.error(err)
+            console.error(error)
             this.makeToast('Error', `Couldn't submit form! ${error}`)
           })
       },
