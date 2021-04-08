@@ -43,23 +43,7 @@
           .container.m-t-1
             .row.p-x-1
               .col-md-12
-                .card
-                  .card-header
-                    h3 Discussion
-                  Get(:messages="messagesUrl(project)" :etag="secondEtag"): template(v-slot="{messages}")
-                    .card-body(v-if="!messages.length")
-                      | No comments posted
-                      hr
-                    .card-body(v-else)
-                      div(v-for="message in messages" :key="message.id")
-                        p
-                          span.float-right {{ message.created_at | asDate }}
-                          | {{ message.message }}
-                        hr
-                  .card-body
-                    InputTextarea(v-model="newComment.message" placeholder="Make a comment or leave a note..." :errors="newCommentErrors && newCommentErrors.message") Comment
-                    Post(v-bind="postCommentProps(project)" @saved="commentSaved" @errors="newCommentErrors = $event")
-                      button.btn.btn-default Add Comment
+                DiscussionCard(:project="project" :token="token")
       b-tab(title="Tasks")
         .card-body.white-card-body
       b-tab(title="Documents")
@@ -96,6 +80,7 @@
 
 <script>
 import { fields, readablePaymentSchedule } from '@/common/ProposalFields'
+import DiscussionCard from '@/common/projects/DiscussionCard'
 import ApplicationsNotice from './alerts/ApplicationsNotice'
 import TimesheetsNotice from './alerts/TimesheetsNotice'
 import EndContractNotice from './alerts/EndContractNotice'
@@ -106,13 +91,9 @@ import EndContractModal from './EndContractModal'
 import ChangeContractAlerts from '@/common/projects/ChangeContractAlerts'
 import EditContractModal from '@/common/projects/EditContractModal'
 
-const DISCUSSION_UPDATE_PERIOD = 20000
 
 export default {
-  mixins: [
-    EtaggerMixin(),
-    EtaggerMixin('secondEtag')
-  ],
+  mixins: [EtaggerMixin()],
   props: {
     currentBusiness: {
       type: String,
@@ -131,12 +112,7 @@ export default {
     return {
       tab: 0,
       showingContract: null,
-      newComment: { message: null },
-      newCommentErrors: null
     }
-  },
-  created() {
-    setInterval(this.newSecondEtag, DISCUSSION_UPDATE_PERIOD)
   },
   methods: {
     completeSuccess() {
@@ -145,18 +121,6 @@ export default {
     },
     completeErrors(errors) {
       errors.length && this.toast('Error', 'Cannot request End project')
-    },
-    commentSaved() {
-      this.newSecondEtag()
-      this.toast('Success', 'Comment added')
-      this.newComment.message = null
-    },
-    postCommentProps(project) {
-      return {
-        action: this.messagesUrl(project),
-        model: { message: this.newComment },
-        headers: { Authorization: this.token },
-      }
     },
     getContracts(projects) {
       return projects.filter(project => !!project.specialist)
@@ -175,13 +139,11 @@ export default {
     viewHref() {
       return project => this.$store.getters.url('URL_PROJECT_POST', project.id)
     },
-    messagesUrl() {
-      return project => `/api/local_projects/${project.id}/messages`
-    },
   },
   components: {
     ApplicationsNotice,
     ChangeContractAlerts,
+    DiscussionCard,
     LocalProjectModal,
     TimesheetsNotice,
     EndContractNotice,
