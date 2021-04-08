@@ -1,6 +1,14 @@
 <template lang="pug">
-  <!--draggable.dragArea(tag='tbody' :list='policies' :group="{ name: 'g1' }" :move="checkMove" @end="onEnd")-->
-  draggable.dragArea(v-bind="dragOptions" tag="tbody" :list="list" :value="value" :move="checkMove" @end="onEnd" @input="emitter")
+  draggable.dragArea(
+  v-bind="dragOptions"
+  tag="tbody" :list="list"
+  :value="value"
+  :move="checkMove"
+  :policiesList="policiesList"
+  ghost-class="alert-secondary"
+  @end="onEnd"
+  @input="emitter"
+  )
     .table__row(v-for='el in realValue' :key='el.title' :data-id-policy="el.id")
       .table__cell.table__cell_name(v-if="el.children && el.children.length !== 0")
         .dropdown-toggle(
@@ -15,8 +23,9 @@
         :policy="el"
         :policyId="el.id ? el.id : parentSection.id"
         :policyTitle="el.title"
-        :policiesList="policiesList"
         :parentSection="el"
+        :policiesList="policiesList"
+        @input="emitter"
         )
       .table__cell.table__cell_name(v-else) {{ el.title }}
       .table__cell(v-if="!shortTable && el.status")
@@ -136,6 +145,11 @@
         // console.log('relatedContext', evt.relatedContext)
         // console.log('draggedContext:', evt.draggedContext)
 
+        // 0. MOVE ON THE SAME PLACE
+        if(!evt.draggedContext.element && !evt.relatedContext.element) {
+          return false;
+        }
+
         // 1. MOVE ROOT POLICY TO ANOTHER PLACE
         if(!this.policyTitle) {
           this.draggedContext = evt.draggedContext
@@ -172,18 +186,21 @@
         console.log('relatedContext', this.relatedContext)
         console.log('draggedContext:', this.draggedContext)
         console.log('policiesList:', this.policiesList)
-        console.log('policiesClonedList:', this.policiesClonedList)
-        console.log('realValue:', this.realValue)
-        console.log('this.policy:', this.policy)
-        console.log('this.policyId:', this.policyId)
-        console.log('this.policyTitle:', this.policyTitle)
-        console.log('this.parentSection:', this.parentSection)
-        console.log('this.parentSection:', this.parentSection?.parentSection)
-        console.log('defaultPoliciesList', this.defaultPoliciesList)
+        // console.log('policiesClonedList:', this.policiesClonedList)
+        // console.log('realValue:', this.realValue)
+        // console.log('this.policy:', this.policy)
+        // console.log('this.policyId:', this.policyId)
+        // console.log('this.policyTitle:', this.policyTitle)
+        // console.log('this.parentSection:', this.parentSection)
+        // console.log('this.parentSection:', this.parentSection?.parentSection)
+        // console.log('defaultPoliciesList', this.defaultPoliciesList)
 
         if (!this.policyTitle) {
           this.movePolicy()
           return
+        }
+        if(!this.draggedContext && !this.relatedContext) {
+          return;
         }
         //
         // if(this.policyTitle && this.sections) {
@@ -201,15 +218,15 @@
         let targetPolicyDetele = null
 
         // HADCODED - NEED REWRITE
-        this.policiesList.forEach(function(policy, index) {
+        this.policiesList.forEach(function(policy) {
           if(policy.title === targetTitle) targetPolicy = policy
-          policy.children.forEach(function(children, index) {
+          policy.children.forEach(function(children) {
             if(children.title === targetTitle) targetPolicy = policy
-            children.children.forEach(function(children, index) {
+            children.children.forEach(function(children) {
               if(children.title === targetTitle) targetPolicy = policy
-              children.children.forEach(function(children, index) {
+              children.children.forEach(function(children) {
                 if(children.title === targetTitle) targetPolicy = policy
-                children.children.forEach(function(children, index) {
+                children.children.forEach(function(children) {
                   if(children.title === targetTitle) targetPolicy = policy
                 })
               })
@@ -217,6 +234,7 @@
           })
         })
 
+        // DEEP DIVE FUNC
         // const searchTargetPolicy = function(array, searchTitle, policy) {
         //   array.children.forEach(function(el, index) {
         //     if(el.title === searchTitle) targetPolicy = policy
@@ -232,31 +250,21 @@
         // })
 
         if(targetPolicy) {
-          this.policiesClonedList.forEach(function(policy, index) {
+          this.policiesList.forEach(function(policy) {
             if(targetPolicy.id !== policy.id) {
-              if(policy.title === targetTitle)
-              {
-                targetPolicyDetele = policy
-                policy.splice(index, 1)
-              }
-              policy.children.forEach(function(children, index) {
-                if(children.title === targetTitle)
-                {
-                  targetPolicyDetele = policy
-                  policy.children.splice(index, 1)
-                }
-                children.children.forEach(function(children, index) {
-                  if(children.title === targetTitle)
-                  {
-                    targetPolicyDetele = policy
-                    children.children.splice(index, 1)
-                  }
-                  children.children.forEach(function(children, index) {
-                    if(children.title === targetTitle)
-                    {
-                      targetPolicyDetele = policy
-                      children.children.splice(index, 1)
-                    }
+              if(policy.title === targetTitle) targetPolicyDetele = policy
+              policy.children.forEach(function(children) {
+                if(children.title === targetTitle) targetPolicyDetele = policy
+                children.children.forEach(function(children) {
+                  if(children.title === targetTitle) targetPolicyDetele = policy
+                  children.children.forEach(function(children) {
+                    if(children.title === targetTitle) targetPolicyDetele = policy
+                    children.children.forEach(function(children) {
+                      if(children.title === targetTitle) targetPolicyDetele = policy
+                      children.children.forEach(function(children) {
+                        if(children.title === targetTitle) targetPolicyDetele = policy
+                      })
+                    })
                   })
                 })
               })
@@ -264,8 +272,8 @@
           })
         }
 
-        console.log('targetPolicy', targetPolicy)
-        console.log('targetPolicyDetele', targetPolicyDetele)
+        // console.log('targetPolicy', targetPolicy)
+        // console.log('targetPolicyDetele', targetPolicyDetele)
 
         if(targetPolicy) {
           this.$store.dispatch("updatePolicy", {
@@ -273,7 +281,7 @@
             sections: targetPolicy.children
           })
             .then((response) => {
-              console.log('response in nested updating a tree', response)
+              console.log('response updating', response)
               this.makeToast('Success', 'Changes succesfully saved.')
             })
         }
@@ -283,7 +291,7 @@
             sections: targetPolicyDetele.children
           })
             .then((response) => {
-              console.log('response in nested updating a tree', response)
+              console.log('response deleting', response)
               this.makeToast('Success', 'Changes succesfully saved.')
             })
         }
@@ -296,16 +304,6 @@
         if (date.invalid) {
           return value
         }
-      },
-      toogleActions(value) {
-        document.getElementById(`#nested-action-${value}`).classList.toggle('active');
-        document.getElementById(`#nested-actionIcon-${value}`).classList.toggle('active');
-      },
-      toogleSections(value) {
-        console.log(value)
-        console.log(document.getElementById(`#nested-section-${value}`))
-        document.getElementById(`#nested-section-${value}`).classList.toggle('active');
-        document.getElementById(`#nested-sectionIcon-${value}`).classList.toggle('active');
       },
       moveUp(policyId) {
         const index = this.realValue.findIndex(record => record.id === policyId);
@@ -352,6 +350,7 @@
       emitter(value) {
         console.log('emit value', value)
         this.$emit("input", value);
+        this.checkMove()
       },
     },
     computed: {
@@ -368,15 +367,15 @@
       realValue() {
         return this.value ? this.value : this.list;
       },
-      policiesClonedList() {
-        return this.$store.getters.policiesClonedList
-      }
     },
     // watch: {
     //   policiesListDefault (oldValue, newValue) {
     //     console.log('watch policies', oldValue, newValue)
     //   },
     // },
+    // mounted() {
+    //   defaultPoliciesList = this.policiesList
+    // }
   };
 </script>
 <style scoped>

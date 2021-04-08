@@ -77,10 +77,10 @@
                       .policy-details
                         h3.policy-details__title Tasks
                         .policy-details__body Tasks
-                    b-tab(title="Activity")
-                      .policy-details
-                        h3.policy-details__title Activity
-                        .policy-details__body Activity
+                    <!--b-tab(title="Activity")-->
+                      <!--.policy-details-->
+                        <!--h3.policy-details__title Activity-->
+                        <!--.policy-details__body Activity-->
             <!--.col-12-->
               <!--pre {{ policy }}-->
 </template>
