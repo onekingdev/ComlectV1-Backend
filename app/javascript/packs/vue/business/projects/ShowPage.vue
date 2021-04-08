@@ -46,7 +46,7 @@
                 .card
                   .card-header
                     h3 Discussion
-                  Get(:messages="messagesUrl(project)" :etag="etag"): template(v-slot="{messages}")
+                  Get(:messages="messagesUrl(project)" :etag="secondEtag"): template(v-slot="{messages}")
                     .card-body(v-if="!messages.length")
                       | No comments posted
                       hr
@@ -106,8 +106,13 @@ import EndContractModal from './EndContractModal'
 import ChangeContractAlerts from '@/common/projects/ChangeContractAlerts'
 import EditContractModal from '@/common/projects/EditContractModal'
 
+const DISCUSSION_UPDATE_PERIOD = 20000
+
 export default {
-  mixins: [EtaggerMixin],
+  mixins: [
+    EtaggerMixin(),
+    EtaggerMixin('secondEtag')
+  ],
   props: {
     currentBusiness: {
       type: String,
@@ -130,6 +135,9 @@ export default {
       newCommentErrors: null
     }
   },
+  created() {
+    setInterval(this.newSecondEtag, DISCUSSION_UPDATE_PERIOD)
+  },
   methods: {
     completeSuccess() {
       this.newEtag()
@@ -139,7 +147,7 @@ export default {
       errors.length && this.toast('Error', 'Cannot request End project')
     },
     commentSaved() {
-      this.newEtag()
+      this.newSecondEtag()
       this.toast('Success', 'Comment added')
       this.newComment.message = null
     },
