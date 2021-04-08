@@ -8,7 +8,7 @@
           .container
             .row.p-x-1
               .col-sm-12
-                ExtensionRequestedAlert(:project="project" @saved="newEtag")
+                ChangeContractAlerts(:project="project" @saved="newEtag" for="Specialist")
               .col-md-7.col-sm-12
                 PropertiesTable(title="Project Details" :properties="acceptedOverviewProps(localProject)")
               .col-md-5.col-sm-12.pl-0
@@ -85,6 +85,7 @@
                   .row
                     .col-sm-12
                       PropertiesTable(title="Contract Details" :properties="proposalProps(showingContract)")
+                        EditContractModal(:project="showingContract" @saved="newEtag(), tab = 0")
       b-tab(title="Activity")
     b-tabs(v-else)
       b-tab(title="Overview")
@@ -106,8 +107,9 @@
 
 <script>
 import { readablePaymentSchedule, fields } from '@/common/ProposalFields'
+import ChangeContractAlerts from '@/common/projects/ChangeContractAlerts'
+import EditContractModal from '@/common/projects/EditContractModal'
 import EditProposalModal from '@/specialist/projects/EditProposalModal'
-import ExtensionRequestedAlert from './alerts/ExtensionRequestedAlert'
 import EtaggerMixin from '@/mixins/EtaggerMixin'
 
 const overviewProps = project => {
@@ -198,7 +200,8 @@ export default {
     }
   },
   components: {
-    ExtensionRequestedAlert,
+    ChangeContractAlerts,
+    EditContractModal,
     EditProposalModal
   }
 }

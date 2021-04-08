@@ -19,7 +19,7 @@
                 Get(v-for="marketProject in project.projects" :etag="etag" :marketProject="`/api/business/projects/${marketProject.id}`" :key="marketProject.id"): template(v-slot="{marketProject}")
                   TimesheetsNotice(:project="marketProject")
                   EndContractNotice(:project="marketProject" @saved="completeSuccess" @errors="completeErrors")
-                  ExtendDeadlineNotice(:project="marketProject" @saved="newEtag")
+                  ChangeContractAlerts(:project="marketProject" @saved="newEtag" for="Business")
             .row.p-x-1
               .col-md-7.col-sm-12
                 .card
@@ -90,8 +90,8 @@ import ProjectDetails from './ProjectDetails'
 import EtaggerMixin from '@/mixins/EtaggerMixin'
 import LocalProjectModal from './LocalProjectModal'
 import EndContractModal from './EndContractModal'
-import ExtendDeadlineNotice from './alerts/ExtendDeadlineNotice'
-import EditContractModal from '@/business/projects/EditContractModal'
+import ChangeContractAlerts from '@/common/projects/ChangeContractAlerts'
+import EditContractModal from '@/common/projects/EditContractModal'
 
 export default {
   mixins: [EtaggerMixin],
@@ -110,16 +110,6 @@ export default {
       tab: 0,
       showingContract: null
     }
-  },
-  components: {
-    ApplicationsNotice,
-    ExtendDeadlineNotice,
-    LocalProjectModal,
-    TimesheetsNotice,
-    EndContractNotice,
-    EndContractModal,
-    ProjectDetails,
-    EditContractModal
   },
   methods: {
     completeSuccess() {
@@ -146,6 +136,16 @@ export default {
     viewHref() {
       return project => this.$store.getters.url('URL_PROJECT_POST', project.id)
     },
+  },
+  components: {
+    ApplicationsNotice,
+    ChangeContractAlerts,
+    LocalProjectModal,
+    TimesheetsNotice,
+    EndContractNotice,
+    EndContractModal,
+    ProjectDetails,
+    EditContractModal
   }
 }
 </script>
