@@ -8,6 +8,7 @@ class LocalProject < ApplicationRecord
   has_many :local_projects_specialists, foreign_key: :local_project_id
   has_many :specialists, through: :local_projects_specialists
   has_many :messages, as: :thread
+  has_many :documents
 
   validates :title, presence: true
 
