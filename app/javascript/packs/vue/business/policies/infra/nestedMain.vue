@@ -1,13 +1,13 @@
 <template lang="pug">
   draggable.dragArea(
-  v-bind="dragOptions"
-  tag="tbody" :list="list"
-  :value="value"
-  :move="checkMove"
-  :policiesList="policiesList"
-  ghost-class="alert-secondary"
-  @end="onEnd"
-  @input="emitter"
+    v-bind="dragOptions"
+    tag="tbody" :list="list"
+    :value="value"
+    :move="checkMove"
+    :policiesList="policiesList"
+    ghost-class="alert-secondary"
+    @end="onEnd"
+    @input="emitter"
   )
     .table__row(v-for='el in realValue' :key='el.title' :data-id-policy="el.id")
       .table__cell.table__cell_name(v-if="el.children && el.children.length !== 0")
@@ -19,13 +19,12 @@
           b-icon.mr-2(v-else icon="chevron-compact-right")
           | {{ el.title }}
         nested-draggable(
-        :list="el.children"
-        :policy="el"
-        :policyId="el.id ? el.id : parentSection.id"
-        :policyTitle="el.title"
-        :parentSection="el"
-        :policiesList="policiesList"
-        @input="emitter"
+          :list="el.children"
+          :policy="el"
+          :policyId="el.id ? el.id : parentSection.id"
+          :policyTitle="el.title"
+          :parentSection="el"
+          :policiesList="policiesList"
         )
       .table__cell.table__cell_name(v-else) {{ el.title }}
       .table__cell(v-if="!shortTable && el.status")
@@ -142,8 +141,8 @@
           });
       },
       checkMove: function(evt){
-        // console.log('relatedContext', evt.relatedContext)
-        // console.log('draggedContext:', evt.draggedContext)
+        console.log('relatedContext', evt.relatedContext)
+        console.log('draggedContext:', evt.draggedContext)
 
         // 0. MOVE ON THE SAME PLACE
         if(!evt.draggedContext.element && !evt.relatedContext.element) {
@@ -248,6 +247,7 @@
         //   if(policy.title === targetTitle) targetPolicy = policy
         //   searchTargetPolicy(policy, targetTitle, arr);
         // })
+        let newSection;
 
         if(targetPolicy) {
           this.policiesList.forEach(function(policy) {
@@ -288,7 +288,7 @@
         if(targetPolicyDetele) {
           this.$store.dispatch("updatePolicy", {
             id: targetPolicyDetele.id,
-            sections: targetPolicyDetele.children
+            sections: newSection
           })
             .then((response) => {
               console.log('response deleting', response)
@@ -350,7 +350,7 @@
       emitter(value) {
         console.log('emit value', value)
         this.$emit("input", value);
-        this.checkMove()
+        this.onEnd()
       },
     },
     computed: {
