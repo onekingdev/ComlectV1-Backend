@@ -11,14 +11,12 @@
   )
     .table__row(v-for='el in realValue' :key='el.title' :data-id-policy="el.id")
       .table__cell.table__cell_name(v-if="el.children && el.children.length !== 0")
-        .dropdown-toggle(
-          :id="`#nested-sectionIcon-${el.id}`", @click="toogleSections(el.id)"
-          :class="[el.children && el.children.length !== 0 ? 'active' : '']"
-          )
-          b-icon.mr-2(v-if="el.children && el.children.length !== 0" icon="chevron-compact-down")
+        .dropdown-toggle(:class="{ active: open }" @click="open = !open")
+          b-icon.mr-2(v-if="el.children && el.children.length !== 0 && open" icon="chevron-compact-down")
           b-icon.mr-2(v-else icon="chevron-compact-right")
           | {{ el.title }}
         nested-draggable(
+          v-if="open"
           :list="el.children"
           :policy="el"
           :policyId="el.id ? el.id : parentSection.id"
@@ -104,7 +102,8 @@
         children: [],
         draggedContext: {},
         relatedContext: {},
-        statusVariant: 'light'
+        statusVariant: 'light',
+        open: true
       }
     },
     methods: {
