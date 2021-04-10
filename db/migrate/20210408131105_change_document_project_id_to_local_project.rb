@@ -7,6 +7,7 @@ class ChangeDocumentProjectIdToLocalProject < ActiveRecord::Migration[6.0]
       proj = Project.where(id: doc.local_project_id)
       local_project = nil
       if proj.count.positive?
+        proj = proj.first
         if proj.local_project.blank?
           local_project_params = proj.attributes.slice('business_id', 'title', 'description', 'starts_on', 'ends_on')
           local_project = LocalProject.create(local_project_params)
