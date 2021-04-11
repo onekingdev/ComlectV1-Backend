@@ -313,5 +313,9 @@ Rails.application.routes.draw do
         get :local
       end
     end
+    resources :businesses, only: [:create]
+    resource :business, only: %i[update] do
+      patch '/' => 'businesses#update', as: :update
+    end
   end
 end
