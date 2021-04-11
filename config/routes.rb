@@ -265,6 +265,8 @@ Rails.application.routes.draw do
       # resources :project_messages, path: 'messages(/:specialist_username)'
       resources :project_ends, path: 'end', only: %i[create update]
       resources :project_extensions, path: 'extension', only: %i[create update]
+      resources :project_issues, path: 'issues', only: %i[create]
+      resources :documents, only: %i[index create destroy]
       # resource :project_rating, path: 'rating'
       # resource :project_overview, path: 'overview(/:specialist_username)', only: :show
     end
@@ -312,6 +314,7 @@ Rails.application.routes.draw do
         resources :project_messages, path: 'messages', only: %i[index create]
         resources :timesheets, except: %i[new edit], controller: 'timesheets'
         resources :job_applications, path: 'applications', only: %i[show update create destroy]
+        get :local
       end
     end
   end

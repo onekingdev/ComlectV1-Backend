@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class RiskSerializer < ApplicationSerializer
-  has_many :compliance_policies, serializer: CompliancePolicySerializer
   attributes :id,
              :name,
              :created_at,
@@ -10,4 +9,8 @@ class RiskSerializer < ApplicationSerializer
              :likelihood,
              :compliance_policies,
              :risk_level
+
+  def compliance_policies
+    object.compliance_policies.select(:id, :name)
+  end
 end
