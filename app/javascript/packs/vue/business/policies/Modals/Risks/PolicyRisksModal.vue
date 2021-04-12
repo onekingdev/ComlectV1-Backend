@@ -4,7 +4,7 @@
       slot
 
     b-modal.fade(:id="modalId" :title="riskId ? 'Edit risk' : 'New risk'" @show="newEtag")
-      ModelLoader(:default="initialrisk" :etag="etag" @loaded="loadrisk")
+      ModelLoader(:url="riskId ? submitUrl : undefined" :default="initialrisk" :etag="etag" @loaded="loadrisk")
 
         b-form-group#input-group-1(label='Risk' label-for='select-1')
           b-form-select#select-1(v-model='risk.risks' :options='options' @change="onChange" required)
@@ -176,6 +176,16 @@ export default {
   },
   computed: {
     initialrisk: () => initialrisk,
+    canBeDraft() {
+      return !this.riskId || ('draft' === this.risk.status)
+    },
+    submitUrl() {
+      const toId = this.riskId ? `/${this.riskId}` : ''
+      return '/api/business/risks' + toId
+    },
+    httpMethod() {
+      return this.riskId ? 'PUT' : 'POST'
+    },
     risksComputedAsOptions() {
       return this.risks.map(risk => {
         return {
