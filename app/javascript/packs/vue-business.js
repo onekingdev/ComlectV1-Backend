@@ -18,9 +18,11 @@ const businesPolicies = {
 }
 
 import BusinessRisksPage from './vue/business/riskregister/Page.vue'
+import BusinessRisksPageDetail from './vue/business/riskregister/RiskDetail.vue'
 
 const businesRisks = {
-  BusinessRisksPage
+  BusinessRisksPage,
+  BusinessRisksPageDetail
 }
 
 init({

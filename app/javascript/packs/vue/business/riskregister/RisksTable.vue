@@ -27,7 +27,7 @@
                 .dropdown-toggle.link.mb-1(:id="`#sectionIcon-${risk.id}`", :class="{ active: open }", @click="toogleSections(risk.id)")
                   b-icon.mr-2(v-if="risk.compliance_policies && risk.compliance_policies.length !== 0" icon="chevron-compact-down")
                   b-icon.mr-2(v-else icon="chevron-compact-right")
-                  | {{ risk.name }}
+                  a.link(:href="`/business/risks/${risk.id}`") {{ risk.name }}
                 .d-flex.mb-2(v-if="risk.compliance_policies")
                   ul.list-unstyled.ml-3
                     li.mb-2(v-for="policy in risk.compliance_policies" :key="policy.id")
