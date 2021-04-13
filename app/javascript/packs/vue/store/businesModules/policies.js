@@ -620,6 +620,7 @@ export default {
       }
     },
     async postPolicyConfig({ commit, getters }, payload) {
+      console.log('payload', payload)
       commit("clearError");
       commit("setLoading", true);
 
@@ -629,9 +630,11 @@ export default {
           headers: {
             'Authorization': `Bearer ${TOKEN}`,
             'Accept': 'application/json',
+          //   'Content-Type': 'image/png'},
+          // body: payload
             'Content-Type': 'multipart/form-data'},
           body: JSON.stringify({
-            logo_data: payload.logo,
+            logo: payload.logo,
             address: payload.address,
             phone: payload.phone,
             email: payload.email,
