@@ -11,14 +11,16 @@ import TimesheetsShowPage from '@/business/projects/TimesheetsShowPage'
 
 import BusinessPoliciesPage from './vue/business/policies/Page.vue'
 import BusinessPoliciesCreatePage from './vue/business/policies/Details/PolicyCreate.vue'
-// import BusinessPoliciesCreatePageSubsection from './vue/business/policies/PolicySubsection.vue'
-// import BusinessPoliciesCreatePageHistory from './vue/business/policies/PolicyTable.vue'
 
 const businesPolicies = {
   BusinessPoliciesPage,
   BusinessPoliciesCreatePage,
-  // BusinessPoliciesCreatePageSubsection,
-  // BusinessPoliciesCreatePageHistory
+}
+
+import BusinessReportsRisksPage from './vue/business/reportsrisks/Page.vue'
+
+const BusinessReportsRisks = {
+  BusinessReportsRisksPage,
 }
 
 init({
@@ -33,6 +35,7 @@ init({
     RemindersPage,
     TimesheetsShowPage,
 
-    ...businesPolicies
+    ...businesPolicies,
+    ...BusinessReportsRisks
   }
 })
