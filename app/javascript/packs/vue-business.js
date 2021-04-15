@@ -17,7 +17,7 @@ const businesPolicies = {
   BusinessPoliciesCreatePage,
 }
 
-import BusinessReportsRisksPage from './vue/business/reportsrisks/Page.vue'
+import BusinessReportsRisksPage from './vue/business/reportsRisks/Page.vue'
 
 const BusinessReportsRisks = {
   BusinessReportsRisksPage,
