@@ -11,7 +11,7 @@
                 .table
                   nested-draggable(v-model='policiesComputed', :policiesList="policiesListNested" :shortTable="true")
             <!--rawdisplayer(:value='policiesComputed' title='List')-->
-        .col
+        .col(v-if="policy")
           .row
             .col-md-12.px-0
               .card-body.white-card-body.p-3.px-4
@@ -130,22 +130,22 @@
         toggleVueEditor: false,
         sections: [],
         count: 0,
-        policy: {
-          archived: '',
-          children: [],
-          created_at: '',
-          description: '',
-          id: this.policyId,
-          name: '',
-          position: '',
-          risks: '',
-          sections: [],
-          src_id: '',
-          status: '',
-          title: 'New Policy',
-          updated_at: '',
-          versions: '',
-        }
+        // policy: {
+        //   archived: '',
+        //   children: [],
+        //   created_at: '',
+        //   description: '',
+        //   id: this.policyId,
+        //   name: '',
+        //   position: '',
+        //   risks: '',
+        //   sections: [],
+        //   src_id: '',
+        //   status: '',
+        //   title: 'New Policy',
+        //   updated_at: '',
+        //   versions: '',
+        // }
       }
     },
     methods: {
@@ -302,8 +302,8 @@
           .then((response) => {
             // console.log('response 1', response);
             this.policies = response
-            this.policy = response.find(el => el.id === this.policyId)
-            console.log('this.policy in create page', this.policy)
+            // this.policy = response.find(el => el.id === this.policyId)
+            // console.log('this.policy in create page', this.policy)
           })
           .catch((err) => {
             // console.error(err);
@@ -373,10 +373,10 @@
       //   });
       //   return newPoliciesList;
       // },
-      // policy(){
-      //   const id = this.policyId
-      //   return this.$store.getters.policyById(id)
-      // },
+      policy(){
+        const id = this.policyId
+        return this.$store.getters.policyById(id)
+      },
       policiesComputed: {
         get() {
           const policies = this.$store.getters.policiesList
