@@ -65,16 +65,17 @@
                       | Mock audit
                       ion-icon.ml-2(name='close-outline')
 
-            .card-header
+            .card-header(v-if="!loading && specialistsList" v-for="specialist in specialistsList" :key="specialist.id")
               .row.py-2.px-4
                 .col-lg-2.col-3
-                  b-img(v-bind="mainProps" rounded="circle" alt="image_desc" src="https://loremflickr.com/100/100/cat?lock=1")
+                  b-img(v-bind="mainProps" rounded="circle" alt="image_desc" :src="specialist.photo ? specialist.photo : `https://loremflickr.com/100/100/cat?lock=${specialist.id}`")
                 .col-lg-10.col-9
                   .row
                     .col-md-9.col
                       h3.m-b-1
-                        a.link(href="#" @click="openDetails(project.id)") Chris Jakson
-                      h6.pb-1.card-subtitle.text-muted.mb-2  Maiami, FL | Investrment Advisor Industry
+                        a.link(:href="specialist.resume_url" @click="openDetails(project.id)" target="_blank") {{ specialist.first_name }} {{ specialist.last_name }}
+                      h6.pb-1.card-subtitle.text-muted.mb-2  {{ specialist.location }} |
+                        .d-inline(v-if="specialist.industries" v-for="ind in specialist.industries") &nbsp;{{ ind.name }}&nbsp;
                       .d-flex.py-2
                         b-icon(icon='star-fill' variant="warning" font-scale="1.5")
                         b-icon(icon='star-fill' variant="warning" font-scale="1.5")
@@ -99,17 +100,17 @@
                         ion-icon.float-left.mt-3.mr-3(name="cash-outline")
                         | Hourly rate
                         br
-                        b $200
+                        b ${{ specialist.min_hourly_rate ? specialist.min_hourly_rate : 0 }}
                       li.list-group-item
                         ion-icon.float-left.mt-3.mr-3(name="analytics-outline")
                         | Expirience
                         br
-                        b Intermadiate
+                        b {{ specialist.experience }}
                       li.list-group-item
                         ion-icon.float-left.mt-3.mr-3(name="earth-outline")
                         | Jurisdiction
                         br
-                        b United States
+                        b(v-if="specialist.jurisdictions" v-for="jur in specialist.jurisdictions") &nbsp;{{ jur.name }}&nbsp;
             .card-body.m-2.text-danger(title="No specialists")
 
             .card-header(v-for="project in projects" :key="project.uid")
@@ -258,6 +259,9 @@
       }
     },
     computed: {
+      loading() {
+        return this.$store.getters.loading;
+      },
       pricingTypeOptions: () => PRICING_TYPE_OPTIONS,
       experienceOptions: () => EXPERIENCE_OPTIONS,
       budgetOptions: () => BUDGET_OPTIONS,
@@ -276,6 +280,9 @@
         getCheckedItems(this.budgetOptions, 'budget').map(buildParam('budget')).map(arg => query.push(arg))
 
         return query.length ? ('?' + query.join('&')) : ''
+      },
+      specialistsList() {
+        return this.$store.getters.specialistsList;
       }
     },
     mounted() {
