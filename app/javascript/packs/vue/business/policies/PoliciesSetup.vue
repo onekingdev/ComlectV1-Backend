@@ -72,8 +72,8 @@
         b-form-group
           b-button.btn.mr-2(type='reset') Reset
           b-button.btn.btn-dark(type='submit' variant='primary') Save
-      b-card.mt-3(header='Form Data Result')
-        pre.m-0 {{ form }}
+      <!--b-card.mt-3(header='Form Data Result')-->
+        <!--pre.m-0 {{ form }}-->
 </template>
 
 <script>
@@ -119,16 +119,6 @@
       onSubmit(event) {
         event.preventDefault()
 
-        // let data = new FormData();
-        // data.append('name', 'logo');
-        // data.append('logo', this.form.logo);
-        // this.form.logo = data
-        // data.append('address', this.form.address),
-        // data.append('phone', this.form.phone),
-        // data.append('email', this.form.email),
-        // data.append('disclosure', this.form.disclosure),
-        // data.append('body', this.form.body),
-
         const params = {
           'logo': this.form.logo,
           'address': this.form.address,
@@ -137,7 +127,6 @@
           'disclosure': this.form.disclosure,
           'body': this.form.body,
         }
-        console.log('params', params)
 
         let formData = new FormData()
 
@@ -146,21 +135,21 @@
         )
         console.log('formData', formData)
 
-        // Finally, sending the POST request with our beloved Axios
         axios.defaults.baseURL = '/api';
         axios.defaults.headers.common['Authorization'] = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImV4cCI6MTYxOTAyMDQwOH0.lnBshrpoodRs2E-cr2l8yXM3fsqUcH1V8hWrEK4H2BU';
         // axios.defaults.headers.post['Content-Type'] = 'application/json';
-
+        // Finally, sending the request with our beloved Axios
         axios
           .patch('/business/compliance_policy_configuration', formData)
           .then(response => {
             console.log('axios response', response)
+            this.makeToast('Success', `Config successfully saved!`)
           })
           .catch(error => {
             console.error('axios error', error)
-            this.errored = true
+            this.makeToast('Error', `Something wrong! ${error}`)
           })
-          .finally(() => console.log('axios finished'))
+          .finally(() => console.log('request finished'))
       },
       onReset(event) {
         event.preventDefault()
@@ -195,15 +184,15 @@
           // this.makeToast('Success', `Policy successfully deleted!`)
 
           // update form
-          // this.url = response.logo_data
-          // this.form = {
+          if (response.logo_data) this.url = response.logo_data.thumb.id
+          this.form = {
             // logo: response.logo_data,
-            // address: response.address,
-            // phone: response.phone,
-            // email: response.email,
-            // disclosure: trresponse.disclosure,
-            // body: response.body,
-          // }
+            address: response.address,
+            phone: response.phone,
+            email: response.email,
+            disclosure: response.disclosure,
+            body: response.body,
+          }
 
           // console.log('this.form after response', this.form)
         })
