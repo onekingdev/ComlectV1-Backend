@@ -2,7 +2,7 @@
   div
     .container
       .row
-        .col-12
+        .col-12.px-0
           .row.p-x-1
             .col-md-12.d-flex.justify-content-between.p-t-3.p-b-3
               div
