@@ -21,10 +21,14 @@ const businesPolicies = {
   // BusinessPoliciesCreatePageHistory
 }
 
-import UserSignUpPage from './vue/auth/SignUp/Business/Page.vue'
+import BusinessSignupPage from './vue/auth/SignUp/Business/Page.vue'
+// import SpecialistOnboardingPage from './vue/auth/SignUp/Business/Onboarding/SpecialistPage.vue'
+// import BusinessOnboardingPage from './vue/auth/SignUp/Business/Onboarding/BusinessPage.vue'
 
 const auth = {
-  UserSignUpPage,
+  BusinessSignupPage,
+  // SpecialistOnboardingPage,
+  // BusinessOnboardingPage
 }
 
 init({
