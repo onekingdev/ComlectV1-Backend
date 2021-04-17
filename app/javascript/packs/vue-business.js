@@ -21,6 +21,12 @@ const businesPolicies = {
   // BusinessPoliciesCreatePageHistory
 }
 
+import UserSignUpPage from './vue/auth/SignUp/Business/Page.vue'
+
+const auth = {
+  UserSignUpPage,
+}
+
 init({
   store,
   components: {
@@ -33,6 +39,7 @@ init({
     RemindersPage,
     TimesheetsShowPage,
 
-    ...businesPolicies
+    ...businesPolicies,
+    ...auth
   }
 })
