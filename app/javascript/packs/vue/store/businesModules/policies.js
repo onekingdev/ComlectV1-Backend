@@ -441,7 +441,7 @@ export default {
         throw error;
       }
     },
-
+    // CONFIG PAGE (SETUP)
     async getPolicyConfig({ commit, getters }, payload) {
       commit("clearError");
       commit("setLoading", true);
