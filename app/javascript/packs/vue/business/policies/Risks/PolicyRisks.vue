@@ -18,7 +18,7 @@
             th(width="10%")
         tbody.text-dark
           tr(v-for="risk in policyById.risks" :key="risk.id")
-            td ({{ risk.id }}) {{ risk.name }}
+            td {{ risk.name }}
             td {{ showLevel(risk.impact) }}
             td {{ showLevel(risk.likelihood) }}
             td
