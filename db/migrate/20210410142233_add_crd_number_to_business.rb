@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddCrdNumberToBusiness < ActiveRecord::Migration[6.0]
   def change
     add_column :businesses, :crd_number, :string
