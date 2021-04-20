@@ -25,7 +25,7 @@ class Api::Specialist::PaymentSettingsController < ApiController
     )
     respond_with payment_source, serilaizer: ::Specialist::PaymentSourceSerializer
   rescue Stripe::StripeError => e
-    respond_with message: { message: e.message }, status: :unprocessable_entity and return
+    respond_with(message: { message: e.message }, status: :unprocessable_entity) && (return)
   end
 
   def create_bank
@@ -52,7 +52,7 @@ class Api::Specialist::PaymentSettingsController < ApiController
     )
     respond_with payment_source, serilaizer: ::Specialist::PaymentSourceSerializer
   rescue Stripe::StripeError => e
-    respond_with message: { message: e.message }, status: :unprocessable_entity and return
+    respond_with(message: { message: e.message }, status: :unprocessable_entity) && (return)
   end
 
   def delete_source
@@ -61,7 +61,7 @@ class Api::Specialist::PaymentSettingsController < ApiController
     payment_source.destroy
     respond_with message: { message: 'Payment source was deattached' }, status: :ok
   rescue Stripe::StripeError => e
-    respond_with message: { message: e.message }, status: :unprocessable_entity and return
+    respond_with(message: { message: e.message }, status: :unprocessable_entity) && (return)
   end
 
   def make_primary
@@ -75,6 +75,6 @@ class Api::Specialist::PaymentSettingsController < ApiController
     responce = payment_source.validate_microdeposits(params[:specialist_payment_source])
     respond_with responce, status: :ok
   rescue Stripe::StripeError => e
-    respond_with message: { message: e.message }, status: :unprocessable_entity and return
+    respond_with(message: { message: e.message }, status: :unprocessable_entity) && (return)
   end
 end

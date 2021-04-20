@@ -18,7 +18,7 @@ class Api::Business::PaymentSettingsController < ApiController
     if params.key?(:payment_source_ach)
       payment_source.validate_microdeposits(stripe_validation_params)
       if payment_source.errors.any?
-        respond_with message: { message: @payment_source.errors.full_messages.join(', ') }, status: 442 and return
+        respond_with(message: { message: @payment_source.errors.full_messages.join(', ') }, status: 442) && return
       else
         payment_source.payment_profile.update(failed: false)
       end
@@ -41,7 +41,7 @@ class Api::Business::PaymentSettingsController < ApiController
     payment_source.destroy
     respond_with message: { message: 'Payment source was deattached' }, status: :ok
   rescue Stripe::StripeError => e
-    respond_with message: { message: e.message }, status: :unprocessable_entity and return
+    respond_with(message: { message: e.message }, status: :unprocessable_entity) && (return)
   end
 
   private

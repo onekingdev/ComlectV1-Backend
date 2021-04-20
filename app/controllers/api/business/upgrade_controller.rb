@@ -4,8 +4,8 @@ class Api::Business::UpgradeController < ApiController
   before_action :require_business!
 
   def subscribe
-    respond_with errors: { plan: 'Wrong plan name' } and return unless Subscription.plans.key?(turnkey_params[:plan]&.parameterize)
-    respond_with errors: { subscribe: 'No payment source' } and return unless payment_source
+    respond_with(errors: { plan: 'Wrong plan name' }) && return unless Subscription.plans.key?(turnkey_params[:plan]&.parameterize)
+    respond_with(errors: { subscribe: 'No payment source' }) && return unless payment_source
     active_subscription = current_business.subscriptions.find_by(status: Subscription.statuses['active'])
 
     begin
@@ -33,7 +33,7 @@ class Api::Business::UpgradeController < ApiController
       message = 'subscribed'
       code = :created
     rescue Stripe::StripeError => e
-      respond_with message: { message: e.message }, status: :unprocessable_entity and return
+      respond_with(message: { message: e.message }, status: :unprocessable_entity) && (return)
     end
 
     respond_with message: { message: message }, status: code

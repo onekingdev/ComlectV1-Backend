@@ -4,9 +4,10 @@ class Subscription < ActiveRecord::Base
   belongs_to :business, optional: true
   belongs_to :payment_source, optional: true
   belongs_to :specialist, optional: true
-  belongs_to :specialist_payment_source, class_name: 'Specialist::PaymentSource', foreign_key: :specialist_payment_source_id, optional: true
+  belongs_to :specialist_payment_source, class_name: 'Specialist::PaymentSource',
+                                         foreign_key: :specialist_payment_source_id, optional: true
 
-  SPECIALIST_PLANS = %w[specialist_pro specialist_freemium]
+  SPECIALIST_PLANS = %w[specialist_pro specialist_freemium].freeze
 
   enum plan: %w[
     monthly

@@ -2,13 +2,13 @@
 
 class Api::Specialist::UpgradeController < ApiController
   before_action :require_specialist!
-  before_action :find_payment_source, only: :subscribe
+  before_action :payment_source, only: :subscribe
 
   def subscribe
     specialist_plan_name = turnkey_params[:plan]&.parameterize
-    respond_with errors: { plan: 'Wrong plan name' } and return unless Subscription::SPECIALIST_PLANS.include?(specialist_plan_name)
-    respond_with errors: { subscribe: 'No payment source' } and return unless @payment_source
-    respond_with errors: { subscribe: 'You have already subscibed to this plan' } and return if active_subscription
+    respond_with(errors: { plan: 'Wrong plan name' }) && return unless Subscription::SPECIALIST_PLANS.include?(specialist_plan_name)
+    respond_with(errors: { subscribe: 'No payment source' }) && return unless @payment_source
+    respond_with(errors: { subscribe: 'You have already subscibed to this plan' }) && return if active_subscription
 
     db_subscription = Subscription.create(
       plan: specialist_plan_name,
@@ -31,18 +31,18 @@ class Api::Specialist::UpgradeController < ApiController
 
     respond_with message: { message: 'You have successfully subscribed' }, status: :created
   rescue Stripe::StripeError => e
-    respond_with message: { message: e.message }, status: :unprocessable_entity and return
+    respond_with(message: { message: e.message }, status: :unprocessable_entity) && (return)
   end
 
   def cancel
-    respond_with errors: { subscription: 'You don\'t have any subsriptions' } and return unless active_subscription
+    respond_with(errors: { subscription: 'You don\'t have any subsriptions' }) && return unless active_subscription
 
     Stripe::CancelSubscription.call(active_subscription.stripe_subscription_id)
     active_subscription.update(status: Subscription.statuses['canceled'])
 
     respond_with message: { message: 'Subscription was canceled' }, status: :ok
   rescue Stripe::StripeError => e
-    respond_with message: { message: e.message }, status: :unprocessable_entity and return
+    respond_with(message: { message: e.message }, status: :unprocessable_entity) && (return)
   end
 
   private
@@ -51,7 +51,7 @@ class Api::Specialist::UpgradeController < ApiController
     params.permit(:plan)
   end
 
-  def find_payment_source
+  def payment_source
     @payment_source ||= current_specialist.payment_sources.find_by(id: params[:payment_source_id])
   end
 
