@@ -342,14 +342,29 @@
       makeToast(title, str) {
         this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
       },
-      onSubmit(event) {
+      onSubmit(event){
         event.preventDefault()
+        console.log(this.form)
+      },
+      checkCDRinfo() {
         // CLEAR ERRORS
         this.errors = []
 
         const dataToSend = {
-          crd: this.form.crd
+          crd: this.form.CRDnumber
         }
+
+        this.$store
+          .dispatch('getInfoByCRDNumber', dataToSend)
+          .then(response => {
+            console.log('response', response)
+            this.makeToast('Success', `Policy Config successfully sended!`)
+          })
+          .catch(error => {
+            console.error(error)
+            this.makeToast('Error', `Something wrong! ${error}`)
+          })
+
         console.log(dataToSend)
       },
       prevStep(stepNum) {
@@ -359,10 +374,16 @@
         this.currentStep = stepNum
       },
       nextStep(stepNum) {
-        this['step'+(stepNum-1)] = false
-        this['navStep'+stepNum] = true
-        this['step'+stepNum] = true
-        this.currentStep = stepNum
+        if (this.form.CRDnumberSelected === 'yes') {
+          this.checkCDRinfo()
+          return
+        }
+        if (this.form.CRDnumberSelected === 'no') {
+          this['step'+(stepNum-1)] = false
+          this['navStep'+stepNum] = true
+          this['step'+stepNum] = true
+          this.currentStep = stepNum
+        }
       },
       openDetails(id) {
         this.openId = id

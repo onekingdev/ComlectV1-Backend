@@ -49,6 +49,21 @@ export default {
         commit("setLoading", false)
       }
     },
+    async getInfoByCRDNumber({commit}, payload) {
+      try {
+        commit("clearError");
+        commit("setLoading", true);
+
+        const response = await axios.put(`/api/crd/`, payload)
+        return response.data
+
+      } catch (error) {
+        console.error(error);
+        throw error
+      } finally {
+        commit("setLoading", false)
+      }
+    },
   },
   getters: {
     getUser(state) {
