@@ -472,9 +472,7 @@
         this.errors = []
 
         const dataToSend = {
-          turnkey: {
-            "plan": this.billingTypeSelected === 'annually' ? 'team_tier_annual' : 'team_tier_monthly'
-          }
+          "plan": this.billingTypeSelected === 'annually' ? 'team_tier_annual' : 'team_tier_monthly'
         }
 
         this.$store
