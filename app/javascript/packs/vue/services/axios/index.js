@@ -1,5 +1,5 @@
 import instance from 'axios'
-// import store from '../../store/business'
+// import store from '@/store/business'
 
 const axios = instance.create({
   baseURL: '/api',
@@ -10,8 +10,8 @@ const axios = instance.create({
 axios.interceptors.request.use((request) => {
   // const accessToken = store.get('accessToken')
   // if (accessToken) {
-  //     request.headers.Authorization = `Bearer ${accessToken}`
-  //     request.headers.AccessToken = accessToken
+  //     request.headers.Authorization = `${accessToken}`
+  //     // request.headers.AccessToken = accessToken
   // }
 
   const jwtToken = window.localStorage.getItem('app.currentUser')
