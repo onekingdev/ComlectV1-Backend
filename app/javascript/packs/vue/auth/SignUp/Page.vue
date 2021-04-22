@@ -236,8 +236,8 @@
         // clear errors
         this.errors = []
 
-        const urlUserId = location.search.split('userid=')[1]
-        if(urlUserId) this.userId = urlUserId
+        // const urlUserId = location.search.split('userid=')[1]
+        // if(urlUserId) this.userId = urlUserId
         // const otpSecret = location.search.split('otp_secret=')[1]
         // if(otpSecret) this.otpSecret = otpSecret
 
