@@ -4,7 +4,8 @@ import axios from '../../services/axios'
 export default {
   state: {
     user: [],
-    accessToken: ''
+    accessToken: '',
+    loggedIn: false,
   },
   mutations: {
     updateUser(state, payload) {
@@ -101,5 +102,8 @@ export default {
     getUser(state) {
       return state.user;
     },
+    logIn(state) {
+      return state.loggedIn
+    }
   },
 };
