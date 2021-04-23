@@ -81,7 +81,7 @@
                     :multiple="true"
                     track-by="name",
                     label="name",
-                    placeholder="Select Sub-Industry",
+                    placeholder="Select Jurisdiction",
                     required)
                     .invalid-feedback.d-block(v-if="errors.jurisdiction") {{ errors.jurisdiction }}
                 .col.pl-2
