@@ -164,7 +164,7 @@
         // send it to your server
         const dataToSend = {
           business: 'business',
-          stripeToken: token,
+          stripeToken: token.id,
         }
 
         this.$store
