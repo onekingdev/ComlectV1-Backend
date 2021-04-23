@@ -137,7 +137,7 @@
             percent: totalPercent
           }
         }
-      }
+      },
     },
     mounted() {
 
