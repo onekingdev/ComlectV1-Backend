@@ -200,7 +200,7 @@
       PurchaseSummary
     },
     created() {
-      console.log('userInfo', this.userInfo)
+      // console.log('userInfo', this.userInfo)
       // console.log('industryIds', this.industryIds)
       // console.log('subIndustryIds', this.subIndustryIds)
       // console.log('jurisdictionIds', this.jurisdictionIds)
