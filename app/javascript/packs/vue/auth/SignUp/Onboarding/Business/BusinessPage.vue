@@ -260,10 +260,10 @@
         options: ['list', 'of', 'options'],
         show: true,
         errors: {},
-        step1: true,
+        step1: false,
         step2: false,
-        step3: false,
-        currentStep: 1,
+        step3: true,
+        currentStep: 3,
         navStep1: true,
         navStep2: false,
         navStep3: false,
@@ -475,7 +475,7 @@
         this.additionalUsers = event
       },
       selectPlanAndComplitePurchase (selectedPlan) {
-        console.log(selectedPlan)
+        console.log('selectedPlan', selectedPlan)
         // CLEAR ERRORS
         this.errors = []
 
