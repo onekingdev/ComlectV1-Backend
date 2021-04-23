@@ -178,6 +178,8 @@ Rails.application.routes.draw do
   get '/employees/stop-mirror', to: 'employees#stop_mirror', as: 'stop_mirror_business'
 
   namespace :specialists, path: 'specialist' do
+    get '/onboarding' => 'onboarding#index'
+    post '/onboarding' => 'onboarding#subscribe'
     get '/' => 'dashboard#show', as: :dashboard
     get '/locked' => 'dashboard#locked'
     resources :reminders, only: %i[new update create destroy edit show index]
@@ -308,6 +310,10 @@ Rails.application.routes.draw do
       scope 'annual_reports/:report_id' do
         resources :review_categories, path: 'review_categories', only: %i[index create update destroy]
       end
+      resources :ratings, only: %i[index]
+      post '/upgrade/subscribe' => 'upgrade#subscribe'
+      resources :payment_settings, only: %i[create update destroy]
+      put '/payment_settings/make_primary/:id' => 'payment_settings#make_primary'
     end
     namespace :specialist do
       get '/projects/my' => 'projects#my'
@@ -317,6 +323,23 @@ Rails.application.routes.draw do
         resources :job_applications, path: 'applications', only: %i[show update create destroy]
         get :local
       end
+      post '/upgrade/subscribe' => 'upgrade#subscribe'
+      delete '/upgrade/cancel' => 'upgrade#cancel'
+      post '/payment_settings/create_card' => 'payment_settings#create_card'
+      post '/payment_settings/create_bank' => 'payment_settings#create_bank'
+      delete '/payment_settings/delete_source/:id' => 'payment_settings#delete_source'
+      put '/payment_settings/make_primary/:id' => 'payment_settings#make_primary'
+      put '/payment_settings/validate/:id' => 'payment_settings#validate'
+    end
+    resources :businesses, only: [:create]
+    resource :business, only: %i[update] do
+      patch '/' => 'businesses#update', as: :update
+    end
+    put 'users/:user_id/confirm_email', to: 'email_confirmation#update'
+    get 'users/:user_id/resend_email', to: 'email_confirmation#resend'
+    resources :specialists, only: :create
+    resource :specialist, only: %i[update] do
+      patch '/' => 'specialists#update', as: :update
     end
   end
 end
