@@ -28,6 +28,7 @@ export default {
 
         const endPoint = payload.business ? 'businesses' : 'specialists'
         const response = await axios.post(`/${endPoint}`, payload)
+        if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
 
       } catch (error) {
@@ -45,6 +46,7 @@ export default {
 
         const endPoint = payload.business ? 'businesses' : 'specialists'
         const response = await axios.delete(`/${endPoint}`, payload)
+        if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
 
       } catch (error) {
@@ -62,6 +64,7 @@ export default {
         const response = await axios.put(`/users/${payload.userId}/confirm_email`, {
           "otp_secret": payload.code
         })
+        if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         if (response.data) {
           if(response.data.token) {
             commit('updateToken', response.data.token)
@@ -92,6 +95,7 @@ export default {
         commit("setLoading", true);
 
         const response = await axios.put(`/crd/`, payload)
+        if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
 
       } catch (error) {
@@ -108,6 +112,7 @@ export default {
 
         const endPointUserType = payload.business ? 'business' : 'specialist'
         const response = await axios.patch(`/${endPointUserType}`, payload[endPointUserType])
+        if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         if(response.data) {
           localStorage.setItem('app.currentUser', JSON.stringify(response.data));
           commit('updateUser', response.data)
@@ -133,6 +138,7 @@ export default {
         const response = await axios.post(`/${endPoint}/upgrade/subscribe`, { plan: planName }, { params: {
             payment_source_id: paymentSourceId
           }})
+        if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
 
       } catch (error) {
@@ -155,6 +161,7 @@ export default {
         const response = await axios.post(`/${endPoint}/payment_settings`, null, { params: {
             stripeToken: payload.stripeToken,
           }})
+        if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
 
       } catch (error) {
@@ -171,6 +178,7 @@ export default {
 
         const { userType } = {...payload}
         const response = await axios.get(`/${userType}/payment_settings`)
+        if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
 
       } catch (error) {
@@ -187,6 +195,7 @@ export default {
 
         const { userType, id } = {...payload}
         const response = await axios.delete(`/${userType}/payment_settings/${id}`)
+        if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
 
       } catch (error) {

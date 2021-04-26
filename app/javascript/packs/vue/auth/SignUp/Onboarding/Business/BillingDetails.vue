@@ -46,7 +46,7 @@
           label(:for="'card'+i") {{ card.text }}
         dd.col-sm-5.text-right.m-b-0
           | {{ card.number }} {{ card.type }}
-          a.link.ml-2(@click="deleteCard(card.id)") Remove
+          a.link.ml-2(href="#" @click.stop="deletePaymentMethod(card.id)") Remove
     .card-header
       <!--div-->
         <!--StripeCheckout(:pk="pk")-->
@@ -92,15 +92,17 @@
         <!--stripe-checkout(ref='checkoutRef' mode='payment' :pk='publishableKey' :line-items='lineItems' :success-url='successURL' :cancel-url='cancelURL' @loading='v => loading = v')-->
         <!--button(@click='submit') Pay now!-->
       //hr
-      div
+      div(v-show="isActive")
         <!--p stripe-element-card:-->
         stripe-element-card(ref="elementRef"
         :pk="pk"
         @token="tokenCreated")
         <!--button(@click="submit") Generate token-->
-      .row
-        .col.text-right
-          b-button(type='button' variant='secondary' @click="submit") Add
+        .row
+          .col.text-right
+            b-button(type='button' variant='outline-primary' @click="submit")
+              b-icon.mr-2(icon="arrow-clockwise" animation="spin" font-scale="1" v-show="loading")
+              | Add
 
 </template>
 
@@ -114,17 +116,17 @@
       StripeElementCard
     },
     data() {
-      this.publishableKey = 'pk_test_01vxEQv9T5FIIKTu1GkHW41D';
+      // this.publishableKey = 'pk_test_01vxEQv9T5FIIKTu1GkHW41D';
       return {
-        loading: false,
-        lineItems: [
-          {
-            price: 'price_1IiDiaGXaxE41NmqapXysseR', // The id of the one-time price you created in your Stripe dashboard
-            quantity: 1,
-          },
-        ],
-        successURL: 'https://example.com/success',
-        cancelURL: 'https://example.com/cancel',
+        // loading: false,
+        // lineItems: [
+        //   {
+        //     price: 'price_1IiDiaGXaxE41NmqapXysseR', // The id of the one-time price you created in your Stripe dashboard
+        //     quantity: 1,
+        //   },
+        // ],
+        // successURL: 'https://example.com/success',
+        // cancelURL: 'https://example.com/cancel',
         token: null,
         cardDetail: {
           nameOnCard: '',
@@ -145,6 +147,7 @@
         // ],
         errors: [],
         additionalUsersCount: 0,
+        isActive: false,
       };
     },
     methods: {
@@ -173,6 +176,9 @@
           .then(response => {
             console.log('response', response)
             this.$emit('complitedPaymentMethod', response)
+            this.makeToast('Success', `Payment Method successfully added!`)
+            this.isActive = false
+            this.cardOptions.push({ text: `Credit Card${this.cardOptions.length===0 ? ' (primary)' : ''}`, value: response.id, number: `**** **** **** ${response.last4}`, type: response.brand, id: response.id })
           })
           .catch(error => {
             console.error(error)
@@ -189,7 +195,7 @@
           id: Math.floor(Math.random()) * 100
         })
       },
-      deleteCard(cardId) {
+      deletePaymentMethod(cardId) {
         const dataToSend = {
           userType: 'business',
           id: cardId,
@@ -199,15 +205,18 @@
           .dispatch('deletePaymentMethod', dataToSend)
           .then(response => {
             console.log('response', response)
-            const index = response.findIndex(record => record.id === payload.id);
+            const index = this.cardOptions.findIndex(record => record.id === payload.id);
             this.cardOptions.splice(index, 1)
+            if (response.message)
+              this.makeToast('Success', `${response.message}`)
           })
           .catch(error => {
             console.error(error)
+            this.makeToast('Error', `Something wrong! ${error}`)
           })
       },
       addBankAccount() {
-
+        this.isActive = true
       },
       onBiliingChange(event){
         this.$emit('updateBiliing', event)
@@ -218,6 +227,9 @@
       }
     },
     computed: {
+      loading() {
+        return this.$store.getters.loading;
+      },
       planComputed() {
         return this.plan
       },
@@ -235,7 +247,7 @@
         .then(response => {
           console.log('response', response)
           const newOptions = response.map((card, index) => {
-            return { text: `Credit Card${index===0 ? ' (primary)' : ''}`, value: index, number: `**** **** **** ${card.last4}`, type: card.brand, id: card.id }
+            return { text: `Credit Card${index===0 ? ' (primary)' : ''}`, value: card.id, number: `**** **** **** ${card.last4}`, type: card.brand, id: card.id }
           })
           this.cardOptions = newOptions
           this.cardSelected = 0
