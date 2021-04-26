@@ -24,8 +24,8 @@
                   b-form-group#inputS-group-1(label='Jurisdiction' label-for='selectS-1')
                     <!--b-form-select#selectS-6(v-model='formStep2.jurisdiction' :options='options' required)-->
                     multiselect#selectS-1(
-                    v-model="formStep2.jurisdiction"
-                    :options="formStep2.jurisdictionOptions"
+                    v-model="formStep1.jurisdiction"
+                    :options="formStep1.jurisdictionOptions"
                     :multiple="true"
                     track-by="name",
                     label="name",
@@ -38,8 +38,8 @@
                 .col-xl-6
                   b-form-group#inputS-group-4(label='Industry' label-for='selectS-4')
                     multiselect#selectS-4(
-                    v-model="formStep2.industry"
-                    :options="formStep2.industryOptions"
+                    v-model="formStep1.industry"
+                    :options="formStep1.industryOptions"
                     :multiple="true"
                     track-by="name",
                     label="name",
@@ -52,8 +52,8 @@
                   b-form-group#inputS-group-5(label='Sub-Industry' label-for='selectS-5')
                     <!--b-form-select#selectS-5(v-model='formStep2.subIndustry' :options='options' required)-->
                     multiselect#selectS-5(
-                    v-model="formStep2.subIndustry"
-                    :options="formStep2.subIndustryOptions"
+                    v-model="formStep1.subIndustry"
+                    :options="formStep1.subIndustryOptions"
                     :multiple="true"
                     track-by="name",
                     label="name",
@@ -66,8 +66,8 @@
               div
                 b-form-group(v-slot='{ ariaDescribedby }')
                   b-form-radio-group(v-model='formStep1.regulatorSelected' :options='formStep1.regulatorOptions' :aria-describedby='ariaDescribedby' name='radios-stacked' stacked)
-                b-form-group(label='Where did you work?' v-if="formStep1.regulatorSelected === 'yes'")
-                  multiselect#selectS-5(
+                b-form-group(label='Where did you work?' v-if="formStep1.regulatorSelected === 'yes'" label-for='selectS-6')
+                  multiselect#selectS-6(
                   v-model="formStep1.regulator"
                   :options="formStep1.regulatorOptionsTags"
                   :multiple="true"
@@ -82,118 +82,58 @@
               .text-right
                 b-button(type='button' variant='dark' @click="nextStep(2)") Next
             #step2.form(v-if='!loading'  :class="step2 ? 'd-block' : 'd-none'")
-              b-alert(show variant="primary" dismissible)
+              b-alert.d-none(show variant="primary" dismissible)
                 h4 Verify information
                 p.mb-0 The following fields were filled in based on the CRD number you provided. Please carefully review each field before proceeding.
-              h3 Tell us more about your business
-              .row
-                .col-xl-6.pr-xl-2
-                  b-form-group#inputS-group-1(label='Company Name' label-for='inputS-1')
-                    b-form-input#inputS-1(v-model='formStep2.companyName' type='text' placeholder='Company Name' required)
-                    .invalid-feedback.d-block(v-if="errors.companyName") {{ errors.companyName }}
-              .row
-                .col.pr-2
-                  b-form-group#inputS-group-2(label='AUM' label-for='inputS-2')
-                    b-form-input#inputS-2(v-model='formStep2.aum' type='text' placeholder='AUM' required)
-                    .invalid-feedback.d-block(v-if="errors.aum") {{ errors.aum }}
-                .col.pl-2
-                  b-form-group#inputS-group-3(label='Number of Accounts' label-for='inputS-3')
-                    b-form-input#inputS-3(v-model='formStep2.numAcc' type='text' placeholder='Number of Accounts' required)
-                    .invalid-feedback.d-block(v-if="errors.numAcc") {{ errors.numAcc }}
-              .row
-                .col.pr-2
-                  b-form-group#inputS-group-4(label='Industry' label-for='selectS-4')
-                    multiselect#selectS-4(
-                    v-model="formStep2.industry"
-                    :options="formStep2.industryOptions"
-                    :multiple="true"
-                    track-by="name",
-                    label="name",
-                    placeholder="Select Industry",
-                    required)
-                    <!--b-form-select#selectS-4(v-model='formStep2.industry' :options='options' required)-->
-                    .invalid-feedback.d-block(v-if="errors.industry") {{ errors.industry }}
-                .col.pl-2
-                  b-form-group#inputS-group-5(label='Sub-Industry' label-for='selectS-5')
-                    <!--b-form-select#selectS-5(v-model='formStep2.subIndustry' :options='options' required)-->
-                    multiselect#selectS-5(
-                    v-model="formStep2.subIndustry"
-                    :options="formStep2.subIndustryOptions"
-                    :multiple="true"
-                    track-by="name",
-                    label="name",
-                    placeholder="Select Sub-Industry",
-                    required)
-                    .invalid-feedback.d-block(v-if="errors.subIndustry") {{ errors.subIndustry }}
-              .row
-                .col.pr-2
-                  b-form-group#inputS-group-6(label='Jurisdiction' label-for='selectS-6')
-                    <!--b-form-select#selectS-6(v-model='formStep2.jurisdiction' :options='options' required)-->
-                    multiselect#selectS-6(
-                    v-model="formStep2.jurisdiction"
-                    :options="formStep2.jurisdictionOptions"
-                    :multiple="true"
-                    track-by="name",
-                    label="name",
-                    placeholder="Select Jurisdiction",
-                    required)
-                    .invalid-feedback.d-block(v-if="errors.jurisdiction") {{ errors.jurisdiction }}
-                .col.pl-2
-                  b-form-group#inputS-group-7(label='Company Website' label-for='inputS-7' description="Optional")
-                    b-form-input#inputS-7.form-control(v-model='formStep2.website' type='text' placeholder='Company Website')
-                    .invalid-feedback.d-block(v-if="errors.website") {{ errors.website }}
-              .row
-                .col-xl-6.pr-xl-2
-                  b-form-group#inputS-group-8(label='Phone Number' label-for='inputS-8')
-                    b-form-input#inputS-8(v-model='formStep2.phoneNumber' type='text' placeholder='Phone Number' required)
-                    .invalid-feedback.d-block(v-if="errors.phoneNumber") {{ errors.phoneNumber }}
+              h3 Tell us more about yourself:
+              p Enter any relevant skills and education to better match with ideal clients.
+              b-form-group(label='Skills' label-for='selectS-7')
+                multiselect#selectS-7(
+                v-model="formStep2.skills"
+                :options="formStep2.skillsTags"
+                :multiple="true"
+                track-by="name",
+                label="name",
+                tag-placeholder="Add this as new tag",
+                placeholder="Search or add a tag",
+                :taggable="true",
+                @tag="addSkillsTag"
+                required)
+                  .invalid-feedback.d-block(v-if="errors.skills") {{ errors.skills }}
               hr
-              .row
-                .col-xl-9.pr-xl-2
-                  b-form-group#inputS-group-9(label='Business Address' label-for='inputS-9')
-                    b-form-input#inputS-9(v-model='formStep2.businessAddress' placeholder='Business Address' required)
-                    .invalid-feedback.d-block(v-if="errors.businessAddress") {{ errors.businessAddress }}
-                .col-xl-3.pl-xl-2
-                  b-form-group#inputS-group-10(label='Apt/Unit:' label-for='inputS-10')
-                    b-form-input#inputS-10(v-model='formStep2.aptUnit' type='text' placeholder='Apt/Unit' required)
-                    .invalid-feedback.d-block(v-if="errors.aptUnit") {{ errors.aptUnit }}
-              .row
-                .col-xl-4.pr-xl-2
-                  b-form-group#inputS-group-11(label='Zip' label-for='inputS-11')
-                    b-form-input#inputS-11(v-model='formStep2.zip' placeholder='Zip' required)
-                    .invalid-feedback.d-block(v-if="errors.zip") {{ errors.zip }}
-                .col-xl-4.px-xl-2
-                  b-form-group#inputS-group-12(label='City' label-for='inputS-12')
-                    b-form-input#inputS-12(v-model='formStep2.city' type='text' placeholder='City' required)
-                    .invalid-feedback.d-block(v-if="errors.city") {{ errors.city }}
-                .col-xl-4.pl-xl-2
-                  b-form-group#inputS-group-13(label='State' label-for='selectS-13')
-                    <!--b-form-select#selectS-13(v-model='formStep2.state' :options='options' required)-->
-                    multiselect#selectS-13(
-                    v-model="formStep2.state"
-                    :options="formStep2.stateOptions"
-                    placeholder="Select state",
-                    required)
-                    .invalid-feedback.d-block(v-if="errors.state") {{ errors.state }}
+              h3 What's your expirience?
+              p Select one that the best matches your level of your expertise.
+              b-form-group
+                b-button-group(size='lg')
+                  b-button.text-left(type='button' variant='outline-primary')
+                    b Junior
+                    br
+                    | Begining consulting with some experience in the field.
+                  b-button.text-left(type='button' variant='outline-primary')
+                    b Intermediate
+                    br
+                    | Good expirience and knowlage of the industry.
+                  b-button.text-left(type='button' variant='outline-primary')
+                    b Expert
+                    br
+                    | Deep understanding of industry with varied experience.
+              hr
+              h3.mb-3 (Optional) Upload you resume:
+              b-form-group.mt-3
+                b-form-file(v-model='formStep2.file1' :state='Boolean(formStep2.file1)' placeholder='Choose a file or drop it here...' drop-placeholder='Drop file here...')
+                .mt-3 Selected file: {{ formStep2.file1 ? formStep2.file1.name : '' }}
               .text-right
                 b-button.mr-2(type='button' variant='outline-primary' @click="prevStep(1)") Go back
-                <!--b-button.mr-2(type='button' variant='outline-primary' @click="nextStep(3)") Skip this step-->
                 b-button(type='button' variant='dark' @click="nextStep(3)") Next
             #step3.form(v-if='!loading'  :class="step3 ? 'd-block' : 'd-none'")
               .row
                 .col.mb-2.text-center
-                  h2.mb-3 Choose your plan
-                  b-form-group.mb-5(v-slot="{ ariaDescribedby }")
-                    b-form-radio-group(id="btn-radios-plan"
-                    v-model="billingTypeSelected"
-                    :options="billingTypeOptions"
-                    :aria-describedby="ariaDescribedby"
-                    button-variant="outline-primary"
-                    size="lg"
-                    name="radio-btn-outline"
-                    buttons)
-              .row
-                .col-xl-4(v-for='(plan, index) in billingPlans')
+                  h2.mb-3 Choose your Membership plan
+                  p Want to skip selecting a plan?
+                  b-form-group.mb-5
+                    b-button(type='button' variant='outline-primary') Continue With Free Plan
+              .row.justify-content-center
+                .col-xl-3(v-for='(plan, index) in billingPlans')
                   b-card.w-100.mb-2.billing-plan(:class="[index === 0 ? 'billing-plan_low' : '', index === 1 ? 'billing-plan_medium' : '', index === 2 ? 'billing-plan_high' : '' ]")
                     b-button.mb-3(type='button' variant='outline-primary' @click="openDetails(plan)") Select Plan
                     b-card-text
@@ -263,19 +203,19 @@
       // console.log('subIndustryIds', this.subIndustryIds)
       // console.log('jurisdictionIds', this.jurisdictionIds)
       // console.log('states', this.states)
-      if(this.industryIds) this.formStep2.industryOptions = this.industryIds;
+      if(this.industryIds) this.formStep1.industryOptions = this.industryIds;
       // if(this.subIndustryIds) this.formStep2.subIndustryOptions = this.subIndustryIds;
       if(this.subIndustryIds) {
         for (const [key, value] of Object.entries(this.subIndustryIds)) {
           // console.log(`${key}: ${value}`);
-          this.formStep2.subIndustryOptions.push({
+          this.formStep1.subIndustryOptions.push({
             value: key,
             name: value
           })
         }
       }
-      if(this.jurisdictionIds) this.formStep2.jurisdictionOptions = this.jurisdictionIds;
-      if(this.states) this.formStep2.stateOptions = this.states;
+      if(this.jurisdictionIds) this.formStep1.jurisdictionOptions = this.jurisdictionIds;
+      if(this.states) this.formStep1.stateOptions = this.states;
 
       const accountInfo = localStorage.getItem('app.currentUser');
       const accountInfoParsed = JSON.parse(accountInfo);
@@ -330,17 +270,22 @@
             {text: 'Yes', value: 'yes'},
           ],
           regulatorOptionsTags: [],
-        },
-        formStep2: {
-          companyName: '',
-          aum: '',
-          numAcc: '',
           industry: '',
           industryOptions: [],
           subIndustry: '',
           subIndustryOptions: [],
           jurisdiction: '',
           jurisdictionOptions: [],
+        },
+        formStep2: {
+          skills: [],
+          skillsTags: [],
+          file1: null,
+
+          companyName: '',
+          aum: '',
+          numAcc: '',
+
           website: '',
           phoneNumber: '',
           businessAddress: '',
@@ -391,6 +336,14 @@
         }
         this.formStep1.regulatorOptionsTags.push(tag)
         this.formStep1.regulator.push(tag)
+      },
+      addSkillsTag (newTag) {
+        const tag = {
+          name: newTag,
+          code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
+        }
+        this.formStep2.skillsTags.push(tag)
+        this.formStep2.skills.push(tag)
       },
       onSubmit(event){
         event.preventDefault()
