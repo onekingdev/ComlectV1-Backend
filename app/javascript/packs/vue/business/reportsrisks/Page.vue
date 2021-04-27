@@ -7,10 +7,13 @@
             .col-md-12.p-t-3.d-flex.justify-content-between.p-b-1
               div
                 h2: b {{ pageTitle }}
-          .row.mb-3
+          .row
+            .col
+              .card-body.white-card-body
+                Loading
+          .row.mb-3(v-if="!loading")
             .col-md-7.col-12
-              Loading
-              .card-body.white-card-body(v-if="!loading")
+              .card-body.white-card-body
                 .card-header
                   h3.m-y-0 Risk Heatmap
                 .card-body
