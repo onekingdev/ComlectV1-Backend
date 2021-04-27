@@ -3,7 +3,7 @@
     TopNavbar(:userInfo="userInfo")
     main.row#main-content
       .col-xl-10.col-md-9.m-x-auto
-        .card-body.white-card-body.registration-onboarding.p-5
+        .card-body.white-card-body.registration-onboarding.p-lg-5
           .div
             h2 Set Up Your Account
             hr
@@ -104,16 +104,16 @@
               h3 What's your expirience?
               p Select one that the best matches your level of your expertise.
               b-form-group
-                b-button-group(size='lg')
-                  b-button.text-left(type='button' variant='outline-primary' @click="onExpirienceChange('junior')")
+                b-button-group.flex-wrap(size='lg')
+                  b-button.text-left(type='button' variant='outline-primary' data-toggle="button" aria-pressed="false" autocomplete="off" @click="onExpirienceChange('junior')")
                     b Junior
                     br
                     | Begining consulting with some experience in the field.
-                  b-button.text-left(type='button' variant='outline-primary' @click="onExpirienceChange('intermediate')")
+                  b-button.text-left(type='button' variant='outline-primary' data-toggle="button" aria-pressed="false" autocomplete="off" @click="onExpirienceChange('intermediate')")
                     b Intermediate
                     br
                     | Good expirience and knowlage of the industry.
-                  b-button.text-left(type='button' variant='outline-primary' @click="onExpirienceChange('expert')")
+                  b-button.text-left(type='button' variant='outline-primary' data-toggle="button" aria-pressed="false" autocomplete="off" @click="onExpirienceChange('expert')")
                     b Expert
                     br
                     | Deep understanding of industry with varied experience.
