@@ -10,7 +10,13 @@
               span.badge.badge-default.m-r-1(v-if="'draft' === project.status") Draft
               | {{ project.title }}
           div
-            button.btn.btn-outline-dark.float-right Delete Post
+            button.btn.btn-outline-dark.float-right(v-b-modal="'DeletePostModal'") Delete Post
+            b-modal#DeletePostModal.fade(title="Delete Post")
+              | Do you want to delete project post?
+              template(#modal-footer="{hide}")
+                button.btn.btn-default(@click="hide") Cancel
+                Delete(:url="url" @deleted="deleted")
+                  button.btn.btn-dark Delete
     .white-card-body.p-y-1
       .container
         .row.p-x-1
@@ -147,6 +153,10 @@ export default {
     saved(id) {
       redirectWithToast(this.$store.getters.url('URL_PROJECT_SHOW', id), 'Specialist added to project.')
       this.$bvModal.hide(this.confirmModalId)
+    },
+    deleted() {
+      redirectWithToast('/business/projects', 'Project post deleted')
+      this.$bvModal.hide('DeletePostModal')
     },
     goBack() {
       this.$bvModal.hide(this.confirmModalId)
