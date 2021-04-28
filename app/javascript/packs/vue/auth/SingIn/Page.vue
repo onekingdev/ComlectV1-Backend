@@ -6,10 +6,15 @@
         .col-xl-4.col-lg-6.col-md-8.m-x-auto
           .card-body.white-card-body.registration
             Loading
+
             #step1.form(v-if='!loading' :class="step1 ? 'd-block' : 'd-none'")
               h1.text-center Let's get you started!
-              <!--p.text-center Create your FREE account-->
+              p.text-center Enter to the system
               div
+                b-alert(:show='dismissCountDown' dismissible fade variant='danger' @dismiss-count-down='countDownChanged')
+                  | {{ error }}
+                  br
+                  | This alert will dismiss after {{ dismissCountDown }} seconds...
                 b-form(@submit='onSubmit1' v-if='show')
                   b-form-group#input-group-1(label='Email:' label-for='input-1')
                     b-form-input#input-1(v-model='form.email' type='email' placeholder='Email' required)
@@ -100,13 +105,17 @@
           code: '',
         },
         show: true,
+        error: '',
         errors: {},
         step1: true,
         step2: false,
         step3: false,
         childDataLoaded: false,
         childdata : [],
-        component: ''
+        component: '',
+        dismissSecs: 8,
+        dismissCountDown: 0,
+        showDismissibleAlert: false,
       }
     },
     methods: {
@@ -138,6 +147,7 @@
 
             if (response.errors) {
               const properties = Object.keys(response.errors);
+              console.log('properties', properties)
               for (const type of Object.keys(response.errors)) {
                 this.errors = response.errors[type]
                 this.makeToast('Error', `Form has errors! Please recheck fields! ${error}`)
@@ -155,7 +165,15 @@
               this.step2 = true
             }
           })
-          .catch((error) => this.makeToast('Error', `Couldn't submit form! ${error}`))
+          .catch((error) => {
+            console.error('error', error)
+            for (const type of Object.keys(error.errors)) {
+              console.log('type', type)
+              this.makeToast('Error', `${error.errors[type]}`)
+              this.error = `Error! ${error.errors[type]}`
+            }
+            this.showAlert()
+          })
       },
       onSubmitStep2(event) {
         event.preventDefault()
@@ -223,6 +241,12 @@
         }
 
         this.form2.code = this.form2.codePart1 + this.form2.codePart2 + this.form2.codePart3 + this.form2.codePart4 + this.form2.codePart5 + this.form2.codePart6
+      },
+      countDownChanged(dismissCountDown) {
+        this.dismissCountDown = dismissCountDown
+      },
+      showAlert() {
+        this.dismissCountDown = this.dismissSecs
       },
     },
     computed: {

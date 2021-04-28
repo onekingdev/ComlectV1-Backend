@@ -1,5 +1,6 @@
 import instance from 'axios'
 import store  from '../../store/business'
+// import { createToast } from "../../mixins/ToasterMixin";
 
 const axios = instance.create({
   baseURL: '/api',
@@ -30,7 +31,9 @@ axios.interceptors.response.use(undefined, (error) => {
   const { data } = response
   if (data) {
     console.log('data interceprots', data)
+    // createToast.toast('Error', data, true)
   }
+  throw data
 })
 
 export default axios
