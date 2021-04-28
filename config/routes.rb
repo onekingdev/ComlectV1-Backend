@@ -261,6 +261,8 @@ Rails.application.routes.draw do
     resources :users, only: [] do
       collection do
         post :sign_in, to: 'authentication#create'
+        post :password, to: 'passwords#create'
+        put :password, to: 'passwords#update'
       end
     end
     scope 'projects/:project_id' do
@@ -313,7 +315,7 @@ Rails.application.routes.draw do
       end
       resources :ratings, only: %i[index]
       post '/upgrade/subscribe' => 'upgrade#subscribe'
-      resources :payment_settings, only: %i[create update destroy]
+      resources :payment_settings, only: %i[create update destroy index]
       put '/payment_settings/make_primary/:id' => 'payment_settings#make_primary'
     end
     namespace :specialist do
@@ -331,6 +333,7 @@ Rails.application.routes.draw do
       delete '/payment_settings/delete_source/:id' => 'payment_settings#delete_source'
       put '/payment_settings/make_primary/:id' => 'payment_settings#make_primary'
       put '/payment_settings/validate/:id' => 'payment_settings#validate'
+      get '/payment_settings' => 'payment_settings#index'
     end
     resources :businesses, only: [:create]
     resource :business, only: %i[update] do
