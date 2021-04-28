@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Api::PasswordsController < ApiController
+  skip_before_action :authenticate_user!, only: [:create]
   skip_before_action :verify_authenticity_token # TODO: proper authentication
 
   def create
