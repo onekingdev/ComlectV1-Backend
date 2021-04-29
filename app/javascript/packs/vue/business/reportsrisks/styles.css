@@ -41,6 +41,7 @@
   width: 24%;
   height: 6rem;
   color: white;
+  background-color: lightgray;
 }
 .risks-heatmap__box-name {
   display: flex;

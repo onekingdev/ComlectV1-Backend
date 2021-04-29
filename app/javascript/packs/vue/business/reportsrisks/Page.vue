@@ -17,26 +17,11 @@
                 .card-header
                   h3.m-y-0 Risk Heatmap
                 .card-body
-                  <!--ul-->
-                    <!--li(v-for="(row, idx) in riskHeatmap" :key="idx")-->
-                      <!--span(v-for="(value, idc) in row[0]" :key="idc") {{ value }} |-->
                   .risks-heatmap
                     .risks-heatmap__impact Impact
-                    .risks-heatmap__box-row
-                      .risks-heatmap__box-name Hight
-                      .risks-heatmap__box.risks-heatmap__box_level-medium 0
-                      .risks-heatmap__box.risks-heatmap__box_level-high 2
-                      .risks-heatmap__box.risks-heatmap__box_level-high 3
-                    .risks-heatmap__box-row
-                      .risks-heatmap__box-name Medium
-                      .risks-heatmap__box.risks-heatmap__box_level-medium 3
-                      .risks-heatmap__box.risks-heatmap__box_level-medium 1
-                      .risks-heatmap__box.risks-heatmap__box_level-medium 2
-                    .risks-heatmap__box-row
-                      .risks-heatmap__box-name Low
-                      .risks-heatmap__box.risks-heatmap__box_level-low 0
-                      .risks-heatmap__box.risks-heatmap__box_level-low 1
-                      .risks-heatmap__box.risks-heatmap__box_level-medium 4
+                    .risks-heatmap__box-row(v-for='(row, rowIdx) in riskHeatmap' :key='rowIdx')
+                      .risks-heatmap__box-name {{ showLevel(rowIdx) }}
+                      .risks-heatmap__box(v-for='(column, colIdx) in row' :key='colIdx' :class="riskLevelClass(rowIdx, colIdx)") {{ column }}
                     .risks-heatmap__box-row
                       .risks-heatmap__box-name
                       .risks-heatmap__box-name.justify-content-center Low
@@ -94,14 +79,6 @@
   import Loading from '@/common/Loading/Loading'
   import RisksTable from '../riskregister/RisksTable.vue'
 
-  function create2DArray(rows, columns) {
-    var x = new Array(rows);
-    for (var i = 0; i < rows; i++) {
-      x[i] = new Array(columns);
-    }
-    return x;
-  }
-
   export default {
     components: {
       Loading,
@@ -111,12 +88,23 @@
     data() {
       return {
         pageTitle: "Reports",
-      };
+        levelOptionsImpact: ['High', 'Medium', 'Low'],
+      }
     },
     methods: {
       getRisks(risk) {
         return this.risks
-      }
+      },
+      showLevel(num) {
+        return this.levelOptionsImpact[num]
+      },
+      riskLevelClass(row, col){
+        let riskHeatmapArray = [
+          ['risks-heatmap__box_level-low','risks-heatmap__box_level-low','risks-heatmap__box_level-medium'],
+          ['risks-heatmap__box_level-medium','risks-heatmap__box_level-medium','risks-heatmap__box_level-medium'],
+          ['risks-heatmap__box_level-medium','risks-heatmap__box_level-high','risks-heatmap__box_level-high']]
+        return riskHeatmapArray[row][col]
+      },
     },
     computed: {
       loading() {
@@ -126,32 +114,13 @@
         return this.$store.getters.risksList
       },
       riskHeatmap() {
-        // let riskHeatmapArray = []
-        //
-        // this.riskList.map((val, ind) => {
-        //   console.log(val, ind)
-        //   let count = 0;
-        //   let arr2level = [0, 0, 0]
-        //   if (val.impact === 0) {
-        //     if (val.risk_level === 0) {}
-        //     if (val.risk_level === 1) {}
-        //     if (val.risk_level === 2) {}
-        //   }
-        //   if (val.impact === 1) {
-        //     if (val.risk_level === 0) {}
-        //     if (val.risk_level === 1) {}
-        //     if (val.risk_level === 2) {}
-        //   }
-        //   if (val.impact === 2) {
-        //     if (val.risk_level === 0) {}
-        //     if (val.risk_level === 1) {}
-        //     if (val.risk_level === 2) {}
-        //   }
-        //   riskHeatmapArray.push(arr2level)
-        // })
-
-        return create2DArray(3, [0, 0, 0])
-        // return riskHeatmapArray
+        let riskHeatmapArray = [[0,0,0], [0,0,0], [0,0,0]]
+        this.riskList.forEach(function (risk) {
+          let counter = riskHeatmapArray[risk.impact][risk.likelihood]
+          counter = counter + 1
+          riskHeatmapArray[risk.impact][risk.likelihood] = counter
+        })
+        return riskHeatmapArray
       },
       riskSummary() {
         const riskList = this.riskList
@@ -184,9 +153,6 @@
           }
         }
       },
-    },
-    mounted() {
-      console.log(create2DArray(3, [0, 0, 0]))
     },
   };
 </script>
