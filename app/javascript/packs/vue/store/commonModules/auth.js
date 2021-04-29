@@ -135,6 +135,21 @@ export default {
         commit("setLoading", false)
       }
     },
+    async changeEmail({commit}, payload) {
+      try {
+        commit("clearError");
+        commit("setLoading", true);
+
+        const response = await axios.put(`/users/password`, payload)
+        return response.data
+
+      } catch (error) {
+        console.error(error);
+        throw error
+      } finally {
+        commit("setLoading", false)
+      }
+    },
     async getInfoByCRDNumber({commit}, payload) {
       try {
         commit("clearError");
