@@ -54,7 +54,6 @@ const store = new Vuex.Store({
       namespaced: true,
       ...annual,
     },
-    auth,
   },
 });
 

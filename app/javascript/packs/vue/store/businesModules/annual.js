@@ -1,6 +1,9 @@
+import axios from '../../services/axios'
+
 import AnnualReview from "../../models/AnnualReview";
 
-const TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImV4cCI6MTYyMDQ3MDM5Mn0.jp3-SuC06LNObDxmw_SrIFFkEO0MCrqzUAGIh0licT4'
+// HOOK TO NOT REWITE ALL REQUESTS
+const TOKEN = localStorage.getItem('app.currentUser.token') ? JSON.parse(localStorage.getItem('app.currentUser.token')) : ''
 
 export default {
   state: {
@@ -68,9 +71,6 @@ export default {
             'Content-Type': 'application/json'
           }
         })
-        if (!response.ok) {
-          throw new Error(`Could't create review (${response.status})`);
-        }
         const data = await response.json()
         const reviews = []
         console.log(data)
