@@ -250,8 +250,8 @@ export default {
 
         // WAIT LONGER
         axios.defaults.timeout = 10000;
-        const response = await axios.post(`/${endPoint}/upgrade/subscribe`, { plan: planName }, { params: {
-            payment_source_id: paymentSourceId, cnt: countPayedUsers
+        const response = await axios.post(`/${endPoint}/upgrade/subscribe`, { plan: planName, cnt: countPayedUsers }, { params: {
+            payment_source_id: paymentSourceId
           }})
         return response.data
 
