@@ -193,6 +193,29 @@ export default {
         commit("setLoading", false)
       }
     },
+    async updateAccountInfoWithFile({commit}, payload) {
+      try {
+        commit("clearError");
+        commit("setLoading", true);
+        const config = {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        };
+        const response = await axios.patch(`/specialist`, payload, config)
+        if(response.data) {
+          localStorage.setItem('app.currentUser', JSON.stringify(response.data));
+          commit('updateUser', response.data)
+        }
+        return response.data
+
+      } catch (error) {
+        console.error(error);
+        throw error
+      } finally {
+        commit("setLoading", false)
+      }
+    },
     async updateSubscribe({commit}, payload) {
       try {
         commit("clearError");
@@ -227,8 +250,8 @@ export default {
 
         // WAIT LONGER
         axios.defaults.timeout = 10000;
-        const response = await axios.post(`/${endPoint}/upgrade/subscribe`, { plan: planName }, { params: {
-            payment_source_id: paymentSourceId, cnt: countPayedUsers
+        const response = await axios.post(`/${endPoint}/upgrade/subscribe`, { plan: planName, cnt: countPayedUsers }, { params: {
+            payment_source_id: paymentSourceId
           }})
         return response.data
 

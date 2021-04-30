@@ -226,32 +226,27 @@
 
       const accountInfo = localStorage.getItem('app.currentUser');
       const accountInfoParsed = JSON.parse(accountInfo);
-      // console.log(JSON.parse(accountInfo))
+      console.log(JSON.parse(accountInfo))
       if(accountInfo) {
-        this.formStep2.companyName = accountInfoParsed.business_name;
-        // this.formStep2.website = accountInfoParsed;
-        this.formStep2.aum = accountInfoParsed.aum;
-        this.formStep2.aptUnit = accountInfoParsed.apartment;
-        this.formStep2.numAcc = accountInfoParsed.client_account_cnt;
-        // this.formStep2.businessAddress = accountInfoParsed;
-        this.formStep2.city = accountInfoParsed.city;
-        this.formStep2.state = accountInfoParsed.state;
-        this.formStep2.zip = accountInfoParsed.zip;
-        // this.formStep1.regulator = accountInfo;
-        this.formStep2.industry = accountInfoParsed.industries;
-        this.formStep2.subIndustry = accountInfoParsed.sub_industries;
-        this.formStep2.jurisdiction = accountInfoParsed.jurisdictions;
+        this.formStep1.industry = accountInfoParsed.industries;
+        this.formStep1.subIndustry = accountInfoParsed.sub_industries;
+        this.formStep1.jurisdiction = accountInfoParsed.jurisdictions;
+        this.formStep1.regulatorSelected = accountInfoParsed.former_regulator ? 'yes' : 'no';
+
+        this.formStep2.skills = accountInfoParsed.skill_names;
+        this.formStep2.experience = accountInfoParsed.experience;
       }
 
 
       const url = new URL(window.location);
-      let stepNum = url.searchParams.get('step');
+      const stepNum = +url.searchParams.get('step');
       this.currentStep = stepNum;
+
       if (stepNum === 2) {
         this.step1 = false;
         this.step2 = true;
         this.step3 = false;
-        this.navStep1 = false;
+        this.navStep1 = true;
         this.navStep2 = true;
         this.navStep3 = false;
       }
@@ -259,8 +254,8 @@
         this.step1 = false;
         this.step2 = false;
         this.step3 = true;
-        this.navStep1 = false;
-        this.navStep2 = false;
+        this.navStep1 = true;
+        this.navStep2 = true;
         this.navStep3 = true;
       }
     },
@@ -396,6 +391,9 @@
 
         if (stepNum === 3) {
 
+          console.log('this.formStep2.file')
+          console.log(this.formStep2.file)
+
           // let formData = new FormData()
           // formData.append('file', this.formStep2.file)
 
@@ -411,7 +409,7 @@
           //     specialist_other: this.formStep1.regulator.join(', '),
           //     experience: this.formStep2.expirience,
           //     // certifications: '',
-          //     resume: formData,
+          //     resume: formData ? JSON.stringify(formData) : '',
           //   },
           //   skill_names: this.formStep2.skills.map(skill => skill.name),
           // }
@@ -432,12 +430,13 @@
             },
             skill_names: this.formStep2.skills.map(skill => skill.name),
           }
+          console.log('formData', formData)
 
           let formData = new FormData()
-          // Object.entries(params).forEach(
-          //   ([key, value]) => formData.append(key, JSON.stringify(value))
-          // )
-          // console.log('formData', formData)
+          Object.entries(params).forEach(
+            ([key, value]) => formData.append(key, JSON.stringify(value))
+          )
+          console.log('formData', formData)
 
           // Object.entries(params).forEach(
           //   ([keyP, valueP]) => {
@@ -450,14 +449,8 @@
           //     formData.append(keyP, JSON.stringify(newObj))
           //   })
 
-          Object.keys(params).map(e => {
-            console.log('e')
-            console.log(e)
-            formData.append(e, params[e])
-          })
-
           this.$store
-            .dispatch('updateAccountInfo', formData)
+            .dispatch('updateAccountInfoWithFile', formData)
             .then(response => {
               console.log('response', response)
 
