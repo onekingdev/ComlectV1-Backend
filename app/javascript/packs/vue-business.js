@@ -23,6 +23,14 @@ const businesMarketplace = {
   BusinessMarketplacePage,
 }
 
+import BusinessRisksPage from './vue/business/riskregister/Page.vue'
+import BusinessRisksPageDetail from './vue/business/riskregister/RiskDetail.vue'
+
+const businesRisks = {
+  BusinessRisksPage,
+  BusinessRisksPageDetail
+}
+
 init({
   store,
   components: {
@@ -36,6 +44,10 @@ init({
     TimesheetsShowPage,
 
     ...businesPolicies,
+<<<<<<< HEAD
     ...businesMarketplace
+=======
+    ...businesRisks
+>>>>>>> CP-07
   }
 })
