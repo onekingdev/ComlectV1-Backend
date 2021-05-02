@@ -21,7 +21,7 @@ export default {
       commit("clearError");
       commit("setLoading", true);
 
-      axios.get('/business/specialists')
+      axios.get('/business/specialists', { timeout: 10000 })
         .then(function (response) {
           // handle success
           commit('updateSpecialistsList', response.data)

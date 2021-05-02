@@ -44,10 +44,7 @@ init({
     TimesheetsShowPage,
 
     ...businesPolicies,
-<<<<<<< HEAD
-    ...businesMarketplace
-=======
+    ...businesMarketplace,
     ...businesRisks
->>>>>>> CP-07
   }
 })

@@ -41,11 +41,8 @@ const store = new Vuex.Store({
 
   modules: {
     policies,
-<<<<<<< HEAD
     specialistsMarketplace,
-=======
     risks,
->>>>>>> CP-07
     // policies: {
     //   namespaced: true,
     //   ...policies,
