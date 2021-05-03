@@ -45,6 +45,7 @@
                                 | Actions
                                 b-icon.ml-2(icon="chevron-down")
                               b-dropdown-item(@click="addTopicItem(i)") Add item
+                              b-dropdown-item(@click="createTask(i)") Create task
                               b-dropdown-item(@click="deleteTopic(i)").delete Delete Topic
                         template(v-for="(topicItem, topicItemIndex) in currentTopic.items")
                           .row(:key="`${currentCategory.name}-${i}-${topicItemIndex}`")
@@ -146,8 +147,8 @@ export default {
       const reviewCategory = this.currentCategory
       const data = {
         annualId: this.annualId,
-        complete: true,
         ...reviewCategory,
+        complete: true,
       }
       try {
         await this.updateReviewCategory(data)
@@ -191,6 +192,9 @@ export default {
     },
     deleteCategory() {
       console.log('this.currentCategory', this.currentCategory)
+    },
+    createTask(i){
+      console.log('createTask: ', i)
     },
     makeToast(title, str) {
       this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
