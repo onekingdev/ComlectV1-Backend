@@ -20,6 +20,10 @@ export default {
     SET_NEW_REVIEW (state, payload) {
       state.reviews.push(payload)
     },
+    UPDATE_REVIEW (state, payload) {
+      const index = state.reviews.findIndex(record => record.id === payload.id);
+      state.reviews.splice(index, 1, payload)
+    },
     DELETE_REVIEW (state, payload) {
       const index = state.reviews.findIndex(record => record.id === payload.id);
       state.reviews.splice(index, 1)
@@ -206,6 +210,23 @@ export default {
           throw new Error(`Could't update review (${response.status})`);
         }
         const data = await response.json()
+        if (data) commit('UPDATE_REVIEW', new AnnualReview(
+          data.annual_review_employees,
+          data.business_id,
+          data.created_at,
+          data.exam_end,
+          data.exam_start,
+          data.id,
+          data.material_business_changes,
+          data.pdf_url,
+          data.regulatory_changes,
+          data.review_categories,
+          data.review_end,
+          data.review_start,
+          data.updated_at,
+          data.year,
+          data.name
+        ))
         return data
       } catch (error) {
         commit("setError", error.message, {

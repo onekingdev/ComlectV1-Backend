@@ -8,7 +8,7 @@
               div
                 h2 Internal Reviews
               div
-                AnnualModalCreate()
+                AnnualModalCreate(:reviews="reviews")
                   button.btn.btn-dark.float-end New Review
     .card-body.white-card-body
       .container

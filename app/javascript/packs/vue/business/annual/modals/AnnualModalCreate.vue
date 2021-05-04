@@ -4,6 +4,10 @@
       slot
 
     b-modal.fade(:id="modalId" title="New Review")
+      .row(v-if="reviewsOptions && reviewsOptions.length")
+        .col-12.m-b-2
+          label.form-label Template
+          b-form-select(v-model="reviewSelected" :options="reviewsOptions")
       .row
         .col-12.m-b-2
           label.form-label Name
@@ -31,7 +35,12 @@
       inline: {
         type: Boolean,
         default: true
-      }
+      },
+      reviews: {
+        type: Array,
+        required: false,
+        default: []
+      },
     },
     data() {
       return {
@@ -41,7 +50,15 @@
           year: year,
           review_start: '',
           review_end: ''
-        }
+        },
+        reviewSelected: null,
+        // reviewsOptions: [
+        //   { value: null, text: 'Please select an option' },
+        //   { value: 'a', text: 'This is First option' },
+        //   { value: 'b', text: 'Selected Option' },
+        //   { value: { C: '3PO' }, text: 'This is an option with object value' },
+        //   { value: 'd', text: 'This one is disabled', disabled: true }
+        // ]
       }
     },
     methods: {
@@ -53,6 +70,36 @@
 
         if (!this.annual_review.name || !this.annual_review.review_start || !this.annual_review.review_end) {
           this.makeToast('Error', `Please check all fields!`)
+          return
+        }
+
+        if(this.reviewSelected) {
+          this.$store.dispatch('annual/duplicateReview', { id: this.reviewSelected })
+            .then(response => {
+              // console.log(response)
+
+              const review = response
+              const data = {
+                id: review.id,
+                name: this.annual_review.name,
+                year: year,
+                review_start: this.annual_review.review_start,
+                review_end: this.annual_review.review_end,
+                regulatory_changes_attributes: review.regulatory_changes,
+                material_business_changes: review.material_business_changes,
+                annual_review_employees_attributes: review.annual_review_employees
+              }
+
+              this.$store.dispatch('annual/updateReview', data)
+                .then((response) => {
+                  this.makeToast('Success', `Annual Review Successfully created!`)
+                  this.$emit('saved')
+                  this.$bvModal.hide(this.modalId)
+                })
+                .catch((error) => console.error(error))
+            })
+            .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
+
           return
         }
 
@@ -71,6 +118,14 @@
           this.makeToast('Error', error.message)
         }
       },
+    },
+    computed: {
+      reviewsOptions () {
+        const revOpt = this.reviews.map(review => {
+          return { value: review.id, text: review.name }
+        })
+        return revOpt ? revOpt : []
+      }
     },
   }
 </script>
