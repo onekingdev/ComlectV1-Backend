@@ -233,8 +233,8 @@
         this.formStep1.jurisdiction = accountInfoParsed.jurisdictions;
         // this.formStep1.regulatorSelected = accountInfoParsed.former_regulator ? 'yes' : 'no';
 
-        // this.formStep2.skills = accountInfoParsed.skill_names;
-        // this.formStep2.experience = accountInfoParsed.experience;
+        this.formStep2.skills = accountInfoParsed.skill_names || [];
+        this.formStep2.experience = accountInfoParsed.experience;
       }
 
 
@@ -396,7 +396,7 @@
 
         if (stepNum === 3) {
 
-          const dataToSend = {
+          const params = {
             specialist: {
               industry_ids: this.formStep1.industry.map(record => record.id),
               sub_industry_ids: this.formStep1.subIndustry.map(record => record.id),
@@ -407,48 +407,22 @@
               former_regulator: this.formStep1.regulatorSelected === 'yes',
               specialist_other: this.formStep1.regulator.join(', '),
               experience: this.formStep2.expirience,
-              resume: '',
+              // certifications: '',
+              resume: this.formStep2.file ? this.formStep2.file : '',
             },
             skill_names: this.formStep2.skills.map(skill => skill.name),
           }
 
-          // const params = {
-          //   specialist: {
-          //     industry_ids: this.formStep1.industry.map(record => record.id),
-          //     sub_industry_ids: this.formStep1.subIndustry.map(record => record.id),
-          //     jurisdiction_ids: this.formStep1.jurisdiction.map(record => record.id),
-          //
-          //     first_name: this.currentUser.first_name,
-          //     last_name: this.currentUser.last_name,
-          //     former_regulator: this.formStep1.regulatorSelected === 'yes',
-          //     specialist_other: this.formStep1.regulator.join(', '),
-          //     experience: this.formStep2.expirience,
-          //     // certifications: '',
-          //     resume: this.formStep2.file ? this.formStep2.file : '',
-          //   },
-          //   skill_names: this.formStep2.skills.map(skill => skill.name),
-          // }
-          // console.log('formData', formData)
-          //
-          // let formData = new FormData()
-          // Object.entries(params).forEach(
-          //   ([key, value]) => formData.append(key, JSON.stringify(value))
-          // )
-          // console.log('formData', formData)
+          let formData = new FormData()
+          Object.keys(params.specialist)
+            .map(specAttr => formData.append(`specialist[${specAttr}]`, params.specialist[specAttr]))
+          params.skill_names
+            .map(skillName => formData.append(`skill_names[]`, skillName))
 
-          // Object.entries(params).forEach(
-          //   ([keyP, valueP]) => {
-          //     const newObj = {}
-          //     Object.entries(valueP).forEach(
-          //       ([key, value]) => {
-          //         Object.assign(newObj, { [key]: value })
-          //         console.log(newObj)
-          //       })
-          //     formData.append(keyP, JSON.stringify(newObj))
-          //   })
+          console.log('formData', formData)
 
           this.$store
-            .dispatch('updateAccountInfo', dataToSend)
+            .dispatch('updateAccountInfoWithFile', formData)
             .then(response => {
               // console.log('response', response)
 
