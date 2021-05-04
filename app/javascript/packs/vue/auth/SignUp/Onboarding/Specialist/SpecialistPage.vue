@@ -3,6 +3,7 @@
     TopNavbar(:userInfo="userInfo")
     main.row#main-content
       .col-xl-10.col-md-9.m-x-auto
+        Overlay(v-if="overlay", :status="overlayStatus", :statusText="overlayStatusText", :show="overlay")
         .card-body.white-card-body.registration-onboarding.p-lg-5
           .div
             h2 Set Up Your Account
@@ -191,6 +192,7 @@
   import BillingDetails from './BillingDetails'
   import PurchaseSummary from './PurchaseSummary'
   // import SpecialistModalSkipStep from './Modals/SpecialistModalSkipStep'
+  import Overlay from '../Overlay'
 
   import data from './BillingPlansData.json'
 
@@ -202,7 +204,8 @@
       Multiselect,
       BillingDetails,
       PurchaseSummary,
-      // SpecialistModalSkipStep
+      // SpecialistModalSkipStep,
+      Overlay
     },
     created() {
       // console.log('userInfo', this.userInfo)
@@ -326,6 +329,9 @@
         additionalUsers: 0,
         paymentSourceId: null,
         disabled: true,
+        overlay: false,
+        overlayStatus: '',
+        overlayStatusText: '',
       }
     },
     methods: {
@@ -484,6 +490,9 @@
         // CLEAR ERRORS
         this.errors = []
 
+        this.overlay = true
+        this.overlayStatusText = 'Setting up account. Subscribing a plan...'
+
         let planName;
         if (selectedPlan.id === 1) {
           planName = 'specialist_free';
@@ -514,11 +523,29 @@
             if(!response.errors) {
               this.makeToast('Success', `Update subscribe successfully finished!`)
               // this.paySeats(selectedPlan)
+
+              // OVERLAY
+              if(+this.additionalUsers === 0) {
+                this.overlayStatusText = 'Account successfully purchased, you will be redirect to the dashboard...'
+                this.overlayStatus = 'success'
+                // this.overlay = false
+                const dashboard = this.userType === 'business' ? '/business2' : '/specialist'
+                setTimeout(() => {
+                  window.location.href = `${dashboard}`;
+                }, 3000)
+              }
             }
           })
           .catch(error => {
             console.error(error)
             this.makeToast('Error', `Something wrong! ${error}`)
+
+            // OVERLAY
+            this.overlayStatus = 'error'
+            this.overlayStatusText = `Something wrong! ${error}`
+            setTimeout(() => {
+              this.overlay = false
+            }, 3000)
           })
           .finally(() => this.disabled = true)
       },
