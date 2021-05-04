@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 class ZipLinksFetcher
   attr_reader :url
 
-  EXEMPT_LINK = '/files/investment/data/information-about-registered-investment-advisers-and-exempt-reporting-advisers/'.freeze
-  REGISTERED_LINK = '/files/investment/data/information-about-registered-investment-advisers-and-exempt-reporting-advisers/'.freeze
+  EXEMPT_LINK = '/files/investment/data/information-about-registered-investment-advisers-and-exempt-reporting-advisers/'
+  REGISTERED_LINK = '/files/investment/data/information-about-registered-investment-advisers-and-exempt-reporting-advisers/'
 
   def initialize(url)
     @url = url

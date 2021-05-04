@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PotentialBusiness < ActiveRecord::Base
-  validates_uniqueness_of :crd_number
+  validates :crd_number, uniqueness: true
 end

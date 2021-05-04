@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class PotentialBusinessesImporter
   attr_reader :zip_links
 
-  URL = 'https://www.sec.gov/help/foiadocsinvafoiahtm.html'.freeze
+  URL = 'https://www.sec.gov/help/foiadocsinvafoiahtm.html'
 
   def initialize
     @zip_links = ZipLinksFetcher.new(URL).call
@@ -18,7 +20,7 @@ class PotentialBusinessesImporter
   def download_and_parse(zip_file_link)
     input = Typhoeus.get(zip_file_link).body
     Zip::InputStream.open(StringIO.new(input)) do |io|
-      while entry = io.get_next_entry
+      while io.get_next_entry
         csv_string = io.read
         encoding_info = CharlockHolmes::EncodingDetector.detect(csv_string)
         csv_string = csv_string.encode('UTF-8', encoding_info[:encoding], invalid: :replace, replace: '')
@@ -37,7 +39,7 @@ class PotentialBusinessesImporter
       crd_number: row['Organization CRD#'],
       business_name: row['Legal Name'],
       website: row['Website Address']&.downcase,
-      contact_phone: row['Main Office Telephone Number'].gsub('-',''),
+      contact_phone: row['Main Office Telephone Number'].delete('-'),
       address_1: row['Main Office Street Address 1'],
       apartment: row['Main Office Street Address 2'],
       city: row['Main Office City'],

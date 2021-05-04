@@ -3779,46 +3779,6 @@ CREATE SEQUENCE public.payment_sources_id_seq
 
 ALTER SEQUENCE public.payment_sources_id_seq OWNED BY public.payment_sources.id;
 
---
--- Name: potential_businesses; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.potential_businesses (
-    id bigint NOT NULL,
-    crd_number character varying,
-    contact_phone character varying,
-    business_name character varying,
-    website character varying,
-    address_1 character varying,
-    city character varying,
-    state character varying,
-    zipcode character varying,
-    apartment character varying,
-    client_account_cnt integer,
-    aum numeric,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: potential_businesses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.potential_businesses_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: potential_businesses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.potential_businesses_id_seq OWNED BY public.potential_businesses.id;
-
 
 --
 -- Name: ported_businesses; Type: TABLE; Schema: public; Owner: -
@@ -3890,6 +3850,47 @@ CREATE SEQUENCE public.ported_subscriptions_id_seq
 --
 
 ALTER SEQUENCE public.ported_subscriptions_id_seq OWNED BY public.ported_subscriptions.id;
+
+
+--
+-- Name: potential_businesses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.potential_businesses (
+    id bigint NOT NULL,
+    crd_number character varying,
+    contact_phone character varying,
+    business_name character varying,
+    website character varying,
+    address_1 character varying,
+    city character varying,
+    state character varying,
+    zipcode character varying,
+    apartment character varying,
+    client_account_cnt integer,
+    aum numeric,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: potential_businesses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.potential_businesses_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: potential_businesses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.potential_businesses_id_seq OWNED BY public.potential_businesses.id;
 
 
 --
@@ -5478,6 +5479,13 @@ ALTER TABLE ONLY public.ported_subscriptions ALTER COLUMN id SET DEFAULT nextval
 
 
 --
+-- Name: potential_businesses id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.potential_businesses ALTER COLUMN id SET DEFAULT nextval('public.potential_businesses_id_seq'::regclass);
+
+
+--
 -- Name: project_ends id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -5923,14 +5931,6 @@ ALTER TABLE ONLY public.favorites
 
 
 --
--- Name: potential_businesses potential_businesses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.potential_businesses
-    ADD CONSTRAINT potential_businesses_pkey PRIMARY KEY (id);
-
-
---
 -- Name: feedback_requests feedback_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6088,6 +6088,14 @@ ALTER TABLE ONLY public.ported_businesses
 
 ALTER TABLE ONLY public.ported_subscriptions
     ADD CONSTRAINT ported_subscriptions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: potential_businesses potential_businesses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.potential_businesses
+    ADD CONSTRAINT potential_businesses_pkey PRIMARY KEY (id);
 
 
 --
@@ -6593,11 +6601,6 @@ CREATE INDEX index_flags_on_flagger_type_and_flagger_id ON public.flags USING bt
 
 CREATE INDEX index_forum_subscriptions_on_business_id ON public.forum_subscriptions USING btree (business_id);
 
---
--- Name: index_potential_businesses_on_crd_number; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_potential_businesses_on_crd_number ON public.potential_businesses USING btree (crd_number);
 
 --
 -- Name: index_industries_projects_on_industry_id_and_project_id; Type: INDEX; Schema: public; Owner: -
@@ -6751,6 +6754,13 @@ CREATE INDEX index_ported_businesses_on_business_id ON public.ported_businesses 
 --
 
 CREATE INDEX index_ported_subscriptions_on_specialist_id ON public.ported_subscriptions USING btree (specialist_id);
+
+
+--
+-- Name: index_potential_businesses_on_crd_number; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_potential_businesses_on_crd_number ON public.potential_businesses USING btree (crd_number);
 
 
 --
