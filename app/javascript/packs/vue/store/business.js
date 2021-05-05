@@ -3,6 +3,7 @@ import Vuex from "vuex";
 
 import policies from "./businesModules/policies";
 import specialistsMarketplace from "./businesModules/specialistsMarketplace";
+import annual from "./businesModules/annual"
 import risks from "./businesModules/risks";
 import shared from "./commonModules/shared";
 
@@ -51,6 +52,10 @@ const store = new Vuex.Store({
     //   // }
     // },
     shared,
+    annual: {
+      namespaced: true,
+      ...annual,
+    },
   },
 });
 
