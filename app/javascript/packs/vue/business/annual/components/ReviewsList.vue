@@ -18,10 +18,10 @@
         b-icon.mr-2(icon='plus-circle-fill')
         | Add Category
       .review__category-add__form(v-else)
-        input.form-control(v-model="category.name" type="text" ref="input")
-        button.btn.btn-default(@click="addCategory")
-          b-icon.mr-2(icon='plus-circle-fill')
-          | Add Category
+        input.form-control(v-model="category.name" type="text" ref="input" @blur="addCategory")
+        <!--button.btn.btn-default(@click="addCategory")-->
+          <!--b-icon.mr-2(icon='plus-circle-fill')-->
+          <!--| Add Category-->
 </template>
 
 <script>
@@ -51,6 +51,10 @@ export default {
       this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
     },
     async addCategory () {
+      if (this.category.name.length === 0) {
+        this.category.visible = false
+        return
+      }
       const reviewCategory = this.category
       const data = {
         annualId: this.annualId,
@@ -59,10 +63,11 @@ export default {
       }
       try {
         this.category.visible = false
-        await this.createReviewCategory(data)
+        const response = await this.createReviewCategory(data)
         this.makeToast('Success', "New category added")
         await this.getCurrentReviewReview(this.annualId)
         this.category.name = ""
+        window.location.href = `${window.location.origin}/business/annual_reviews/${response.annual_report_id}/${response.id}`
       } catch (error) {
         this.makeToast('Error', error.message)
       }
