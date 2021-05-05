@@ -3,7 +3,9 @@ import Vuex from "vuex";
 
 import policies from "./businesModules/policies";
 import specialistsMarketplace from "./businesModules/specialistsMarketplace";
-import shared from "./shared";
+import annual from "./businesModules/annual"
+import risks from "./businesModules/risks";
+import shared from "./commonModules/shared";
 
 Vue.use(Vuex);
 
@@ -17,6 +19,7 @@ const URL_PROJECT_TIMESHEETS = `${URL_PROJECT_SHOW}/timesheets`;
 const URL_API_PROJECT_TIMESHEETS = `/api${URL_PROJECT_TIMESHEETS}`;
 
 const URL_POLICIES_SHOW = "/business/compliance_policies/:id";
+const URL_RISKS_SHOW = "/business/risks/:id";
 
 const URLS = {
   URL_PROJECT_SHOW,
@@ -29,6 +32,7 @@ const URLS = {
   URL_API_PROJECT_TIMESHEETS,
 
   URL_POLICIES_SHOW,
+  URL_RISKS_SHOW,
 };
 
 const store = new Vuex.Store({
@@ -39,6 +43,7 @@ const store = new Vuex.Store({
   modules: {
     policies,
     specialistsMarketplace,
+    risks,
     // policies: {
     //   namespaced: true,
     //   ...policies,
@@ -47,6 +52,10 @@ const store = new Vuex.Store({
     //   // }
     // },
     shared,
+    annual: {
+      namespaced: true,
+      ...annual,
+    },
   },
 });
 
