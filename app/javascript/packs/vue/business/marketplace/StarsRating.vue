@@ -76,7 +76,7 @@ export default {
   height: 20px;
   margin-right: 5px;
   z-index: 2;
-  background-image: url(../../../../../assets/images/svg/star.svg); /* probably, the best way is to use "<svg use=''>". May be I remake it later */
+  background-image: url(../../assets/star.svg); /* probably, the best way is to use "<svg use=''>". May be I remake it later */
   background-size: 105%;
 }
 .stars-rating_item::after {
