@@ -29,8 +29,10 @@
               .col-md-9.position-relative
                 .annual-actions
                   b-dropdown.bg-white(text='Actions', variant="secondary", right)
-                    b-dropdown-item Duplicate
-                    b-dropdown-item.delete Delete all categories
+                    AnnualModalEdit(:review="review" :inline="false")
+                      b-dropdown-item Edit
+                    AnnualModalDelete(@deleteConfirmed="deleteReview(review.id)" :inline="false")
+                      b-dropdown-item.delete Delete
                 .card-body.white-card-body.reviews__card.p-xl-5
                   .reviews__card--internal.p-b-1
                     h3
@@ -126,6 +128,7 @@ import { mapGetters, mapActions } from "vuex"
 import { VueEditor } from "vue2-editor"
 import ReviewsList from "./components/ReviewsList"
 import AnnualModalComplite from './modals/AnnualModalComplite'
+import AnnualModalEdit from './modals/AnnualModalEdit'
 import AnnualModalDelete from './modals/AnnualModalDelete'
 import PageTasks from './PageTasks'
 import PageDocuments from './PageDocuments'
@@ -137,6 +140,7 @@ export default {
     ReviewsList,
     VueEditor,
     AnnualModalComplite,
+    AnnualModalEdit,
     AnnualModalDelete,
     PageTasks,
     PageDocuments,
