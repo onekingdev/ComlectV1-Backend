@@ -14,13 +14,19 @@
         b-dropdown(size="sm" variant="light" class="m-0 p-0" right)
           template(#button-content)
             b-icon(icon="three-dots")
-          FoldersModalEdit(@editConfirmed="moveToFileFolder", :item="item", :inline="false")
+          b-dropdown-item(v-if="item.locked" :disabled="item.locked" v-b-tooltip.hover.left="'Cant be edited!'") Edit
+          FoldersModalEdit(v-else @editConfirmed="moveToFileFolder", :item="item", :inline="false")
             b-dropdown-item Edit
           b-dropdown-item(@click="downloadFileFolder(item.id)") Download
-          FoldersModalMoveTo(@moveToConfirmed="moveToFileFolder", :itemId="item.id", :inline="false")
+          b-dropdown-item(v-if="item.locked" :disabled="item.locked" v-b-tooltip.hover.left="'Cant be moved!'") Move to
+          FoldersModalMoveTo(v-else @moveToConfirmed="moveToFileFolder", :itemId="item.id", :inline="false")
             b-dropdown-item Move to
-          FilefoldersModalDelete(@deleteConfirmed="deleteFileFolder(item.id, itemType)" :inline="false")
-            b-dropdown-item.delete Delete
+          b-dropdown-item-button.delete(v-if="item.locked" :disabled="item.locked" variant='danger' v-b-tooltip.hover.left="'Cant be deleted!'" )
+            <!--b-icon.mr-1(icon='x-circle' aria-hidden='true')-->
+            | Delete
+          FilefoldersModalDelete(v-else @deleteConfirmed="deleteFileFolder(item.id, itemType)" :inline="false")
+            b-dropdown-item(:disabled="item.locked").delete Delete
+
 </template>
 
 <script>

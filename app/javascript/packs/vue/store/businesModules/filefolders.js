@@ -175,7 +175,7 @@ export default {
       // commit("setLoading", true, { root: true });
       try {
         console.log(commit, getters)
-        const response = await axios.get(`/file_folders/${getters.currentFolder}/download_folder`)
+        const response = await axios.get(`/business/file_folders/${getters.currentFolder}/download_folder`)
         return response.data
       } catch (error) {
         commit("setError", error.message, { root: true });
@@ -190,7 +190,7 @@ export default {
       // commit("setLoading", true, { root: true });
       try {
         console.log(commit, getters)
-        const response = await axios.get(`/file_folders/${getters.currentFolder}/check_zip`)
+        const response = await axios.get(`/business/file_folders/${getters.currentFolder}/check_zip`)
         return response.data
       } catch (error) {
         commit("setError", error.message, { root: true });
