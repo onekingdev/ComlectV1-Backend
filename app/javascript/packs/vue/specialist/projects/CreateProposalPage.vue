@@ -45,7 +45,9 @@ import { redirectWithToast } from '@/common/Toast'
 import {
   PRICING_TYPES_OPTIONS,
   FIXED_PAYMENT_SCHEDULE_OPTIONS,
-  HOURLY_PAYMENT_SCHEDULE_OPTIONS
+  HOURLY_PAYMENT_SCHEDULE_OPTIONS,
+  FIXED_PAYMENT_SCHEDULE_OPTIONS_FILTERED,
+  HOURLY_PAYMENT_SCHEDULE_OPTIONS_FILTERED,
 } from '@/common/ProjectInputOptions'
 
 const FIXED_BUDGET = Object.keys(PRICING_TYPES_OPTIONS)[0]
@@ -97,8 +99,12 @@ export default {
   },
   computed: {
     pricingTypesOptions: () => PRICING_TYPES_OPTIONS,
-    fixedPaymentScheduleOptions: () => FIXED_PAYMENT_SCHEDULE_OPTIONS,
-    hourlyPaymentScheduleOptions: () => HOURLY_PAYMENT_SCHEDULE_OPTIONS,
+    fixedPaymentScheduleOptions() {
+      return FIXED_PAYMENT_SCHEDULE_OPTIONS_FILTERED(this.form.starts_on, this.form.ends_on)
+    },
+    hourlyPaymentScheduleOptions() {
+      return HOURLY_PAYMENT_SCHEDULE_OPTIONS_FILTERED(this.form.starts_on, this.form.ends_on)
+    },
     isFixedBudget() {
       return FIXED_BUDGET === this.form.pricing_type
     },
