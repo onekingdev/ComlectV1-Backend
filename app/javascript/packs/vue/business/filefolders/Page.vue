@@ -116,8 +116,13 @@
           this.disabled = true
           await this.$store.dispatch('filefolders/startZipping')
             .then(response => {
-              console.log(response)
-              this.zippinTimerChecker()
+              // console.log(response)
+              this.makeToast('Success', `${response.message}`)
+
+              setTimeout(() => {
+                this.zippinTimerChecker()
+                this.zipCounter++
+              }, 5000)
             })
             .catch(error => console.error(response))
             // .finally(() => this.zippinTimerChecker()) // FOR TESTS
@@ -131,28 +136,57 @@
           this.disabled = true
           await this.$store.dispatch('filefolders/checkZipping')
             .then(response => {
-              console.log(response)
-              this.zipStatus = true
-              this.zipCounter = 11
-            })
-            .catch(error => console.error(response))
-            .finally(() => {
-              // If automatic requests less or equal 10
-              if (this.zipCounter <= 10) {
-                if(!this.zipStatus) {
-                  setTimeout(() => {
-                    this.zippinTimerChecker()
-                    this.zipCounter++
-                  }, 5000)
-                }
-              } else {
+              // console.log(response)
+              // this.zipCounter = 11
+              if (!response.complete) {
+                setTimeout(() => {
+                  this.zippinTimerChecker()
+                  this.zipCounter++
+                }, 5000)
+              }
+
+              if (response.complete) {
+                this.zipStatus = true
+                this.makeToast('Success', 'Zipping completed! Dowloading started.')
+
+                // const url = response.path
+                // this.forceFileDownload(response.path)
+                this.download(response.path, `Books and Records ${this.parentFolderId}.zip`);
                 this.disabled = false
-                this.makeToast('Error', 'Requests for checking is too much!')
               }
             })
+            .catch(error => console.error(response))
+            // .finally(() => {
+            //   // If automatic requests less or equal 10
+            //   if (this.zipCounter <= 10) {
+            //     if(!this.zipStatus) {
+            //       setTimeout(() => {
+            //         this.zippinTimerChecker()
+            //         this.zipCounter++
+            //       }, 5000)
+            //     }
+            //   } else {
+            //     this.disabled = false
+            //     this.makeToast('Error', 'Requests for checking is too much!')
+            //   }
+            // })
         } catch (error) {
           this.makeToast('Error', error.message)
         }
+      },
+      // forceFileDownload(response){
+      //   const url = window.URL.createObjectURL(new Blob([response]))
+      //   const link = document.createElement('a')
+      //   link.href = url
+      //   link.setAttribute('download', 'file.zip') //or any other extension
+      //   document.body.appendChild(link)
+      //   link.click()
+      // },
+      download(dataurl, filename) {
+        var a = document.createElement("a");
+        a.href = dataurl;
+        a.setAttribute("download", filename);
+        a.click();
       }
     },
     computed: {

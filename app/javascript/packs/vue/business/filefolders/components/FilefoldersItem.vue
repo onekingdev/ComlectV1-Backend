@@ -75,9 +75,9 @@ export default {
       this.setCurrentReviewFolder(folderId)
     },
     downloadFileFolder(filefolderId){
-      this.$store.dispatch('annual/duplicateReview', { id: filefolderId })
-        .then(response => this.toast('Success', ` ${response.message}`))
-        .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
+      // this.$store.dispatch('annual/duplicateReview', { id: filefolderId })
+      //   .then(response => this.toast('Success', ` ${response.message}`))
+      //   .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
     },
     async moveToFileFolder(){
       await this.getFileFolders

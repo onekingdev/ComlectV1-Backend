@@ -44,7 +44,7 @@ export default {
       commit("setLoading", true, { root: true });
       try {
         const response = await axios.post(`/business/file_folders`, payload)
-        console.log(response.data)
+        // console.log(response.data)
         if (response.data) commit('SET_FOLDER', response.data)
         return response.data
       } catch (error) {
@@ -60,7 +60,7 @@ export default {
       commit("setLoading", true, { root: true });
       try {
         const response = await axios.patch(`/business/file_folders/${payload.id}`, payload.data)
-        console.log(response.data)
+        // console.log(response.data)
         if (response.data && !payload.parent_id) commit('SET_NEW_FILEFOLDERS', new FileFolders(
           response.data.files,
           response.data.folders,
@@ -82,7 +82,7 @@ export default {
         const { id, itemType  } = payload
         const endpoint = itemType === 'folder' ? 'file_folders' : 'file_docs'
         const response = await axios.delete(`/business/${endpoint}/${id}`)
-        console.log(response.data)
+        // console.log(response.data)
         if (response.data) commit('DELETE_FILEFOLDERS', { itemType, data: response.data } )
         return response.data
       } catch (error) {
@@ -119,7 +119,7 @@ export default {
       commit("setLoading", true, { root: true });
       try {
         const response = await axios.get(`/business/file_folders`)
-        console.log(response.data)
+        // console.log(response.data)
         if (response.data) commit('SET_FILEFOLDERS', new FileFolders(
           response.data.files,
           response.data.folders,
@@ -138,7 +138,7 @@ export default {
       commit("setLoading", true, { root: true });
       try {
         const response = await axios.get(`/business/file_folders/${payload}`)
-        console.log(response.data)
+        // console.log(response.data)
         if (response.data) commit('SET_FILEFOLDERS', new FileFolders(
           response.data.files,
           response.data.folders,
@@ -174,7 +174,7 @@ export default {
       commit("clearError", null, { root: true });
       // commit("setLoading", true, { root: true });
       try {
-        console.log(commit, getters)
+        // console.log(commit, getters)
         const response = await axios.get(`/business/file_folders/${getters.currentFolder}/download_folder`)
         return response.data
       } catch (error) {
@@ -189,7 +189,7 @@ export default {
       commit("clearError", null, { root: true });
       // commit("setLoading", true, { root: true });
       try {
-        console.log(commit, getters)
+        // console.log(commit, getters)
         const response = await axios.get(`/business/file_folders/${getters.currentFolder}/check_zip`)
         return response.data
       } catch (error) {
