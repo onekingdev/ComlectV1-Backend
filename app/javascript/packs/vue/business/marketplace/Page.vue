@@ -9,44 +9,7 @@
     .container
       .row
         .col-lg-3
-          .card#sidebarMenu_alt
-            .card-header(style='border-bottom: 0px;')
-              b Filters
-            .card-body
-              h3.d-flex.justify-content-between(role="button" v-b-toggle.collapse_industry)
-                | Industry
-                ion-icon(name='chevron-down-outline')
-              b-collapse#collapse_industry(visible)
-                b-form-input(v-model="filter.industry")
-              hr
-              h3.d-flex.justify-content-between(role="button" v-b-toggle.collapse_experience)
-                | Experience Level
-                ion-icon(name='chevron-down-outline')
-              b-collapse#collapse_experience(visible)
-                b-form-checkbox(v-for="(option, i) in experienceOptions" v-model="filter.experience[i]" :key="'e'+i") {{option.label}}
-              hr
-              h3.d-flex.justify-content-between(role="button" v-b-toggle.collapse_hourly_rate)
-                | Hourly rate
-                ion-icon(name='chevron-down-outline')
-              b-collapse#collapse_hourly_rate(visible)
-                <!--b-form-checkbox(v-for="(option, i) in pricingTypeOptions" v-model="filter.pricing_type[i]" :key="'hr'+i") {{option.label}}-->
-                vue-range-slider.mb-5(
-                ref='slider' v-model='value'
-                :min="min" :max="max" :formatter="formatter" :tooltip-merge="tooltipMerge" :enable-cross="enableCross"
-                :bgStyle="bgStyle" :tooltipStyle="tooltipStyle" :processStyle="processStyle" :slider-style="sliderStyle"
-                :tooltip-dir='tooltipDir')
-              hr
-              h3.d-flex.justify-content-between(role="button" v-b-toggle.collapse_jurisdiction)
-                | Jurisdiction
-                ion-icon(name='chevron-down-outline')
-              b-collapse#collapse_jurisdiction(visible)
-                b-form-input(v-model="filter.jurisdiction")
-              hr
-              h3.d-flex.justify-content-between(role="button" v-b-toggle.collapse_fromer_regulator)
-                | Fromer Regulator
-                ion-icon(name='chevron-down-outline')
-              b-collapse#collapse_fromer_regulator(visible)
-                b-form-checkbox(v-for="(option, i) in fromer_regulatorOptions" v-model="filter.fromer_regulator[i]" :key="'fr'+i") {{option.label}}
+          MarketPlaceFilter(:optionsForRequest="optionsForRequest" :filter="filter")
 
         .col-lg-9
           .card
@@ -54,16 +17,7 @@
               .col-md-12
                 h3 Browse Specialist
             .card-header
-              .col-md-12
-                .row.py-2
-                  .col-sm-12
-                    b-form-group(label="Search" label-for="search-input")
-                      b-form-input#search-input(v-model="search" placeholder="Enter keywords, skills, etc.")
-                .row.py-2
-                  .col
-                    b-badge(variant="light")
-                      | Mock audit
-                      ion-icon.ml-2(name='close-outline')
+              MarketPlaceSearchInput
 
             .card-header(v-if="loading")
               .row.py-2.px-4
@@ -89,12 +43,12 @@
 
 <script>
   import Loading from '@/common/Loading/Loading'
+  import MarketPlaceFilter from './MarketPlaceFilter'
+  import MarketPlaceSearchInput from './MarketPlaceSearchInput'
   import SpecialistPanel from './SpecialistPanel'
   import SpecialistDetails from './SpecialistDetails'
 
   // import 'vue-range-component/dist/vue-range-slider.css'
-  // import VueRangeSlider from 'vue-range-component'
-
 
   const frontendUrl = '/projects'
   const endpointUrl = '/api/specialist/projects'
@@ -106,7 +60,6 @@
   })
 
   const PRICING_TYPE_OPTIONS = [{ label: 'Fixed Price', value: 'fixed' }, { label: 'Hourly', value: 'hourly' }]
-  const EXPERIENCE_OPTIONS = [{ label: 'Junior', value: [0, 0] },{ label: 'Intermediate', value: [1, 1] },{ label: 'Expert', value: [2, 2] }]
   const BUDGET_OPTIONS = [{ label: 'Less than $100', value: [0, 100] },
     { label: '$100 - $250', value: [100, 250] },
     { label: '$250 - $500', value: [250, 500] },
@@ -124,7 +77,6 @@
 
   const initialFilter = () => ({
     pricing_type: PRICING_TYPE_OPTIONS.map(() => false),
-    experience: EXPERIENCE_OPTIONS.map(() => false),
     budget: BUDGET_OPTIONS.map(() => false),
     duration: DURATION_OPTIONS.map(() => false),
     fromer_regulator: FORMER_REGULATOR_OPTIONS.map(() => false),
@@ -136,7 +88,9 @@
     components: {
       Loading,
       // VueRangeSlider,
-      SpecialistPanel
+      SpecialistPanel,
+      MarketPlaceFilter,
+      MarketPlaceSearchInput
     },
     data() {
       return {
@@ -147,35 +101,29 @@
         openId: null,
         isSidebarOpen: false,
         search: null,
-        value: [0, 100]
+        value: [0, 100],
+        optionsForRequest: {
+          industries: '',
+          experienceLevel: [],
+          hourlyRate: [10, 500],
+          jurisdictions: '',
+          formerRegulator: []
+        }
       };
     },
     created() {
       if (this.initialOpenId) {
         this.openDetails(this.initialOpenId)
       }
-
-      this.min = 0
-      this.max = 250
-      this.bgStyle = {
-        backgroundColor: '#fff',
-        boxShadow: 'inset 0.5px 0.5px 3px 1px rgba(0,0,0,.36)'
+    },
+    watch: {
+      optionsForRequest: {
+        handler: function (newValue, oldValue) {
+          console.log('changed: ', newValue)
+          // there would be request with debounce
+        },
+        deep: true
       }
-      this.tooltipStyle = {
-        // color: '#303132',
-        backgroundColor: '#303132',
-        borderColor: '#303132'
-      }
-      this.processStyle = {
-        backgroundColor: '#303132'
-      },
-      this.sliderStyle = {
-        backgroundColor: '#303132',
-      },
-      this.enableCross = false,
-      this.tooltipMerge = false,
-      this.formatter = value => `$${value}`,
-      this.tooltipDir = 'bottom'
     },
     methods: {
       makeToast(title, str) {
@@ -233,7 +181,7 @@
         return this.$store.getters.specialistsList;
       }
     },
-    mounted() {
+    mounted() { 
       this.$store
         .dispatch("getSpecialists")
         .then((response) => {
