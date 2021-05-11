@@ -85,7 +85,7 @@ Rails.application.routes.draw do
     post '/upgrade/buy' => 'upgrade#subscribe'
     resources :risks, only: %i[index show]
     get '/reports/risks' => 'reports#risks'
-    resources :file_folders, only: %i[index]
+    resources :file_folders, only: %i[index show]
     resources :file_docs
     resources :upgrade
     resources :addons, only: %i[index]
