@@ -47,6 +47,7 @@
   import MarketPlaceSearchInput from './MarketPlaceSearchInput'
   import SpecialistPanel from './SpecialistPanel'
   import SpecialistDetails from './SpecialistDetails'
+  import _debounce from 'lodash/debounce'
 
   // import 'vue-range-component/dist/vue-range-slider.css'
 
@@ -112,20 +113,26 @@
       };
     },
     created() {
+      this.debouncedSend = _debounce(this.sendRequest, 2000)
       if (this.initialOpenId) {
         this.openDetails(this.initialOpenId)
       }
     },
+    unmounted() {
+      this.debouncedSend.cancel()
+    },
     watch: {
       optionsForRequest: {
         handler: function (newValue, oldValue) {
-          console.log('changed: ', newValue)
-          // there would be request with debounce
+          this.debouncedSend(newValue, oldValue)
         },
         deep: true
       }
     },
     methods: {
+      sendRequest(newValue, oldValue) {
+        console.log('changed: ', newValue)
+      },
       makeToast(title, str) {
         this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
       },
