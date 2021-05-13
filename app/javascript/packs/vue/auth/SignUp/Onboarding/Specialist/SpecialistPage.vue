@@ -239,7 +239,7 @@
         this.formStep1.jurisdiction = accountInfoParsed.jurisdictions;
         // this.formStep1.regulatorSelected = accountInfoParsed.former_regulator ? 'yes' : 'no';
 
-        this.formStep2.skills = accountInfoParsed.skill_names || [];
+        this.formStep2.skills = accountInfoParsed.skills || [];
         this.formStep2.experience = accountInfoParsed.experience;
       }
 
@@ -401,9 +401,8 @@
 
           const params = {
             specialist: {
-              industry_ids: this.formStep1.industry.map(record => record.id),
-              sub_industry_ids: this.formStep1.subIndustry.map(record => record.id),
-              jurisdiction_ids: this.formStep1.jurisdiction.map(record => record.id),
+              // industry_ids: this.formStep1.industry.map(record => record.id),
+              // jurisdiction_ids: this.formStep1.jurisdiction.map(record => record.id),
 
               first_name: this.currentUser.first_name,
               last_name: this.currentUser.last_name,
@@ -413,12 +412,17 @@
               // certifications: '',
               resume: this.formStep2.file ? this.formStep2.file : '',
             },
+            sub_industry_ids: this.formStep1.subIndustry.map(record => record.value),
             skill_names: this.formStep2.skills.map(skill => skill.name),
           }
 
           let formData = new FormData()
+          formData.append(`specialist[industry_ids][]`, this.formStep1.industry.map(record => record.id))
+          formData.append(`specialist[jurisdiction_ids][]`, this.formStep1.jurisdiction.map(record => record.id))
           Object.keys(params.specialist)
             .map(specAttr => formData.append(`specialist[${specAttr}]`, params.specialist[specAttr]))
+          params.sub_industry_ids
+            .map(subIindustryIds => formData.append(`sub_industry_ids[]`, subIindustryIds))
           params.skill_names
             .map(skillName => formData.append(`skill_names[]`, skillName))
 
@@ -551,7 +555,7 @@
     async mounted () {
       try {
         const data = await this.$store.dispatch('getSkills')
-        if (data) this.formStep2.skills = data;
+        if (data) this.formStep2.skillsTags = data;
       } catch (error) {
         console.error(error)
       }
