@@ -85,10 +85,7 @@ Rails.application.routes.draw do
     post '/upgrade/buy' => 'upgrade#subscribe'
     resources :risks, only: %i[index show]
     get '/reports/risks' => 'reports#risks'
-    resources :file_folders do
-      get :download_folder, on: :member
-      get :check_zip, on: :member
-    end
+    resources :file_folders, only: %i[index show]
     resources :file_docs
     resources :upgrade
     resources :addons, only: %i[index]
@@ -97,14 +94,8 @@ Rails.application.routes.draw do
       post :assign
     end
     post '/seats/buy' => 'seats#buy'
-    resources :compliance_policies, only: %i[new update create edit show destroy index] do
-      collection do
-        put :sort
-      end
-      member do
-        put :ban
-        put :unban
-      end
+    resources :compliance_policies, only: %i[show index] do
+      get :entire, on: :collection
     end
     get 'annual_reviews/:id/:revcat', to: 'annual_reviews#revcat'
     resources :annual_reviews, only: %i[new create show destroy index edit update]
@@ -282,6 +273,12 @@ Rails.application.routes.draw do
     resources :direct_messages, path: 'messages(/:recipient_username)', only: %i[index create]
     resources :project_ratings, only: %i[index]
     namespace :business do
+      resources :file_folders, only: %i[index create destroy update show] do
+        get :download_folder, on: :member
+        get :check_zip, on: :member
+        get :list_tree, on: :member
+      end
+      resources :file_docs, only: %i[create update destroy]
       resource :compliance_policy_configuration, only: %i[show update]
       get '/reminders/:id' => 'reminders#show'
       delete '/reminders/:id' => 'reminders#destroy'
@@ -326,6 +323,8 @@ Rails.application.routes.draw do
         resources :timesheets, except: %i[new edit], controller: 'timesheets'
         resources :job_applications, path: 'applications', only: %i[show update create destroy]
         get :local
+        get :calendar_hide
+        get :calendar_show
       end
       post '/upgrade/subscribe' => 'upgrade#subscribe'
       delete '/upgrade/cancel' => 'upgrade#cancel'
