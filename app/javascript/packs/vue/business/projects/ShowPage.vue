@@ -61,14 +61,15 @@
                     h3.m-y-0 Collaborators
                     button.btn.btn-default.float-right(v-b-modal="'AddCollaboratorModal'") Add Collaborator
                     b-modal#AddCollaboratorModal(title="Add Collaborator")
-                      p Select a user to add.
-                      p
-                        strong Note:
-                        | An unlimited amount of employees can be added to the project but only one specialist can be actively working on a project at a time.
-                      InputSelect(value="" :options="[]") Select User
-                      template(#modal-footer="{ hide }")
-                        button.btn(@click="hide") Cancel
-                        button.btn.btn-dark Add
+                      Get(:etag="etag" :specialists="`/api/business/specialists`" :callback="getSpecialistsOptions")
+                        p Select a user to add.
+                        p
+                          strong Note:
+                          | An unlimited amount of employees can be added to the project but only one specialist can be actively working on a project at a time.
+                        InputSelect(value="" :options="getSpecialistsOptions") Select User
+                        template(#modal-footer="{ hide }")
+                          button.btn(@click="hide") Cancel
+                          button.btn.btn-dark Add
                   .card-body
                     table.rating_table
                       tbody
@@ -149,7 +150,10 @@ export default {
       this.showingContract = collaborator || null
     },
     contractDetails: fields,
-    readablePaymentSchedule
+    readablePaymentSchedule,
+    getSpecialistsOptions(specialists) {
+      return specialists.map(({ id, first_name, last_name }) => ({ id: id, label: `${first_name} ${last_name}`, text: `${first_name} ${last_name}` }))
+    }
   },
   computed: {
     postHref() {
