@@ -1,5 +1,5 @@
 <template lang="pug">
-  b-alert(show variant="primary")
+  b-alert(:show="show" variant="primary")
     .d-flex.align-items-center
       b-icon.m-r-2.m-l-1(icon="exclamation-triangle-fill" scale="2" variant="warning")
       .d-block.mr-auto
@@ -10,6 +10,7 @@
 </template>
 
 <script>
+  import { DateTime } from 'luxon'
   import ExtendDeadlineModal from '../ExtendDeadlineModal'
   export default {
     props: {
@@ -24,6 +25,12 @@
     computed: {
       confirmModalId() {
         return (this.modalId || '') + '_confirm'
+      },
+      show () {
+        const d = new Date;
+        const tommorow = d.getDate() + 1
+        const end = +this.project.ends_on.split('-')[2]
+        return tommorow === end
       }
     }
   }
