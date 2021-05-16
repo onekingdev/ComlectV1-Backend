@@ -5,7 +5,7 @@ class Api::Business::ExamsController < ApiController
   before_action :find_exam, only: %i[update destroy show]
 
   def index
-    respond_with json: current_business.exams.to_json, each_serializer: ExamSerializer
+    respond_with current_business.exams, each_serializer: ExamSerializer
   end
 
   def show
@@ -29,6 +29,14 @@ class Api::Business::ExamsController < ApiController
     end
   end
 
+  def destroy
+    if @exam.destroy
+      respond_with @exam, serializer: ExamSerializer
+    else
+      respond_with errors: @exam.errors, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def find_exam
@@ -36,7 +44,7 @@ class Api::Business::ExamsController < ApiController
   end
 
   def exam_params
-    params[:exam].permit(
+    params.permit(
       :name, :starts_on, :ends_on,
       exam_requests_attributes: %i[name details text_items complete shared exam_request_file_ids]
     )
