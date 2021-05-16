@@ -271,6 +271,9 @@ Rails.application.routes.draw do
     post 'local_projects/:project_id/messages' => 'project_messages#create'
     resources :direct_messages, path: 'messages(/:recipient_username)', only: %i[index create]
     namespace :business do
+      resources :exams, only: %i[index show create update] do
+        resources :exam_requests, path: 'requests', only: %i[create update]
+      end
       get '/reminders/:id' => 'reminders#show'
       delete '/reminders/:id' => 'reminders#destroy'
       post '/reminders/:id' => 'reminders#update'

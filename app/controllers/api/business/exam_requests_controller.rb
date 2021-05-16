@@ -1,16 +1,8 @@
 # frozen_string_literal: true
 
-class Api::Business::ExamsController < ApiController
+class Api::Business::ExamRequestsController < ApiController
   before_action :require_business!
-  before_action :find_exam, only: %i[update destroy show]
-
-  def index
-    respond_with json: current_business.exams.to_json, each_serializer: ExamSerializer
-  end
-
-  def show
-    respond_with @exam, serializer: ExamSerializer
-  end
+  before_action :find_exam_request, only: %i[create update]
 
   def create
     exam = current_business.exams.create(exam_params)
@@ -31,14 +23,14 @@ class Api::Business::ExamsController < ApiController
 
   private
 
-  def find_exam
-    @exam = current_business.exams.find(params[:id])
+  def find_exam_request
+    @exam = current_business.exams.find(params[:exam_id])
+    @exam_request = @exam.exam_requests.find(params[:id])
   end
 
   def exam_params
-    params[:exam].permit(
-      :name, :starts_on, :ends_on,
-      exam_requests_attributes: %i[name details text_items complete shared exam_request_file_ids]
+    params[:exam_request].permit(
+      :name, :details, :text_items, :complete, :shared, exam_request_file_ids: []
     )
   end
 end
