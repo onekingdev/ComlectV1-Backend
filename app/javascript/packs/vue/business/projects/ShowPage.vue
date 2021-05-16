@@ -59,9 +59,9 @@
                 .card(v-if="!showingContract")
                   .card-header.d-flex.justify-content-between
                     h3.m-y-0 Collaborators
-                    button.btn.btn-default.float-right(v-b-modal="'AddCollaboratorModal'") Add Collaborator
-                    b-modal#AddCollaboratorModal(title="Add Collaborator")
-                      Get(:etag="etag" :specialists="`/api/business/specialists`" :callback="getSpecialistsOptions"): template(v-slot="{specialists}")
+                    Get(:etag="etag" :specialists="`/api/business/specialists`" :callback="getSpecialistsOptions"): template(v-slot="{specialists}")
+                      button.btn.btn-default.float-right(v-b-modal="'AddCollaboratorModal'") Add Collaborator
+                      b-modal#AddCollaboratorModal(title="Add Collaborator")
                         p Select a user to add.
                         p
                           strong Note:
@@ -152,7 +152,7 @@ export default {
     contractDetails: fields,
     readablePaymentSchedule,
     getSpecialistsOptions(specialists) {
-      return specialists.map(({ id, first_name, last_name }) => ({ id: id, label: `${first_name} ${last_name}`, text: `${first_name} ${last_name}` }))
+      return specialists.map(({ id, first_name, last_name }) => ({ id: id, label: `${first_name} ${last_name}`}))
     }
   },
   computed: {
