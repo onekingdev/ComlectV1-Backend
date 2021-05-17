@@ -214,7 +214,7 @@ export default {
         body: JSON.stringify({ "specialist": { "role": `${role}` } })
       })
         .then(response => response.json())
-        .then(result => console.log(result))
+        .then(result => this.toast('Success', 'The Role has been setted!'))
         .catch(error => console.error(error))
     },
   },
