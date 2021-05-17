@@ -3,7 +3,7 @@
     div(v-b-modal="modalId" :class="{'d-inline-block':inline}")
       slot
 
-    b-modal.fade(:id="modalId" title="New Exam")
+    b-modal.fade(:id="modalId" title="Edit Exam")
       .row
         .col-12.m-b-2
           label.form-label Name
@@ -18,13 +18,11 @@
 
       template(slot="modal-footer")
         button.btn(@click="$bvModal.hide(modalId)") Cancel
-        button.btn.btn-dark(@click="submit") Create
+        button.btn.btn-dark(@click="submit") Save
 </template>
 
 <script>
   const rnd = () => Math.random().toFixed(10).toString().replace('.', '')
-  var today = new Date();
-  var year = today.getFullYear();
 
   export default {
     props: {
@@ -32,14 +30,19 @@
         type: Boolean,
         default: true
       },
+      exam: {
+        type: Object,
+        default: true
+      },
     },
     data() {
       return {
         modalId: `modal_${rnd()}`,
         exam_management: {
-          name: '',
-          exam_start: '',
-          exam_end: ''
+          id: this.exam.id,
+          name: this.exam.name,
+          exam_start: this.exam.exam_start,
+          exam_end: this.exam.exam_start
         },
       }
     },
@@ -56,8 +59,8 @@
         }
 
         try {
-          await this.$store.dispatch('exams/createExam', this.exam_management)
-          this.makeToast('Success', `Exam Management successfully created!`)
+          await this.$store.dispatch('exams/updateExam', this.exam_management)
+          this.makeToast('Success', `Exam Management successfully updated!`)
           this.$emit('saved')
           this.$bvModal.hide(this.modalId)
         } catch (error) {

@@ -62,7 +62,7 @@ const store = new Vuex.Store({
       namespaced: true,
       ...filefolders,
     },
-    exammanagement: {
+    exams: {
       namespaced: true,
       ...exammanagement,
     },

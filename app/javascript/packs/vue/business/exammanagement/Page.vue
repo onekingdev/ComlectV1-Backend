@@ -49,7 +49,7 @@
     },
     methods: {
       ...mapActions({
-        getExams: 'exammanagement/getExams',
+        getExams: 'exams/getExams',
       }),
     },
     computed: {
@@ -57,13 +57,12 @@
         return this.$store.getters.loading;
       },
       ...mapGetters({
-        exams: 'exammanagement/exams',
+        exams: 'exams/exams',
       }),
     },
     async mounted () {
       try {
-        const data = await this.exams
-        console.log('data', data)
+        await this.getExams()
       } catch (error) {
         console.error(error)
         this.makeToast('Error', error.message)
