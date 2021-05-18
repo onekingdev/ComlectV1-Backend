@@ -8,6 +8,7 @@ const mapAuthProviders = {
     deleteExam: jwt.deleteExam,
     getExamById: jwt.getExamById,
     createExamRequest: jwt.createExamRequest,
+    deleteExamRequest: jwt.deleteExamRequest,
   },
 }
 
@@ -36,8 +37,12 @@ export default {
       const index = state.exams.findIndex(record => record.id === payload.id);
       state.exams.splice(index, 1)
     },
-    ADD_EXAM_REQUEST(state, payload) {
-      state.exams[payload.id].exam_requests.push(payload.request)
+    ADD_REQUEST_CURRENT_EXAM(state, payload) {
+      state.currentExam.exam_requests.push(payload)
+    },
+    DELETE_REQUEST_CURRENT_EXAM(state, payload) {
+      const index = state.currentExam.exam_requests.findIndex(record => record.id === payload.id);
+      state.currentExam.exam_requests.splice(index, 1)
     },
   },
   actions: {
@@ -57,7 +62,6 @@ export default {
 
               const data = success.data
               const exams = []
-              // console.log(data)
               for (const examItem of data) {
                 exams.push(new ExamManagement(
                   examItem.created_at,
@@ -288,10 +292,43 @@ export default {
           .then((success) => {
             if (success) {
               const data = success.data
-              commit('ADD_EXAM_REQUEST', {
-                id: payload.id,
-                request: data
-              })
+              commit('ADD_REQUEST_CURRENT_EXAM', data)
+              return success
+            }
+            if (!success) {
+              // console.log('Not success', success)
+            }
+            commit("clearError");
+            commit("setLoading", false);
+          })
+      } catch (error) {
+        commit("setError", error.message, {
+          root: true
+        });
+        commit("setLoading", false, {
+          root: true
+        });
+        throw error;
+      } finally {
+        commit("setLoading", false, {
+          root: true
+        })
+      }
+    },
+    async deleteExamRequest({state, commit, rootState}, payload) {
+      commit("clearError", null, {
+        root: true
+      });
+      commit("setLoading", true, {
+        root: true
+      });
+      try {
+        const deleteExamRequest = mapAuthProviders[rootState.shared.settings.authProvider].deleteExamRequest
+        deleteExamRequest(payload)
+          .then((success) => {
+            if (success) {
+              const data = success.data
+              commit('DELETE_REQUEST_CURRENT_EXAM', data)
               return success
             }
             if (!success) {

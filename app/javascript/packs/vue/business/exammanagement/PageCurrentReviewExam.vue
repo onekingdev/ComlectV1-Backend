@@ -64,8 +64,8 @@
                                     b-icon(icon="three-dots")
                                   b-dropdown-item Edit
                                   b-dropdown-item Share
-                                  ExamModalDelete(@deleteConfirmed="deleteRequest(currentRequst.id)" :inline="false")
-                                    b-dropdown-item Delete
+                                  ExamModalDelete(@deleteConfirmed="deleteExamRequest(currentRequst.id)" :inline="false")
+                                    b-dropdown-item.delete Delete
                         .row.m-b-1
                           .col-md-11.offset-md-1
                             p {{ currentRequst.details }}
@@ -78,7 +78,7 @@
                             hr
                             .row
                               .col-11
-                                textarea.reviews__topic-body.w-100(v-model="currentRequst.text_items")
+                                textarea.exams__topic-body.w-100(v-model="currentRequst.text_items")
                               .col-1
                                 button.btn.btn__close
                                   b-icon(icon="x" font-scale="1")
@@ -126,7 +126,7 @@ import ExamRequestModalCreate from "./modals/ExamRequestModalCreate";
 import ExamModalDelete from "./modals/ExamModalDelete";
 
 export default {
-  props: [],
+  props: ['examId'],
   components: {
     ExamRequestModalCreate,
     ExamModalDelete,
@@ -140,8 +140,6 @@ export default {
         [{ list: "bullet" }],
         ["link"]
       ],
-      examId: 1,
-      revcatId: 1
     }
   },
   computed: {
@@ -163,7 +161,8 @@ export default {
   methods: {
     ...mapActions({
       updateExam: 'exams/updateExam',
-      getCurrentExam: 'exams/getExamById'
+      getCurrentExam: 'exams/getExamById',
+      deleteCurrentExamRequest: 'exams/deleteExamRequest'
     }),
     async saveCategory () {
       const examCategory = this.currentExam
@@ -226,14 +225,13 @@ export default {
     deleteTopic(i) {
       this.currentExam.exam_topics.splice(i, 1);
     },
-    deleteCategory(id) {
-      console.log('currentExam id: ', id)
-      this.$store.dispatch('annual/deleteexamCategory', { examlId: this.exam.id, id: id })
-        .then(response => {
-          this.toast('Success', `The annual exam category has been deleted! ${response.id}`)
-          window.location.href = `${window.location.origin}/business/annual_exams/${response.annual_report_id}`
-        })
-        .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
+    async deleteExamRequest(id) {
+      try {
+        await this.deleteCurrentExamRequest({ id: this.examId, requestId: id })
+        this.toast('Success', `The request has been deleted!`)
+      } catch (error) {
+        this.makeToast('Error', error.message)
+      }
     },
     createTask(i){
       console.log('createTask: ', i)
@@ -260,5 +258,9 @@ export default {
 <style scoped>
   .separator {
     color: #ffc107;
+  }
+
+  .exams__topic-body {
+    border: 1px solid #dee2e6;
   }
 </style>

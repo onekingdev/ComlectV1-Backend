@@ -69,3 +69,14 @@ export async function createExamRequest(payload) {
     })
     .catch(err => console.error(err))
 }
+
+export async function deleteExamRequest(payload) {
+  return await axios.delete(`${END_POINT}/${payload.id}/requests/${payload.requestId}`)
+    .then(response => {
+      if (response) {
+        return response
+      }
+      return false
+    })
+    .catch(err => console.error(err))
+}
