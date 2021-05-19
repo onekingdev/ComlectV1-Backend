@@ -67,7 +67,7 @@
               h1.text-center Confirm your email!
               p.text-center We send a 6 digit code to email.com. Please enter it below.
               div
-                b-form(@submit='onSubmitStep2' @keydown="onCodeChange" v-if='show' autocomplete="off")
+                b-form(@submit='onSubmitStep2' @keyup="onCodeChange" v-if='show' autocomplete="off")
                   b-form-group
                     .col.text-center
                       ion-icon(name="mail-outline")
@@ -199,10 +199,8 @@
           }
         }
 
-        // console.log('dataToSend', dataToSend)
         this.$store.dispatch('singUp', dataToSend)
           .then((response) => {
-            // console.log('response', response)
 
             if (response.errors) {
               const properties = Object.keys(response.errors);
@@ -250,7 +248,6 @@
           userId: this.userId,
           code: this.form2.code
         }
-        // console.log('dataToSend', dataToSend)
 
         this.$store.dispatch('confirmEmail', dataToSend)
           .then((response) => {
@@ -261,7 +258,6 @@
             }
 
             if(response.token) {
-              // console.log('response with succes token', response)
               this.makeToast('Success', `${response.message}`)
               // localStorage.setItem('app.currentUser', JSON.stringify(response.token));
               // this.$store.commit('updateToken', response.token)
@@ -286,6 +282,13 @@
       onCodeChange(e){
         this.errors = []
 
+        // CATCH COPY PASTE CASE
+        if (e.target.value.length === 6) {
+          for(let i=1; i <= 6; i++) {
+            this.form2['codePart'+i] = e.target.value.charAt(i-1)
+          }
+        }
+
         if (e.keyCode === 8 || e.keyCode === 46) {
           // BACKSPACE === 8 DELETE === 46
           e.preventDefault();
@@ -294,7 +297,7 @@
           return
         }
 
-        if (e.target.value.length < 6) {
+        if (e.target.value.length < 6 && (e.keyCode > 47) && (e.keyCode < 58)) {
           e.preventDefault();
           e.target.value = e.key
           if(e.target.nextElementSibling) {
@@ -304,13 +307,6 @@
 
           if(!e.target.nextElementSibling) {
             this.$refs.codesubmit.focus();
-          }
-        }
-
-        // CATCH COPY PASTE CASE
-        if (e.target.value.length === 6) {
-          for(let i=1; i <= 6; i++) {
-            this.form2['codePart'+i] = e.target.value.charAt(i-1)
           }
         }
 
@@ -333,7 +329,6 @@
         //fetch from server then
         this.childdata = data;
         this.childDataLoaded = true;
-        // console.log('data', data) //has some values
       }
     },
     computed: {

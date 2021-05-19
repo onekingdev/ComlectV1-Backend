@@ -168,7 +168,7 @@
             }
           })
           .catch((error) => {
-            console.error('error', error)
+            console.error(error)
             for (const type of Object.keys(error.errors)) {
               this.makeToast('Error', `${error.errors[type]}`)
               this.error = `Error! ${error.errors[type]}`
@@ -214,7 +214,7 @@
 
               this.makeToast('Success', `You will be redirect to the dashboard!`)
 
-              const dashboard = response.business ? '/business2' : '/specialist'
+              const dashboard = response.business ? '/business' : '/specialist'
               this.dashboardLink = dashboard
               setTimeout(() => {
                 window.location.href = `${dashboard}`;
