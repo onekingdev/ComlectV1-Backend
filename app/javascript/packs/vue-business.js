@@ -14,12 +14,10 @@ import BusinessAnnualGeneralPage from './vue/business/annual/PageCurrentGeneral.
 
 import BusinessPoliciesPage from './vue/business/policies/Page.vue'
 import BusinessPoliciesCreatePage from './vue/business/policies/Details/PolicyCreate.vue'
-import BusinessPoliciesEntirePage from './vue/business/policies/Details/PolicyEntire.vue'
 
 const businesPolicies = {
   BusinessPoliciesPage,
   BusinessPoliciesCreatePage,
-  BusinessPoliciesEntirePage,
 }
 
 import BusinessMarketplacePage from './vue/business/marketplace/Page.vue'
@@ -48,6 +46,14 @@ const BusinessFileFolders = {
   BusinessFileFoldersPage,
 }
 
+import BusinessExamManagementPage from './vue/business/exammanagement/Page.vue'
+import BusinessExamManagementShowPage from './vue/business/exammanagement/PageCurrentReviewExam.vue'
+
+const BusinessExamManagement = {
+  BusinessExamManagementPage,
+  BusinessExamManagementShowPage,
+}
+
 
 init({
   store,
@@ -67,6 +73,7 @@ init({
     ...BusinessReportsRisks,
     ...businesRisks,
     ...businesMarketplace,
-    ...BusinessFileFolders
+    ...BusinessFileFolders,
+    ...BusinessExamManagement,
   }
 })
