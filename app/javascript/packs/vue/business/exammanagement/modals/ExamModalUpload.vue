@@ -61,56 +61,58 @@
       async submit(e) {
         e.preventDefault();
 
-        if (!this.files) {
+        if (!this.files.length) {
           this.makeToast('Error', `Please add minimal 1 file!`)
           return
         }
 
-        const params = {
-          // 'file': this.file,
-        }
-        // Add file if it exist
-        if (this.files) params.file = this.files[0]
-
-        let formData = new FormData()
+        // FOR SINGLE LOADING FILE
+        // const params = {
+        //   'file': this.files[0],
+        // }
+        //
+        // let formData = new FormData()
+        //
+        // Object.entries(params).forEach(
+        //   ([key, value]) => formData.append(key, value)
+        // )
 
         // FOR MULTIPLE LOADING FILES
-        // for( var i = 0; i < this.files.length; i++ ){
-        //   let file = this.files[i];
-        //   formData.append('files[' + i + ']', file);
-        // }
+        let formData = new FormData()
+        for( var i = 0; i < this.files.length; i++ ){
+          let file = this.files[i];
+          formData.append('file', this.files[i]);
 
-        Object.entries(params).forEach(
-          ([key, value]) => formData.append(key, value)
-        )
+          const data = {
+            id: this.currentExamId,
+            request: { id: this.request.id },
+            formData
+          }
 
-        const data = {
-          id: this.currentExamId,
-          request: { id: this.request.id },
-          formData
-        }
+          try {
+            await this.$store.dispatch('exams/uploadExamRequestFile', data)
+            this.makeToast('Success', `File successfull loaded!`)
+            this.$emit('saved')
+            this.$bvModal.hide(this.modalId)
+          } catch (error) {
+            this.makeToast('Error', error.message)
+          }
 
-        try {
-          await this.$store.dispatch('exams/uploadExamRequestFile', data)
-          this.makeToast('Success', `File successfull loaded!`)
-          this.$emit('saved')
-          this.$bvModal.hide(this.modalId)
-        } catch (error) {
-          this.makeToast('Error', error.message)
         }
       },
       selectFile(event){
+        // FOR SINGLE
         // this.files[0] = event.target.files[0]
-        this.files.push(event.target.files[0])
+        // this.files.push(event.target.files[0])
 
         // FOR MULTIPLE
-        // let uploadedFiles = this.$refs.files.files;
-        // /*
-        //   Adds the uploaded file to the files array
-        // */
-        // for( var i = 0; i < uploadedFiles.length; i++ ){
-        //   this.files.push( uploadedFiles[i] );
-        // }
+        let uploadedFiles = this.$refs.files.files;
+        /*
+          Adds the uploaded file to the files array
+        */
+        for( var i = 0; i < uploadedFiles.length; i++ ){
+          this.files.push( uploadedFiles[i] );
+        }
       },
       removeFile(key){
         this.files.splice( key, 1 );
