@@ -59,7 +59,8 @@
                                   b-dropdown-item(@click="addTextEntry(i)") Text Entry
                                   ExamModalUpload(:currentExamId="currentExam.id"  :request="currentRequst" :inline="false")
                                     b-dropdown-item Upload New
-                                  b-dropdown-item(@click="deleteTopic(i)") Select Existing
+                                  ExamModalSelectFiles(:currentExamId="currentExam.id"  :request="currentRequst" :inline="false")
+                                    b-dropdown-item Select Existing
                                 ExamModalCreateTask(:inline="false")
                                   button.btn.btn-default.m-x-1 Create Task
                                 b-dropdown(size="sm" variant="none" class="m-0 p-0" right)
@@ -130,10 +131,12 @@ import ExamModalCreateTask from "./modals/ExamModalCreateTask";
 import ExamModalComplite from "./modals/ExamModalComplite";
 import ExamModalShare from "./modals/ExamModalShare";
 import ExamModalUpload from "./modals/ExamModalUpload";
+import ExamModalSelectFiles from "./modals/ExamModalSelectFiles";
 
 export default {
   props: ['examId'],
   components: {
+    ExamModalSelectFiles,
     ExamModalUpload,
     ExamModalShare,
     ExamModalComplite,
