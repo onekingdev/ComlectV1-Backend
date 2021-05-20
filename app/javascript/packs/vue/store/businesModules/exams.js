@@ -78,7 +78,6 @@ export default {
         getExams()
           .then((success) => {
             if (success) {
-
               const data = success.data
               const exams = []
               for (const examItem of data) {
@@ -107,8 +106,6 @@ export default {
               root: true
             });
           })
-
-
       } catch (error) {
         console.error(error);
         throw error
