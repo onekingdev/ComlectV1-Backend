@@ -555,7 +555,16 @@
     async mounted () {
       try {
         const data = await this.$store.dispatch('getSkills')
-        if (data) this.formStep2.skillsTags = data;
+          .then(response => console.log('response', response))
+          .catch(error => console.error('data', error))
+        // if (data) this.formStep2.skillsTags = data;
+
+        // for (const [key, value] of Object.entries(this.subIndustryIds)) {
+        //   this.formStep1.subIndustryOptions.push({
+        //     value: key,
+        //     name: value
+        //   })
+        // }
       } catch (error) {
         console.error(error)
       }
