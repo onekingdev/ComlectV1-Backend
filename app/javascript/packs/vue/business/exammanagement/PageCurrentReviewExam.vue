@@ -85,7 +85,7 @@
                             .row(v-if="currentRequst.text_items")
                               template(v-for="(textItem, textIndex) in currentRequst.text_items")
                                 .col-12.exams__text(:key="`${currentRequst.name}-${i}-${textItem}-${textIndex}`")
-                                    textarea.exams__text-body(v-model="currentRequst.text_items[textIndex]")
+                                    textarea.exams__text-body(v-model="currentRequst.text_items[textIndex].text")
                                     button.btn.btn__close.float-right(@click="removeTextEntry(i, textIndex)")
                                       b-icon(icon="x" font-scale="1")
                             .row
@@ -122,7 +122,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex"
-import { VueEditor } from "vue2-editor"
+// import { VueEditor } from "vue2-editor"
 import ExamRequestModalCreate from "./modals/ExamRequestModalCreate";
 import ExamModalDelete from "./modals/ExamModalDelete";
 import ExamRequestModalEdit from "./modals/ExamRequestModalEdit";
@@ -141,16 +141,16 @@ export default {
     ExamRequestModalEdit,
     ExamRequestModalCreate,
     ExamModalDelete,
-    VueEditor,
+    // VueEditor,
   },
   data () {
     return {
-      customToolbar: [
-        ["bold", "italic", "underline"],
-        ["blockquote"],
-        [{ list: "bullet" }],
-        ["link"]
-      ],
+      // customToolbar: [
+      //   ["bold", "italic", "underline"],
+      //   ["blockquote"],
+      //   [{ list: "bullet" }],
+      //   ["link"]
+      // ],
       filterOption: 'all',
     }
   },
@@ -194,6 +194,16 @@ export default {
     },
     async saveExam () {
       const exam = this.currentExam
+
+      // PREPARE ENTRY TEXT FOR SENDING
+      this.currentExam.exam_requests = this.currentExam.exam_requests
+        .map(request => {
+          return {
+            ...request,
+            text_items: request.text_items.map(item => item.text)
+          }
+        })
+
       const data = {
         // examlId: this.examlId,
         ...exam
@@ -265,7 +275,9 @@ export default {
     },
     addTextEntry(i) {
       // if (!this.currentExam.exam_requests[i].text_items) this.currentExam.exam_requests[i].text_items = []
-      this.currentExam.exam_requests[i].text_items.push('')
+      this.currentExam.exam_requests[i].text_items.push({
+        text: ""
+      })
     },
     removeTextEntry(i, itemIndex) {
       this.currentExam.exam_requests[i].text_items.splice(itemIndex, 1);
