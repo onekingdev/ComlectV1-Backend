@@ -29,10 +29,11 @@
             ExamModalDelete(@deleteConfirmed="deleteRecord(exam.id)" :inline="false")
               b-dropdown-item.delete Delete
         b-tab(title="Detail" active)
-          .container-fluid(v-if="exam")
+          .container-fluid
             .row
               .col-md-9.mx-auto.position-relative
-                .card-body.white-card-body.reviews__card.px-5
+                Loading
+                .card-body.white-card-body.reviews__card.px-5(v-if="!loading && exam")
                   .reviews__card--internal.p-y-1.d-flex.justify-content-between
                     h3 Requests
                     b-button(variant='default') View Portal
@@ -130,6 +131,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex"
 // import { VueEditor } from "vue2-editor"
+import Loading from '@/common/Loading/Loading'
 import ExamRequestModalCreate from "./modals/ExamRequestModalCreate";
 import ExamModalEdit from "./modals/ExamModalEdit";
 import ExamModalDelete from "./modals/ExamModalDelete";
@@ -146,6 +148,7 @@ import PageActivity from "./PageActivity";
 export default {
   props: ['examId'],
   components: {
+    Loading,
     PageActivity,
     PageAttachments,
     PageTasks,
@@ -175,6 +178,9 @@ export default {
     ...mapGetters({
       exam: 'exams/currentExam'
     }),
+    loading() {
+      return this.$store.getters.loading;
+    },
     currentExam () {
       // return this.exam.exam_categories.find(item => item.id === this.revcatId)
       return this.exam
@@ -292,7 +298,6 @@ export default {
       })
     },
     addTextEntry(i) {
-
       if (!this.currentExam.exam_requests[i].text_items) this.currentExam.exam_requests[i].text_items = []
       this.currentExam.exam_requests[i].text_items.push({
         text: ""
