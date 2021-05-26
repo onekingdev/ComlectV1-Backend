@@ -120,7 +120,8 @@
               .row
                 .col-xl-9.pr-xl-2
                   b-form-group#inputB-group-9(label='Business Address' label-for='inputB-9' label-class="required")
-                    b-form-input#inputB-9(v-model='formStep2.business.address_1' placeholder='Business Address' required :class="{'is-invalid': errors.address_1 }")
+                    b-form-input#inputB-9(v-model='formStep2.business.address_1' placeholder='Business Address' required :class="{'is-invalid': errors.address_1 }"
+                                          v-debounce:1000ms="onAdressChange")
                     .invalid-feedback.d-block(v-if="errors.address_1") {{ errors.address_1[0] }}
                 .col-xl-3.pl-xl-2
                   b-form-group#inputB-group-10(label='Apt/Unit:' label-for='inputB-10')
@@ -167,7 +168,8 @@
               .row
                 .col-xl-4(v-for='(plan, index) in billingPlans')
                   b-card.w-100.mb-2.billing-plan(:class="[index === 0 ? 'billing-plan_low' : '', index === 1 ? 'billing-plan_medium' : '', index === 2 ? 'billing-plan_high' : '' ]")
-                    b-button.mb-3(type='button' variant='outline-primary' @click="openDetails(plan)") Select Plan
+                    b-button.mb-3(type='button' :variant="currentPlan.status && currentPlan.id === index+1 ? 'dark' : 'outline-primary'" @click="openDetails(plan)")
+                      | {{ currentPlan.status && currentPlan.id === index+1 ? 'Current' : 'Select' }} Plan
                     b-card-text
                       h4.billing-plan__name {{ plan.name }}
                       p.billing-plan__descr {{ plan.description }}
@@ -223,7 +225,7 @@
     let rminutes = Math.round(minutes) === 0 ? '0'+Math.round(minutes) : Math.round(minutes)
     let zoneNameView = zoneName.split('/')[1] ? zoneName.split('/')[1].replace('_', ' ') : zoneName
 
-    return `(GMT ${rhoursView}:${rminutes})  ${zoneNameView}`
+    return `(GMT ${rhoursView}:${rminutes}) ${zoneNameView}`
   }
   const luxonValidTimezones = Object.entries(zones)
     .filter(([zoneName, v]) => Array.isArray(v))
@@ -363,6 +365,7 @@
         overlay: false,
         overlayStatus: '',
         overlayStatusText: '',
+        currentPlan: { id: null, status: false }
       }
     },
     methods: {
@@ -481,7 +484,11 @@
           }
 
           this.$store.dispatch('updateSubscribe', dataToSend)
-            .then(response => this.makeToast('Success', `Update subscribe successfully finished!`))
+            .then(response => {
+              this.makeToast('Success', `Update subscribe successfully finished! You will be redirect.`)
+              this.currentPlan = { id: 1, status: true }
+              this.redirect();
+            })
             .catch(error =>this.makeToast('Error', `Something wrong!`))
 
           return
@@ -545,10 +552,7 @@
                 this.overlayStatusText = 'Account successfully purchased, you will be redirect to the dashboard...'
                 this.overlayStatus = 'success'
                 // this.overlay = false
-                const dashboard = this.userType === 'business' ? '/business' : '/specialist'
-                setTimeout(() => {
-                  window.location.href = `${dashboard}`;
-                }, 3000)
+                this.redirect()
               }
             }
           })
@@ -599,10 +603,7 @@
               this.overlayStatusText = `Account and ${countPayedUsers} seats successfully purchased, you will be redirect to the dashboard...`
               this.overlayStatus = 'success'
               // this.overlay = false
-              const dashboard = this.userType === 'business' ? '/business' : '/specialist'
-              setTimeout(() => {
-                window.location.href = `${dashboard}`;
-              }, 3000)
+              this.redirect()
             }
           })
           .catch(error => {
@@ -644,6 +645,20 @@
       },
       onChangeState(){
         delete this.errors.state
+      },
+      onAdressChange() {
+        const address = this.formStep2.business.address_1
+        // console.log('address', address)
+
+        // this.$store.dispatch('getGeo', address)
+        //   .then(response => console.log('response', response))
+        //   .catch(error => console.error(error))
+      },
+      redirect() {
+        const dashboard = this.userType === 'business' ? '/business' : '/specialist'
+        setTimeout(() => {
+          window.location.href = `${dashboard}`;
+        }, 3000)
       }
     },
     computed: {
@@ -704,6 +719,8 @@
   }
   .multiselect__single {
     margin-bottom: 0;
+    font-size: 1.2rem;
+    line-height: 14px;
   }
 
     /* ALERTS*/
