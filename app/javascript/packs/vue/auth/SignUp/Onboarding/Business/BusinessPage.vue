@@ -102,9 +102,8 @@
                       multiselect#selectB-7(
                       v-model="formStep2.business.time_zone"
                       :options="timeZoneOptions"
-                      :multiple="true"
-                      track-by="name",
-                      label="name",
+                      :multiple="false"
+                      :show-labels="false"
                       placeholder="Select Time Zone",
                       required)
                       .invalid-feedback.d-block(v-if="errors.time_zone") {{ errors.time_zone[0] }}
@@ -214,6 +213,24 @@
 </template>
 
 <script>
+  const {DateTime} = require('luxon')
+  const {zones} = require('tzdata')
+  const luxonValidTimeZoneName = function (zoneName) {
+    let hours = (DateTime.local().setZone(zoneName).offset / 60);
+    let rhours = Math.floor(hours)
+    let rhoursView = Math.floor(hours) < 10 && Math.floor(hours) >= 0 ? '0'+Math.round(hours) : '-0'+Math.abs(hours)
+    let minutes = (hours - rhours) * 60;
+    let rminutes = Math.round(minutes) === 0 ? '0'+Math.round(minutes) : Math.round(minutes)
+    let zoneNameView = zoneName.split('/')[1] ? zoneName.split('/')[1].replace('_', ' ') : zoneName
+
+    return `(GMT ${rhoursView}:${rminutes})  ${zoneNameView}`
+  }
+  const luxonValidTimezones = Object.entries(zones)
+    .filter(([zoneName, v]) => Array.isArray(v))
+    .map(([zoneName, v]) => zoneName)
+    .filter(tz => DateTime.local().setZone(tz).isValid)
+    .map(zoneName => `${luxonValidTimeZoneName(zoneName)}`)
+
   import Loading from '@/common/Loading/Loading'
   import TopNavbar from "@/auth/SignUp/TopNavbar";
   import Multiselect from 'vue-multiselect'
@@ -253,6 +270,15 @@
       Overlay
     },
     created() {
+      if(luxonValidTimezones) this.timeZoneOptions = luxonValidTimezones;
+      // if(luxonValidTimezones) {
+      //   for (const [key, value] of Object.entries(luxonValidTimezones)) {
+      //     this.timeZoneOptions.push({
+      //       value: key,
+      //       name: value
+      //     })
+      //   }
+      // }
       if(this.industryIds) this.industryOptions = this.industryIds;
       // if(this.subIndustryIds) this.formStep2.subIndustryOptions = this.subIndustryIds;
       // if(this.subIndustryIds) {
@@ -423,8 +449,7 @@
           dataToSend.business.sub_industry_ids = this.formStep2.business.sub_industries.map(record => record.value) || []
           dataToSend.business.jurisdiction_ids = this.formStep2.business.jurisdictions.map(record => record.id) || []
 
-          this.$store
-            .dispatch('updateAccountInfo', dataToSend)
+          this.$store.dispatch('updateAccountInfo', dataToSend)
             .then(response => {
               if(response.errors) {
                 for (const type of Object.keys(response.errors)) {
