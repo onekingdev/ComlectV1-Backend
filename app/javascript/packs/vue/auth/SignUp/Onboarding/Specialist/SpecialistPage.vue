@@ -629,6 +629,8 @@
   }
   .multiselect__single {
     margin-bottom: 0;
+    font-size: 1.2rem;
+    line-height: 14px;
   }
 
   /* ALERTS*/
