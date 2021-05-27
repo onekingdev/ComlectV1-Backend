@@ -25,8 +25,8 @@
                 b-form-group(v-slot='{ ariaDescribedby }')
                   b-form-radio-group(v-model='formStep1.crd_numberSelected' :options='formStep1.crd_numberOptions' :aria-describedby='ariaDescribedby' name='radios-stacked' stacked)
                 b-form-group(label='What is your CRD number?' v-if="formStep1.crd_numberSelected === 'yes'")
-                  b-form-input.w-50(v-model="formStep1.crd_number" placeholder="Enter your CRD number")
-                  .invalid-feedback.d-block(v-if="errors.crd_number") {{ errors.crd_number[0] }}
+                  b-form-input.w-50(v-model="formStep1.crd_number" placeholder="Enter your CRD number" :class="{'is-invalid': errors.crd_number }")
+                  .invalid-feedback.d-block(v-if="errors.crd_number") {{ errors.crd_number }}
               .text-right
                 b-button(type='button' variant='dark' @click="nextStep(2)") Next
             #step2.form(v-if='!loading'  :class="step2 ? 'd-block' : 'd-none'")
@@ -297,7 +297,7 @@
       const accountInfo = localStorage.getItem('app.currentUser');
       const accountInfoParsed = JSON.parse(accountInfo);
       if(accountInfo) {
-        this.formStep1.crd_number = accountInfo.crd_number
+        this.formStep1.crd_number = accountInfo.crd_number ? accountInfo.crd_number : ''
         this.formStep2.business = Object.assign({}, this.formStep2.business, { ...accountInfoParsed })
         this.onChange(accountInfoParsed.industries)
       }
