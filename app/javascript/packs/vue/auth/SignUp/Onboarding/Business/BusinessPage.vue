@@ -58,6 +58,7 @@
                       v-model="formStep2.business.industries"
                       :options="industryOptions"
                       :multiple="true"
+                      :show-labels="false"
                       track-by="name",
                       label="name",
                       placeholder="Select Industry",
@@ -74,6 +75,7 @@
                       v-model="formStep2.business.sub_industries"
                       :options="subIndustryOptions"
                       :multiple="true"
+                      :show-labels="false"
                       track-by="name",
                       label="name",
                       placeholder="Select Sub-Industry",
@@ -89,6 +91,7 @@
                       v-model="formStep2.business.jurisdictions"
                       :options="jurisdictionOptions"
                       :multiple="true"
+                      :show-labels="false"
                       track-by="name",
                       label="name",
                       placeholder="Select Jurisdiction",
@@ -140,6 +143,7 @@
                       multiselect#selectB-13(
                       v-model="formStep2.business.state"
                       :options="stateOptions"
+                      :show-labels="false"
                       placeholder="Select state",
                       @input="onChangeState",
                       required)
