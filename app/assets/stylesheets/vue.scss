@@ -403,5 +403,9 @@ table.table, table.table thead tr th {
   }
 }
 
+.portal {
+  min-height: 100vh;
+}
+
 @import '../../../node_modules/bootstrap/scss/bootstrap.scss';
 @import '../../../node_modules/bootstrap-vue/src/index.scss';
