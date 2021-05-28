@@ -57,9 +57,6 @@
                           .policy-details__name Description
                           .policy-details__text-editor(@click="toggleVueEditorHandler", v-if="!toggleVueEditor", v-b-tooltip.hover.left title="Click to edit text", v-html="policy.description ? policy.description : description")
                           vue-editor.policy-details__text-editor(v-if="toggleVueEditor", v-model="policy.description", @blur="handleBlur")
-                b-tab(title="History")
-                  .card-body.white-card-body.position-relative.p-0.h-100
-                    HistoryPolicy(:policy="policy")
                 b-tab(title="Risks" lazy)
                   .card-body.white-card-body.position-relative.p-0.h-100
                     PolicyRisks(:policyId="policyId")
@@ -68,6 +65,9 @@
                     .policy-details
                       h3.policy-details__title Tasks
                       .policy-details__body Tasks
+                b-tab(title="History")
+                  .card-body.white-card-body.position-relative.p-0.h-100
+                    HistoryPolicy(:policy="policy")
 </template>
 
 <script>
@@ -335,11 +335,11 @@
 
 <style scoped>
   .h-80 {
-    height: calc(100vh - 200px);
+    min-height: calc(100vh - 200px);
   }
 
   .policy .tab-pane.h-80{
-    height: calc(100vh - 200px);
+    min-height: calc(100vh - 200px);
   }
 
   .policy-details__text-editor {
