@@ -173,6 +173,9 @@ input[type=number] {
   margin-bottom: 1rem;
   color: #797b7e;
 }
+.billing-plan__discount {
+  text-decoration: line-through;
+}
 .billing-plan__list {
   margin-top: 1rem;
 }
