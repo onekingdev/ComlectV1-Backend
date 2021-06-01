@@ -15,7 +15,7 @@
                   | {{ error }}
                   br
                   | This alert will dismiss after {{ dismissCountDown }} seconds...
-                b-form(@submit='onSubmit1' v-if='show')
+                b-form(@submit='onSubmit' v-if='show')
                   b-form-group#input-group-1(label='Email:' label-for='input-1')
                     b-form-input#input-1(v-model='form.email' type='email' placeholder='Email' required)
                     .invalid-feedback.d-block(v-if="errors['user.email']") 'Email' {{ ...errors['user.email'] }}
@@ -31,7 +31,7 @@
                     h4.text-uppercase.m-t-1.m-b-1 Don’t have an account yet?&nbsp;
                       a.link(data-remote='true' href='/users/sign_up') sign up here
             #step2.form(v-if='!loading' :class="step2 ? 'd-block' : 'd-none'")
-              OtpConfirm(@otpSecretConfirmed="otpConfirmed", :userId="userId", :form="form")
+              OtpConfirm(@otpSecretConfirmed="otpConfirmed", :form="form")
             #step3.form(v-if='!loading'  :class="step3 ? 'd-block' : 'd-none'")
               h1.text-center You successfuly logged in!
               p.text-center.m-b-2 You will be redirect to the dashboard!
@@ -96,39 +96,33 @@
       selectType(type){
         this.userType = type
       },
-      onSubmit1(event) {
+      onSubmit(event) {
         event.preventDefault()
         // clear errors
         this.errors = []
-        let dataToSend = {
+        const data = {
           "user": {
             "email": this.form.email,
             "password": this.form.password
           },
         }
 
-        this.$store.dispatch('singIn', dataToSend)
+        this.$store.dispatch('singIn', data)
           .then((response) => {
             if (response.errors) {
-              const properties = Object.keys(response.errors);
               for (const type of Object.keys(response.errors)) {
                 this.errors = response.errors[type]
                 this.makeToast('Error', `Form has errors! Please recheck fields! ${error}`)
-                // Object.keys(response.errors[type]).map(prop => response.errors[prop].map(err => this.makeToast(`Error`, `${prop}: ${err}`)))
               }
-              return
             }
             if (!response.errors) {
-              this.userId = response.userid
               this.makeToast('Success', `${response.message}`)
-
               // open step 2
               this.step1 = false
               this.step2 = true
             }
           })
           .catch((error) => {
-            // console.error('error', error)
             if(error.errors) {
               for (const type of Object.keys(error.errors)) {
                 this.makeToast('Error', `${error.errors[type]}`)

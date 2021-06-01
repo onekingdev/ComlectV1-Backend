@@ -248,6 +248,7 @@ input[type=number] {
 a.link,
 .link {
   color: var(--blue);
+  cursor: pointer;
 }
 
 /* ---------- Onboarding Specialist Uploading ---------- */

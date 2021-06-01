@@ -62,7 +62,7 @@
                     p Already have a Complect account?&nbsp;
                       a.link(href="#") Sign In
             #step2.form(v-if='!loading'  :class="step2 ? 'd-block' : 'd-none'")
-              OtpConfirm(@otpSecretConfirmed="otpConfirmed", :userId="userId", :form="form")
+              OtpConfirm(@otpSecretConfirmed="otpConfirmed", :form="form")
             #step3.form(v-if='!loading'  :class="step3 ? 'd-block' : 'd-none'")
               h1.text-center You successfuly registered!
               p.text-center You will be redirect to finish steps for updating your account
@@ -178,23 +178,17 @@
 
         this.$store.dispatch('singUp', dataToSend)
           .then((response) => {
-
             if (response.errors) {
-              const properties = Object.keys(response.errors);
               for (const type of Object.keys(response.errors)) {
                 this.errors = response.errors[type]
                 this.makeToast('Error', `Form has errors! Please recheck fields! ${error}`)
-                // Object.keys(response.errors[type]).map(prop => response.errors[prop].map(err => this.makeToast(`Error`, `${prop}: ${err}`)))
               }
-
-              return
             }
-
             if (!response.errors) {
               this.userId = response.userid
               this.makeToast('Success', `${response.message}`)
 
-                // ?userid=14&otp_secret=123456
+              // ?userid=14&otp_secret=123456
               // const url = new URL(window.location);
               // url.searchParams.set('userid', response.userid);
               // window.history.pushState({}, '', url);
