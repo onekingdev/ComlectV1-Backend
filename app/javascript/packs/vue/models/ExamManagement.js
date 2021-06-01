@@ -3,7 +3,7 @@ export default class ExamManagement {
     this.complete = complete,
     this.created_at = created_at,
     this.ends_on = ends_on,
-    this.exam_auditors = exam_auditors,
+    this.exam_auditors = exam_auditors ? exam_auditors : [],
     this.exam_requests = this.examRequests(exam_requests),
     // this.exam_requests_attributes = [],
     this.id = id,
