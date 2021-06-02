@@ -9,14 +9,14 @@ class Api::Business::FavoritesController < ApiController
 
   def update
     @local_project = LocalProject.find_by id: favorite_params[:favorited_id]
-    if @local_project
+    if @local_project && favorite_params[:favorited_type] == "Specialist"
       if Favorite.toggle!(current_business, favorite_params)
         respond_with project_id: @local_project.id, toggled: true, status: :ok
       else
         respond_with project_id: @local_project.id, toggled: false, status: :ok
       end
     else
-      respond_with errors: "Specified project_id not found", status: :unprocessable_entity
+      respond_with status: :unprocessable_entity
     end
   end
 
