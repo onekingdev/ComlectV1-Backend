@@ -1,46 +1,40 @@
 <template lang="pug">
   div
-    Loading
-    div(v-if="!loading")
-      h1.text-center Confirm your email!
-      p.text-center We send a 6 digit code to {{ form.email }}. Please enter it below.
-      div
-        b-alert(:show='dismissCountDown' dismissible fade variant='danger' @dismiss-count-down='countDownChanged')
-          | {{ error }}
-          br
-          | This alert will dismiss after {{ dismissCountDown }} seconds...
-        b-form(@submit='onSubmit' @keyup="onCodeChange" v-if='show' autocomplete="off")
-          b-form-group
-            .col.text-center
-              ion-icon(name="mail-outline")
-          b-form-group
-            .row
-              .col-12.mx-0
-                .d-flex.justify-content-space-around.mx-auto
-                  b-form-input#inputCode1.code-input.ml-auto(v-model='form2.codePart1' type='number' maxlength="1" required)
-                  b-form-input#inputCode2.code-input(v-model='form2.codePart2' type='number' maxlength="1" required)
-                  b-form-input#inputCode3.code-input(v-model='form2.codePart3' type='number' maxlength="1" required)
-                  b-form-input#inputCode4.code-input(v-model='form2.codePart4' type='number' maxlength="1" required)
-                  b-form-input#inputCode5.code-input(v-model='form2.codePart5' type='number' maxlength="1" required)
-                  b-form-input#inputCode6.code-input.mr-auto(v-model='form2.codePart6' type='number' maxlength="1" required)
-                .invalid-feedback.d-block.text-center(v-if="errors.code") {{ errors.code }}
-            .row
-              .col
-                input(v-model='form2.code' type='hidden')
-          b-button.w-100.mb-2(type='submit' variant='dark' ref="codesubmit") Submit
-          b-form-group
-            .row
-              .col-12.text-center
-                button.btn.link(@click.stop="resendOTP" :disabled="disabled") Resend code
+    h1.text-center Confirm your email!
+    p.text-center We send a 6 digit code to {{ form.email }}. Please enter it below.
+    div
+      b-alert(:show='dismissCountDown' dismissible fade variant='danger' @dismiss-count-down='countDownChanged')
+        | {{ error }}
+        br
+        | This alert will dismiss after {{ dismissCountDown }} seconds...
+      b-form(@submit='onSubmit' @keyup="onCodeChange" v-if='show' autocomplete="off")
+        b-form-group
+          .col.text-center
+            ion-icon(name="mail-outline")
+        b-form-group
+          .row
+            .col-12.mx-0
+              .d-flex.justify-content-space-around.mx-auto
+                b-form-input#inputCode1.code-input.ml-auto(v-model='form2.codePart1' type='number' maxlength="1" required)
+                b-form-input#inputCode2.code-input(v-model='form2.codePart2' type='number' maxlength="1" required)
+                b-form-input#inputCode3.code-input(v-model='form2.codePart3' type='number' maxlength="1" required)
+                b-form-input#inputCode4.code-input(v-model='form2.codePart4' type='number' maxlength="1" required)
+                b-form-input#inputCode5.code-input(v-model='form2.codePart5' type='number' maxlength="1" required)
+                b-form-input#inputCode6.code-input.mr-auto(v-model='form2.codePart6' type='number' maxlength="1" required)
+              .invalid-feedback.d-block.text-center(v-if="errors.code") {{ errors.code }}
+          .row
+            .col
+              input(v-model='form2.code' type='hidden')
+        b-button.w-100.mb-2(type='submit' variant='dark' ref="codesubmit") Submit
+        b-form-group
+          .row
+            .col-12.text-center
+              button.btn.link(@click.stop="resendOTP" :disabled="disabled") Resend code
 </template>
 
 <script>
-  import Loading from '@/common/Loading/Loading'
   export default {
     props: ['form', 'userid'],
-    components: {
-      Loading,
-    },
     data() {
       return {
         show: true,
@@ -64,7 +58,9 @@
     methods: {
       onSubmit(event) {
         event.preventDefault()
-        this.disabled = true
+
+        console.log('this.userId', this.userId)
+        console.log('this.form', this.form)
 
         if(this.form2.code.length !== 6) {
           this.toast('Error', `Code length incorrect!`)
@@ -94,26 +90,28 @@
           .then((response) => {
             console.log('response', response)
             if(response.errors) {
-              for (const type of Object.keys(response.errors)) {
-                this.errors = response.errors[type]
-                this.makeToast('Error', `${response.errors[type]}`)
-              }
-              this.showAlert()
+              this.toast('Error', `${response.errors}`)
+              // for (const type of Object.keys(response.errors)) {
+              //   this.errors = response.errors[type]
+              //   this.toast('Error', `${response.errors[type]}`)
+              // }
+              // this.showAlert()
             }
-            if(!response.token) {
-              this.errors = {code: response.message}
-              this.toast('Error', `Errors ${response.message}`)
-            }
+            // if(!response.token) {
+            //   this.errors = {code: response.message}
+            //   this.toast('Error', `Errors ${response.message}`)
+            // }
             if(response.token) {
-              this.toast('Success', `${response.message}`)
-              this.$emit('otpSecretConfirmed', response)
+              // this.toast('Success', `${response.message}`)
             }
+
+            this.$emit('otpSecretConfirmed', response)
           })
           .catch((error) => {
             const { data } = error
             if(data.errors) {
               for (const type of Object.keys(data.errors)) {
-                this.makeToast('Error', `${data.errors[type]}`)
+                this.toast('Error', `${data.errors[type]}`)
                 this.error = `Error! ${data.errors[type]}`
               }
               this.showAlert()
@@ -125,14 +123,7 @@
               this.toast('Error', `${error.status} (${error.statusText})`)
             }
           })
-          .finally(() => {
-            console.log('hey finally')
 
-
-            setTimeout(() => {
-              this.disabled = false
-            }, 30000)
-          })
       },
       onCodeChange(e){
         this.errors = []
