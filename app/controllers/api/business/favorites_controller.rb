@@ -4,17 +4,14 @@ class Api::Business::FavoritesController < ApiController
   before_action :require_business!
 
   def index
-    respond_with current_business.favorite_specialists.all
+    respond_with current_business.favorited_projects.all.collect(&:id)
   end
 
   def update
-    @local_project = LocalProject.find_by id: favorite_params[:favorited_id]
-    if @local_project && favorite_params[:favorited_type] == "Specialist"
-      if Favorite.toggle!(current_business, favorite_params)
-        respond_with project_id: @local_project.id, favorited: true, status: :ok
-      else
-        respond_with project_id: @local_project.id, favorited: false, status: :ok
-      end
+    local_project = LocalProject.find_by id: favorite_params[:favorited_id]
+    if local_project && favorite_params[:favorited_type] == "Project"
+      Favorite.toggle!(current_business, favorite_params)
+      respond_with project_id: favorite_params[:favorited_id], status: :ok
     else
       respond_with status: :unprocessable_entity
     end
