@@ -1,9 +1,9 @@
 <template lang="pug">
   tr
     td
-      ion-icon.m-r-1.pointer(@click="toggleDone(task)" v-bind:class="{ done_task: task.done_at }" name='checkmark-circle-outline')
-      TaskFormModal(:task-id="task.taskId" :occurence-id="task.oid" @saved="$emit('saved')") {{ task.body }} {{ item.name }}
-    td(v-if="!shortTable") {{ task.assignee }}
+      ion-icon.m-r-1.pointer(@click="toggleDone(task)" v-bind:class="{ done_task: item.done_at }" name='checkmark-circle-outline')
+      TaskFormModal(:task-id="item.taskId" :occurence-id="item.oid" @saved="$emit('saved')") {{ item.body }} {{ item.name }}
+    td(v-if="!shortTable") {{ item.assignee }}
     td(v-if="!shortTable").text-right(:class="{ overdue: isOverdue(task) }") {{ dateToHuman(item.remind_at) }}
     td.text-right(:class="{ overdue: isOverdue(task) }") {{ dateToHuman(item.end_date) }}
     td(v-if="!shortTable").text-right 0
@@ -13,7 +13,7 @@
         template(#button-content)
           b-icon(icon="three-dots")
         b-dropdown-item(:href="`/business/annual_reviews/${item.id}`") Edit
-        b-dropdown-item {{ task.done_at ? 'Incomplite' : 'Complite' }}
+        b-dropdown-item {{ item.done_at ? 'Incomplite' : 'Complite' }}
         b-dropdown-item(@click="duplicateTask(item.id)") Dublicate
         TaskModalDelete(@deleteConfirmed="deleteTask(item.id)", :inline="false")
           b-dropdown-item.delete Delete
@@ -26,13 +26,7 @@ import TaskModalDelete from '../modals/TaskModalDelete'
 
 export default {
   name: "TaskItem",
-  props: {
-    item,
-    shortTable: {
-      type: Boolean,
-      default: false
-    }
-  },
+  props: ['item', 'shortTable'],
   components: {
     TaskFormModal,
     TaskModalDelete

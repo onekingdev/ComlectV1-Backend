@@ -15,16 +15,18 @@
             h3 Compilance Program
       .row
         .col
-          TaskTable(:shortTable="shortTable", :tasks="tasks")
+          Loading
+          TaskTable(v-if="loading", :shortTable="shortTable", :tasks="tasks")
 </template>
 
 <script>
   import { DateTime } from 'luxon'
   import { toEvent, isOverdue, splitReminderOccurenceId } from '@/common/TaskHelper'
 
+  import Loading from '@/common/Loading'
   import TaskFormModal from '@/common/TaskFormModal'
   import TaskModalCreate from './modals/TaskModalCreate'
-  import TaskTable from "../../common/TaskTable";
+  import TaskTable from "./components/TaskTable";
 
   const endpointUrl = '/api/business/reminders/'
   const overdueEndpointUrl = '/api/business/overdue_reminders'
@@ -46,6 +48,7 @@
       }
     },
     components: {
+      Loading,
       TaskTable,
       TaskFormModal,
       TaskModalCreate
@@ -56,7 +59,7 @@
       }
     },
     created() {
-      this.refetch()
+
     },
     methods: {
       refetch() {
@@ -114,7 +117,13 @@
             end: DateTime.fromSQL(e.end).toLocaleString(),
             ...splitReminderOccurenceId(e.id)
           }))
-      }
+      },
+      loading() {
+        return this.$store.getters.loading;
+      },
+    },
+    mounted(){
+      this.refetch()
     },
     watch: {
       etag: {
