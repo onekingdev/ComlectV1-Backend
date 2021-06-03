@@ -13,6 +13,11 @@
 
 <script>
 export default {
-  name: 'MarketPlaceSearchInput'
+  name: 'MarketPlaceSearchInput',
+  data() {
+    return {
+      search: null,
+    };
+  },
 }
 </script>

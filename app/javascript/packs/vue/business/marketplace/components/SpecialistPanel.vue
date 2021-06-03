@@ -6,7 +6,7 @@
       .row
         .col-md-9.col
           h3.m-b-1
-          a.link(:href="specialist.resume_url" @click="openDetails(project.id)" target="_blank") {{ specialist.first_name }} {{ specialist.last_name }}
+            a.link(:href="specialist.resume_url" @click="openDetails(project.id)" target="_blank") {{ specialist.first_name }} {{ specialist.last_name }}
           h6.pb-1.card-subtitle.text-muted.mb-2  {{ specialist.location }} |
           .d-inline(v-if="specialist.industries" v-for="ind in specialist.industries") &nbsp;{{ ind.name }}&nbsp;
           .d-flex.py-2

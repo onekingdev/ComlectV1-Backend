@@ -23,8 +23,8 @@
               .row.py-2.px-4
                 .col
                   Loading
-            SpecialistPanel(v-for="specialist in specialistsList" :specialist="specialist" :key="specialist.id")
-            .card-body.m-2.text-danger(v-if="!specialistsList.length"  title="No specialists")
+            SpecialistPanel(v-for="specialist in specialists" :specialist="specialist" :key="specialist.id")
+            .card-body.m-2.text-danger(v-if="!specialists && !specialists.length"  title="No specialists")
 
       b-sidebar#ProjectSidebar(@hidden="closeSidebar" v-model="isSidebarOpen" backdrop-variant='dark' backdrop right width="60%")
         .card
@@ -42,11 +42,12 @@
 </template>
 
 <script>
+  import { mapGetters } from "vuex"
   import Loading from '@/common/Loading/Loading'
-  import MarketPlaceFilter from './MarketPlaceFilter'
-  import MarketPlaceSearchInput from './MarketPlaceSearchInput'
-  import SpecialistPanel from './SpecialistPanel'
-  import SpecialistDetails from './SpecialistDetails'
+  import MarketPlaceFilter from './components/MarketPlaceFilter'
+  import MarketPlaceSearchInput from './components/MarketPlaceSearchInput'
+  import SpecialistPanel from './components/SpecialistPanel'
+  import SpecialistDetails from './components/SpecialistDetails'
   import _debounce from 'lodash/debounce'
 
   // import 'vue-range-component/dist/vue-range-slider.css'
@@ -162,6 +163,9 @@
       }
     },
     computed: {
+      ...mapGetters({
+        specialists: 'marketplace/specialistsList'
+      }),
       loading() {
         return this.$store.getters.loading;
       },
@@ -184,20 +188,15 @@
 
         return query.length ? ('?' + query.join('&')) : ''
       },
-      specialistsList() {
-        return this.$store.getters.specialistsList;
-      }
     },
-    mounted() { 
-      this.$store
-        .dispatch("getSpecialists")
-        .then((response) => {
-          console.log('response: ', response);
-        })
-        .catch((err) => {
-          console.error(err);
-          this.makeToast('Error', err.message)
-        });
+    async mounted () {
+      try {
+        await this.$store.dispatch('marketplace/getSpecialists')
+          .then((response) => console.log('response: ', response) )
+          .catch((error) => console.error(error) );
+      } catch (error) {
+        console.error(error)
+      }
     },
   };
 </script>
