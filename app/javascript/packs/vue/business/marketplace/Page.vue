@@ -9,7 +9,7 @@
     .container
       .row
         .col-lg-3
-          MarketPlaceFilter(:optionsForRequest="optionsForRequest" :filter="filter")
+           MarketPlaceFilter(:optionsForRequest="optionsForRequest" :filter="filter")
 
         .col-lg-9
           .card
@@ -49,8 +49,6 @@
   import SpecialistPanel from './components/SpecialistPanel'
   import SpecialistDetails from './components/SpecialistDetails'
   import _debounce from 'lodash/debounce'
-
-  // import 'vue-range-component/dist/vue-range-slider.css'
 
   const frontendUrl = '/projects'
   const endpointUrl = '/api/specialist/projects'
@@ -106,10 +104,10 @@
         search: null,
         value: [0, 100],
         optionsForRequest: {
-          industries: '',
+          industries: [],
           experienceLevel: [],
-          hourlyRate: [10, 500],
-          jurisdictions: '',
+          hourlyRate: [3, 100],
+          jurisdictions: [],
           formerRegulator: []
         }
       };

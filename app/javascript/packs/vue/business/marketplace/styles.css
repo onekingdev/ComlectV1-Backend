@@ -40,3 +40,12 @@
   border-color: #0479FF;
   box-shadow: none;
 }
+
+ion-icon.close {
+  font-size: .8rem;
+  cursor: pointer;
+}
+ion-icon.close:active,
+ion-icon.close:hover {
+  background-color: #E5E5EA;
+}

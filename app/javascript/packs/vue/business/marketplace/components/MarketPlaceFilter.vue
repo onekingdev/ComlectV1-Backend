@@ -10,7 +10,7 @@
         // b-form-input(v-model="filter.industry")
         div(:class="{ 'invalid': errors.industry }")
           multiselect#selectS-1(
-            v-model="filter.industry"
+            v-model="optionsForRequest.industries"
             :options="filter.industryOptions"
             :multiple="true"
             :show-labels="false"
@@ -31,9 +31,16 @@
         ion-icon(name='chevron-down-outline')
       b-collapse#collapse_hourly_rate(visible)
         <!--b-form-checkbox(v-for="(option, i) in pricingTypeOptions" v-model="filter.pricing_type[i]" :key="'hr'+i") {{option.label}}-->
-        VueRangeSlider.mb-5(
-        v-bind="vueRangeOptions"
-        ref='slider' v-model='optionsForRequest.hourlyRate')
+        <!--VueRangeSlider.mb-5(-->
+        <!--v-bind="vueRangeOptions"-->
+        <!--ref='slider' v-model='optionsForRequest.hourlyRate')-->
+        <!--vue-range-slider.mb-5(-->
+        <!--ref='slider' v-model='value'-->
+        <!--:min="min" :max="max" :formatter="formatter" :tooltip-merge="tooltipMerge" :enable-cross="enableCross"-->
+        <!--:bgStyle="bgStyle" :tooltipStyle="tooltipStyle" :processStyle="processStyle" :slider-style="sliderStyle"-->
+        <!--:tooltip-dir='tooltipDir')-->
+        .sliedr-contaner
+          vue-slider(v-model="optionsForRequest.hourlyRate" :enable-cross="false" v-bind="options")
       hr
       h3.d-flex.justify-content-between(role="button" v-b-toggle.collapse_jurisdiction)
         | Jurisdiction
@@ -42,7 +49,7 @@
         // b-form-input(v-model="filter.jurisdiction")
         div(:class="{ 'invalid': errors.jurisdiction }")
           multiselect#selectS-2(
-            v-model="filter.jurisdiction"
+            v-model="optionsForRequest.jurisdiction"
             :options="filter.jurisdictionOptions"
             :multiple="true"
             :show-labels="false"
@@ -60,14 +67,18 @@
 </template>
 
 <script>
-import 'vue-range-component/dist/vue-range-slider.css'
-import VueRangeSlider from 'vue-range-component'
+// import 'vue-range-component/dist/vue-range-slider.css'
+// import VueRangeSlider from 'vue-range-component'
+
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/default.css'
+
 import Multiselect from 'vue-multiselect'
 
 export default {
   name: 'MarketPlaceFilter',
   components: {
-    VueRangeSlider,
+    VueSlider,
     Multiselect
   },
   props: {
@@ -80,6 +91,33 @@ export default {
       required: true
     }
   },
+  created() {
+    if (this.initialOpenId) {
+      this.openDetails(this.initialOpenId)
+    }
+
+    // this.min = 0
+    // this.max = 250
+    // this.bgStyle = {
+    //   backgroundColor: '#fff',
+    //   boxShadow: 'inset 0.5px 0.5px 3px 1px rgba(0,0,0,.36)'
+    // }
+    // this.tooltipStyle = {
+    //   // color: '#303132',
+    //   backgroundColor: '#303132',
+    //   borderColor: '#303132'
+    // }
+    // this.processStyle = {
+    //   backgroundColor: '#303132'
+    // },
+    // this.sliderStyle = {
+    //   backgroundColor: '#303132',
+    // },
+    // this.enableCross = false,
+    // this.tooltipMerge = false,
+    // this.formatter = value => `$${value}`,
+    // this.tooltipDir = 'bottom'
+  },
   data () {
     return {
       errors: {},
@@ -87,32 +125,42 @@ export default {
       jurisdictionOptions: [],
       experienceOptions: ['Junior', 'Intermediate', 'Expert'],
       regulatorOptions: ['SEC', 'FINRA', 'State', 'International'],
-      vueRangeOptions: {
+      // value: [0, 100],
+      options: {
         min: 0,
         max: 500,
-        bgStyle: {
-          backgroundColor: '#fff',
-          boxShadow: 'inset 0.5px 0.5px 3px 1px rgba(0,0,0,.36)'
-        },
-        tooltipStyle: {
-          color: '#303132',
-          backgroundColor: 'transparent',
-          border: 'none',
-          marginTop: '-9px'
-        },
-        labelStyle: {
-          bottom: 0
-        },
-        processStyle: {
-          backgroundColor: '#303132'
-        },
-        sliderStyle: {
-          backgroundColor: '#303132',
-        },
-        tooltipMerge: false,
-        formatter: value => `$${value}`,
-        tooltipDir: 'bottom'
-      }
+        tooltip: 'always',
+        tooltipPlacement: 'bottom',
+        tooltipFormatter: v => `$${v}`,
+      },
+      // vueRangeOptions: {
+      //   min: 0,
+      //   max: 500,
+      //   bgStyle: {
+      //     backgroundColor: '#fff',
+      //     boxShadow: 'inset 0.5px 0.5px 3px 1px rgba(0,0,0,.36)'
+      //   },
+      //   tooltipStyle: {
+      //     color: '#303132',
+      //     backgroundColor: 'transparent',
+      //     border: 'none',
+      //     marginTop: '-9px'
+      //   },
+      //   labelStyle: {
+      //     bottom: 0
+      //   },
+      //   processStyle: {
+      //     backgroundColor: '#303132'
+      //   },
+      //   sliderStyle: {
+      //     backgroundColor: '#303132',
+      //   },
+      //   tooltipMerge: false,
+      //   formatter: value => `$${value}`,
+      //   tooltipDir: 'bottom'
+      // },
+      // value: [0, 100],
+      // mainProps: { blank: false, blankColor: '#777', width: 100, height: 100, class: 'm1' }
     }
   }
 }
@@ -197,5 +245,29 @@ export default {
     margin-bottom: 0;
     font-size: 1.2rem;
     line-height: 14px;
+  }
+</style>
+
+<style>
+  .sliedr-contaner {
+    height: 3.5rem;
+  }
+  .vue-slider-process,
+  .vue-slider-dot-handle {
+    background-color: #303132;
+  }
+  .vue-slider-dot-tooltip-inner {
+    color: #303132;
+    border: none;
+    background-color: transparent;
+  }
+  .vue-slider-dot-tooltip-inner-bottom::after {
+    border: none;
+  }
+  .vue-slider-dot-tooltip-bottom {
+    bottom: -5px;
+  }
+  .vue-slider-rail {
+    background-color: #ecf4ff;
   }
 </style>
