@@ -4,6 +4,7 @@ class Api::ExamsController < ApiController
   before_action :find_exam, only: %i[email show]
   before_action :find_auditor, only: %i[email show]
   skip_before_action :verify_authenticity_token
+  skip_before_action :authenticate_user!
 
   def email
     if @auditor.present?
