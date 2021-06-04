@@ -5,7 +5,7 @@
         b-form-group(label="Search" label-for="search-input")
            b-form-input#search-input(v-model="search" placeholder="Enter keywords, skills, etc." @keyup.enter="addTag")
         b-form-group
-          b-badge.mr-2(variant="none" v-for="(tag, idx) in value" :key="tag")
+          b-badge.mr-2(variant="none" v-for="(tag, idx) in values" :key="tag")
             | {{ tag }}
             ion-icon.ml-2.close(name='close-outline' @click="removeTag(idx)")
 </template>
@@ -16,17 +16,18 @@ export default {
   data() {
     return {
       search: '',
-      value: []
+      values: []
     };
   },
   methods: {
     addTag () {
       if(!this.search) return
-      this.value.push(this.search)
+      this.values.push(this.search)
       this.search = ''
+      this.$emit('searchComplited', this.values)
     },
     removeTag (id) {
-      this.value.splice(id, 1)
+      this.values.splice(id, 1)
     }
   }
 }

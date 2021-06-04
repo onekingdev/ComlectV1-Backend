@@ -17,13 +17,13 @@
               .col-md-12
                 h3 Browse Specialist
             .card-header
-              MarketPlaceSearchInput
+              MarketPlaceSearchInput(@searchComplited="filterByInput")
 
             .card-header(v-if="loading")
               .row.py-2.px-4
                 .col
                   Loading
-            SpecialistPanel(v-for="specialist in specialists" :specialist="specialist" :key="specialist.id" @directMessage="isSidebarOpen = true")
+            SpecialistPanel(v-for="specialist in filteredSpecialists" :specialist="specialist" :key="specialist.id" @directMessage="isSidebarOpen = true")
             .card-body.m-2.text-danger(v-if="!specialists && !specialists.length"  title="No specialists")
 
       b-sidebar#ProjectSidebar(@hidden="closeSidebar" v-model="isSidebarOpen" backdrop-variant='dark' backdrop right width="60%")
@@ -109,6 +109,12 @@
           hourlyRate: [3, 100],
           jurisdictions: [],
           formerRegulator: []
+        },
+        sortOptions: {
+          tags: [],
+          field: 'progress',
+          type: 'number',
+          reverse: false
         }
       };
     },
@@ -157,11 +163,15 @@
       closeSidebar() {
         this.openId = null
         this.project = null
-        history.pushState({}, '', frontendUrl)
+        history.pushState({}, '', '/business/specialists')
         this.isSidebarOpen = false
       },
       applyUrl(project) {
         return `/projects/${project.id}/applications/new`
+      },
+      filterByInput (values) {
+        console.log('value', values)
+        this.sortOptions.tags = values
       }
     },
     computed: {
@@ -170,6 +180,19 @@
       }),
       loading() {
         return this.$store.getters.loading;
+      },
+      filteredSpecialists() {
+        console.log('this.specialists', this.specialists)
+        if(this.sortOptions.tags.length) {
+          const sortOption = this.sortOptions
+          const res = this.specialists.map(val => {
+            console.log('val', val)
+            // sortOption.tags.filter(tag => val.first_name.toLowerCase() === tag.toLowerCase())
+          })
+          console.log(res)
+          // return this.specialists.map(val => sortOption.tags.filter(tag => val.first_name.toLowerCase() === tag.toLowerCase()))
+        }
+        return this.specialists
       },
       pricingTypeOptions: () => PRICING_TYPE_OPTIONS,
       experienceOptions: () => EXPERIENCE_OPTIONS,
