@@ -36,7 +36,8 @@ class SpecialistsController < ApplicationController
                                                                             name: ind.name }
                                                                         }).to_json,
                              ':sub-industry-ids': sub_industries(true).to_json,
-                             ':states': State.fetch_all_usa.to_json).html_safe, layout: 'vue_onboarding'
+                             ':states': State.fetch_all_usa.to_json,
+                             ':timezones': timezones_json).html_safe, layout: 'vue_onboarding'
   end
 
   def create

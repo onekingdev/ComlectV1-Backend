@@ -2,6 +2,7 @@
 
 class Api::Settings::GeneralController < ApiController
   before_action :require_someone!
+  skip_before_action :verify_authenticity_token
 
   def index
     respond_with @current_someone, serializer: ::Settings::GeneralSerializer
