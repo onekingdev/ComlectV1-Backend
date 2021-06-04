@@ -355,6 +355,7 @@ Rails.application.routes.draw do
       get '/payment_settings' => 'payment_settings#index'
       get '/favorites' => 'favorites#index'
       patch '/favorites' => 'favorites#update'
+      post '/share_project' => 'share_project#create'
     end
     resources :businesses, only: [:create]
     resource :business, only: %i[update] do
