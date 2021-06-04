@@ -2019,7 +2019,8 @@ CREATE TABLE public.job_applications (
     starts_on date,
     ends_on date,
     status character varying,
-    role_details text DEFAULT ''::text
+    role_details text DEFAULT ''::text,
+    document_data jsonb
 );
 
 
@@ -8009,6 +8010,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20210527230840'),
 ('20210527232059'),
 ('20210528030325'),
-('20210528030543');
+('20210528030543'),
+('20210528182423'),
+('20210601234719');
 
 
