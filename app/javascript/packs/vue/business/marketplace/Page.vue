@@ -9,7 +9,7 @@
     .container
       .row
         .col-lg-3
-           MarketPlaceFilter(:optionsForRequest="optionsForRequest" :filter="filter")
+          MarketPlaceFilter(:optionsForRequest="optionsForRequest" :filter="filter")
 
         .col-lg-9
           .card
@@ -98,6 +98,7 @@
       Loading,
       // VueRangeSlider,
       SpecialistPanel,
+      SpecialistDetails,
       MarketPlaceFilter,
       MarketPlaceSearchInput
     },
