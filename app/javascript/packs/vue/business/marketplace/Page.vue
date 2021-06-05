@@ -84,8 +84,8 @@
     budget: BUDGET_OPTIONS.map(() => false),
     duration: DURATION_OPTIONS.map(() => false),
     fromer_regulator: FORMER_REGULATOR_OPTIONS.map(() => false),
-    industry: '',
-    jurisdiction: ''
+    industries: '',
+    jurisdictions: ''
   })
 
   export default {
@@ -116,9 +116,11 @@
         },
         sortOptions: {
           tags: [],
-          field: 'progress',
-          type: 'number',
-          reverse: false
+          industries: [],
+          experienceLevel: [],
+          hourlyRate: [0, 500],
+          jurisdictions: [],
+          formerRegulator: []
         }
       };
     },
@@ -190,10 +192,27 @@
         return this.$store.getters.loading;
       },
       filteredSpecialists() {
+        const defaultSpecialists = this.specialists
+        let filteredSpecialists = []
+
+        if(this.sortOptions.industries.length) {
+          const sortOption = this.sortOptions.industries
+
+          for (const industry of sortOption) {
+            for (const specialist of defaultSpecialists) {
+              for (const ind of specialist.industries) {
+                if(ind.name.toLowerCase() === industry.name.toLowerCase()) {
+                  if(!filteredSpecialists.includes(specialist)) filteredSpecialists.push(specialist)
+                }
+              }
+            }
+          }
+
+          return filteredSpecialists
+        }
+
         if(this.sortOptions.tags.length) {
           const sortOption = this.sortOptions
-          const defaultSpecialists = this.specialists
-          const filteredSpecialists = []
 
           for (const tag of sortOption.tags) {
             defaultSpecialists.map(specialist => {
@@ -218,10 +237,8 @@
           return filteredSpecialists
         }
 
-        if(this.sortOptions.experienceLevel) {
+        if(this.sortOptions.experienceLevel.length) {
           const sortOption = this.sortOptions.experienceLevel
-          const defaultSpecialists = this.specialists
-          const filteredSpecialists = []
 
           for (const level of sortOption) {
             let numLevel = null
@@ -239,8 +256,23 @@
           return filteredSpecialists
         }
 
+        if(this.sortOptions.jurisdictions.length) {
+          const sortOption = this.sortOptions.jurisdictions
 
-        return this.specialists
+          for (const industry of sortOption) {
+            for (const specialist of defaultSpecialists) {
+              for (const ind of specialist.jurisdictions) {
+                if(ind.name.toLowerCase() === industry.name.toLowerCase()) {
+                  if(!filteredSpecialists.includes(specialist)) filteredSpecialists.push(specialist)
+                }
+              }
+            }
+          }
+
+          return filteredSpecialists
+        }
+
+        return defaultSpecialists
       },
       pricingTypeOptions: () => PRICING_TYPE_OPTIONS,
       experienceOptions: () => EXPERIENCE_OPTIONS,

@@ -47,9 +47,9 @@
         ion-icon(name='chevron-down-outline')
       b-collapse#collapse_jurisdiction(visible)
         // b-form-input(v-model="filter.jurisdiction")
-        div(:class="{ 'invalid': errors.jurisdiction }")
+        div(:class="{ 'invalid': errors.jurisdictions }")
           multiselect#selectS-2(
-            v-model="optionsForRequest.jurisdiction"
+            v-model="optionsForRequest.jurisdictions"
             :options="filter.jurisdictionOptions"
             :multiple="true"
             :show-labels="false"
@@ -57,7 +57,7 @@
             label="name",
             placeholder="Select jurisdiction",
             required)
-          .invalid-feedback.d-block(v-if="errors.jurisdiction") {{ errors.jurisdiction }}
+          .invalid-feedback.d-block(v-if="errors.jurisdictions") {{ errors.jurisdictions }}
       hr
       h3.d-flex.justify-content-between(role="button" v-b-toggle.collapse_fromer_regulator)
         | Former Regulator
