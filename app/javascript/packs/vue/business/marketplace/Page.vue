@@ -122,7 +122,7 @@
           tags: [],
           industries: [],
           experienceLevel: [],
-          hourlyRate: [0, 500],
+          hourlyRate: [],
           jurisdictions: [],
           formerRegulator: []
         },
@@ -285,6 +285,19 @@
 
           return filteredSpecialists
         }
+
+        // if(this.sortOptions.hourlyRate.length) {
+        //   const [min, max] = this.sortOptions.hourlyRate
+        //
+        //   for (const specialist of defaultSpecialists) {
+        //     const [sMin, sMax] = this.specialist.hourlyRate
+        //     if (min >= sMin && max <= sMax) {
+        //       if(!filteredSpecialists.includes(specialist)) filteredSpecialists.push(specialist)
+        //     }
+        //   }
+        //
+        //   return filteredSpecialists
+        // }
 
         return defaultSpecialists
       },

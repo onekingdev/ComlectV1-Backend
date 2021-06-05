@@ -4,7 +4,7 @@
       ion-icon.float-left.mt-3.mr-3(name="cash-outline")
       | Hourly rate
       br
-      b ${{ specialist.min_hourly_rate | usdWhole }} - {{ specialist.upper_hourly_rate | usdWhole }}
+      b {{ specialist.min_hourly_rate | usdWhole }}
     li.list-group-item
       ion-icon.float-left.mt-3.mr-3(name="analytics-outline")
       | Expirience
