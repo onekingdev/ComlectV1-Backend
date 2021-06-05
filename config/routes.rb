@@ -275,8 +275,6 @@ Rails.application.routes.draw do
       patch 'general' => 'general#update'
       get 'profile' => 'profile#index'
       patch 'profile' => 'profile#update'
-      get 'business' => 'business#index'
-      patch 'business' => 'business#update'
       patch 'password' => 'password#update'
     end
 
