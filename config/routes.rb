@@ -285,7 +285,7 @@ Rails.application.routes.draw do
 
     get 'local_projects/:project_id/messages' => 'project_messages#index'
     post 'local_projects/:project_id/messages' => 'project_messages#create'
-    resources :direct_messages, path: 'messages(/:recipient_username)', only: %i[index create]
+    resources :direct_messages, path: 'messages/:recipient_username', only: %i[index create]
     resources :project_ratings, only: %i[index]
     namespace :business do
       resources :exams, only: %i[index show create update destroy] do
@@ -305,6 +305,8 @@ Rails.application.routes.draw do
       get '/reminders/:id' => 'reminders#show'
       delete '/reminders/:id' => 'reminders#destroy'
       post '/reminders/:id' => 'reminders#update'
+      get '/reminders/:id/messages' => '/api/reminder_messages#index'
+      post '/reminders/:id/messages' => '/api/reminder_messages#create'
       get '/reminders/:date_from/:date_to' => 'reminders#by_date'
       get '/overdue_reminders' => 'reminders#overdue'
       post '/reminders' => 'reminders#create'
