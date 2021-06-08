@@ -15,7 +15,7 @@ export async function getSpecialists() {
     .catch(err => err)
 }
 
-export async function createSpecialists(payload) {
+export async function createSpecialist(payload) {
   return await axios.post(`${END_POINT}`, payload)
     .then(response => {
       if (response) {
@@ -26,7 +26,7 @@ export async function createSpecialists(payload) {
     .catch(err => err)
 }
 
-export async function updateSpecialists(payload) {
+export async function updateSpecialist(payload) {
   return await axios.patch(`${END_POINT}/${payload.id}`, payload)
     .then(response => {
       if (response) {
@@ -37,7 +37,7 @@ export async function updateSpecialists(payload) {
     .catch(err => err)
 }
 
-export async function deleteSpecialists(payload) {
+export async function deleteSpecialist(payload) {
   return await axios.delete(`${END_POINT}/${payload.id}`, payload)
     .then(response => {
       if (response) {
@@ -48,7 +48,7 @@ export async function deleteSpecialists(payload) {
     .catch(err => err)
 }
 
-export async function getSpecialistsById(payload) {
+export async function getSpecialistById(payload) {
   return await axios.get(`${END_POINT}/${payload}`)
     .then(response => {
       if (response) {
