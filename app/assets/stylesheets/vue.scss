@@ -270,6 +270,7 @@ table.table, table.table thead tr th {
   }
 }
 
+
 .reviews {
   &__list {
     &-icon {
@@ -397,6 +398,23 @@ table.table, table.table thead tr th {
           background: #6fca65;
         }
       }
+    }
+  }
+}
+
+.settings {
+  &__card {
+    border-radius: 10px;
+    border: 2px solid #e9ebee;
+    &--internal {
+      border-top: initial;
+      border-bottom: 2px solid #e9ebee;
+      &-top {
+        border-bottom: initial;
+      }
+    }
+    &--label {
+      color: #797b7e;
     }
   }
 }
