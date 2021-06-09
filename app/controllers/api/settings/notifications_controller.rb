@@ -1,16 +1,18 @@
 # frozen_string_literal: true
 
 class Api::Settings::NotificationsController < ApiController
+  skip_before_action :verify_authenticity_token
   before_action :require_someone!
 
   def index
-    settings = [:email_notifications, :in_app_notifications, :email_updates].each_with_object({}) { |item, returning|
+    settings = %i[email_notifications in_app_notifications email_updates].each_with_object({}) { |item, returning|
       returning[item] = @current_someone.settings(item).value
     }
     render json: settings.to_json
   end
 
   def update
+    # rubocop:disable Style/GuardClause
     if @current_someone.default_settings[notify_params[:kind].to_sym][notify_params[:setting]]
       setting = @current_someone.settings(notify_params[:kind].to_sym).value[notify_params[:setting]]
       if setting.nil? || setting == true
@@ -21,6 +23,7 @@ class Api::Settings::NotificationsController < ApiController
         respond_with setting: notify_params[:setting], result: true
       end
     end
+    # rubocop:enable Style/GuardClause
   end
 
   private
