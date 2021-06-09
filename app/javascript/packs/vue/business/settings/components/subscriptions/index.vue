@@ -28,6 +28,7 @@
               .row
                 .col
                   AppsTable(:apps="apps")
+                  div(v-if="!apps && apps.length") Apps not avaliable
 </template>
 
 <script>

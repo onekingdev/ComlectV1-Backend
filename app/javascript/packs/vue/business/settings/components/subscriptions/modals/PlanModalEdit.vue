@@ -29,6 +29,7 @@
               p
                 b 150$
                 | /month
+              p.text-success You saved 50$/month
       b-row
         b-col
           h5.mb-3 Payment method
