@@ -4,8 +4,7 @@
       .d-flex
         UserAvatar(:user="item")
         .d-block.m-l-2
-          p.mb-1: b {{ item.first_name + ' ' +  item.last_name }}
-          p.mb-0 {{ item.email }}
+          p.mt-2.mb-0: b {{ item.first_name + ' ' +  item.last_name }}
     td
       b-form-checkbox(v-model="item.checked") {{item.checked ? 'Trusted' : 'Basic'}}
     td
@@ -16,8 +15,9 @@
       b-dropdown.actions(size="sm" variant="light" class="m-0 p-0" right)
         template(#button-content)
           b-icon(icon="three-dots")
-        b-dropdown-item Edit
-        b-dropdown-item Archive
+        b-dropdown-item Message
+        b-dropdown-item Edit Role
+        b-dropdown-item View contract
         b-dropdown-item.delete Delete
 </template>
 
@@ -26,7 +26,7 @@
   import { DateTime } from 'luxon'
 
   export default {
-    name: "userItem",
+    name: "roleItem",
     props: ['item'],
     components: {
       UserAvatar,

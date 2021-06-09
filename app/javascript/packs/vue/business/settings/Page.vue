@@ -30,6 +30,7 @@
   import Users from "./components/users";
   import Security from "./components/security";
   import Subscriptions from "./components/subscriptions";
+  import RolePermisssions from "./components/roles";
 
   export default {
     components: {
@@ -38,12 +39,14 @@
       Users,
       Security,
       Subscriptions,
+      RolePermisssions,
     },
     created() {
       // this.component = General;
       // this.component = Users;
       // this.component = Security;
-      this.component = Subscriptions;
+      // this.component = Subscriptions;
+      this.component = RolePermisssions;
 
       // console.log(window.location)
       // const pathName = window.location.pathname.split('settings/')
