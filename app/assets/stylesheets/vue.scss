@@ -449,13 +449,16 @@ table.table, table.table thead tr th {
   &__card {
     border-radius: 10px;
     border: 2px solid #e9ebee;
+
     &--internal {
       border-top: initial;
       border-bottom: 2px solid #e9ebee;
+
       &-top {
         border-bottom: initial;
       }
     }
+
     &--label {
       color: #797b7e;
     }
@@ -477,6 +480,7 @@ table.table, table.table thead tr th {
       padding-right: 2rem;
     }
   }
+}
 
 .portal {
   min-height: 100vh;

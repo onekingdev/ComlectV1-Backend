@@ -6,6 +6,10 @@
     b-modal.fade(:id="modalId" title="Add User")
       .row
         .col-12.m-b-1
+          Notifications(:notify="notify")
+            button.btn.btn-default(@click='click') Extend
+      .row
+        .col-12.m-b-1
           label.form-label Email
           input.form-control(v-model="user.email" type="text" placeholder="Enter email" ref="input")
           Errors(:errors="errors.email")
@@ -54,6 +58,16 @@
           access: ''
         },
         errors: {},
+        notify: {
+          show: 'show',
+          mainText: 'User limit reached',
+          subText: 'Please edit your plan in order to add additional users',
+          variant: 'warning',
+          dismissible: false,
+          icon: null,
+          scale: 2,
+          animation: ""
+        }
       }
     },
     methods: {
@@ -68,6 +82,10 @@
         } catch (error) {
           this.toast('Error', error.message)
         }
+      },
+      click(value) {
+        console.log(value)
+        console.log('123')
       },
     },
     computed: {
