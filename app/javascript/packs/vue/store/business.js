@@ -74,6 +74,7 @@ const store = new Vuex.Store({
     settings: {
       namespaced: true,
       ...settings,
+    },
     reminders: {
       namespaced: true,
       ...tasks,
