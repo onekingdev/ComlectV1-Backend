@@ -12,23 +12,26 @@ class Api::Settings::NotificationsController < ApiController
   end
 
   def update
-    # rubocop:disable Style/GuardClause
-    if @current_someone.default_settings[notify_params[:kind].to_sym][notify_params[:setting]]
-      setting = @current_someone.settings(notify_params[:kind].to_sym).value[notify_params[:setting]]
-      if setting.nil? || setting == true
-        @current_someone.settings(notify_params[:kind].to_sym).update! notify_params[:setting].to_sym => false
-        respond_with setting: notify_params[:setting], result: false
-      elsif setting == false
-        @current_someone.settings(notify_params[:kind].to_sym).update! notify_params[:setting].to_sym => true
-        respond_with setting: notify_params[:setting], result: true
+    kind = notifications_params[:kind].to_sym
+    setting = notifications_params[:setting].to_sym
+
+    if @current_someone.default_settings[kind][setting.to_s]
+      cur_setting = @current_someone.settings(kind).value[setting.to_s]
+      if cur_setting.nil? || cur_setting
+        @current_someone.settings(kind).update! setting => false
+        respond_with setting: setting, result: false
+      else
+        @current_someone.settings(kind).update! setting => true
+        respond_with setting: setting, result: true
       end
+    else
+      respond_with error: :unknown_parameter
     end
-    # rubocop:enable Style/GuardClause
   end
 
   private
 
-  def notify_params
+  def notifications_params
     params.permit(
       :kind,
       :setting
