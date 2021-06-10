@@ -20,6 +20,7 @@
   import Subscriptions from "./components/subscriptions";
   import RolePermisssions from "./components/roles";
   import Billings from "./components/billings";
+  import Notifications from "./components/notifications";
 
   export default {
     components: {
@@ -30,6 +31,7 @@
       Subscriptions,
       RolePermisssions,
       Billings,
+      Notifications,
     },
     created() {
       // this.component = General;
@@ -37,7 +39,8 @@
       // this.component = Security;
       // this.component = Subscriptions;
       // this.component = RolePermisssions;
-      this.component = Billings;
+      // this.component = Billings;
+      this.component = Notifications;
 
       // console.log(window.location)
       // const pathName = window.location.pathname.split('settings/')

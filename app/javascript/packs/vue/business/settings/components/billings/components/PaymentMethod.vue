@@ -13,8 +13,8 @@
                 p.mb-0 {{ payment.paymentCard }} {{ payment.paymentCardType }} {{ payment.email }}
           .col
             .d-flex.justify-content-end.align-items-center
-              b-button.btn.mr-2(v-if="!payment.primary" type='button' variant='default') Make Primary
-              b-button.btn.mr-2(type='button' variant='default') Remove
+              b-button.btn.mr-2.font-weight-bold(v-if="!payment.primary" type='button' variant='default') Make Primary
+              b-button.btn.mr-2.font-weight-bold(type='button' variant='default') Remove
 </template>
 
 <script>

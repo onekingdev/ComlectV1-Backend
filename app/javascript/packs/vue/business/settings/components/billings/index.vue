@@ -15,7 +15,7 @@
                   h4
                     b Payment Method
                 .col.text-right
-                  b-button.btn.mr-2(type='button' variant='default') Add Method
+                  b-button.btn.mr-2.font-weight-bold(type='button' variant='default') Add Method
               .row
                 .col
                   PaymentMethod
