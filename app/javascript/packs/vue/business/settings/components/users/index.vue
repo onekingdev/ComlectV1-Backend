@@ -23,7 +23,8 @@
                         .col-md-4
                           .d-flex.justify-content-end
                             button.btn.btn-default.mr-2 Export
-                            button.btn.btn-dark Add User
+                            UserModalAdd
+                              button.btn.btn-dark Add User
                     .row
                       .col-12
                         Loading
@@ -43,9 +44,11 @@
   import Loading from '@/common/Loading/Loading'
   import UsersTable from "./components/UsersTable";
   import SearchItem from "./components/SearchItem";
+  import UserModalAdd from "./modals/UserModalAdd";
 
   export default {
     components: {
+      UserModalAdd,
       Loading,
       UsersTable,
       SearchItem,
@@ -82,7 +85,7 @@
             checked: true,
             access: false,
             created_at: '31/01/2017',
-            status: true
+            status: false
           }
         ]
       },
