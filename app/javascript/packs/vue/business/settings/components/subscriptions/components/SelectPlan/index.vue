@@ -127,11 +127,12 @@
 
           this.$store.dispatch('updateSubscribe', dataToSend)
             .then(response => {
-              this.makeToast('Success', `Update subscribe successfully finished! You will be redirect.`)
+              this.toast('Success', `Update subscribe successfully finished!`)
               this.currentPlan = { id: 1, status: true }
-              this.redirect();
+              // this.redirect();
+              this.$emit('upgradePlanComplited')
             })
-            .catch(error =>this.makeToast('Error', `Something wrong!`))
+            .catch(error =>this.toast('Error', `Something wrong!`))
 
           return
         }
@@ -186,21 +187,22 @@
           .then(response => {
             if(response.errors) throw new Error(`Response error!`)
             if(!response.errors) {
-              this.makeToast('Success', `Update subscribe successfully finished!`)
+              this.toast('Success', `Update subscribe successfully finished!`)
               this.paySeats(selectedPlan)
 
               // OVERLAY
               if(+this.additionalUsers === 0) {
-                this.overlayStatusText = 'Account successfully purchased, you will be redirect to the dashboard...'
+                this.overlayStatusText = 'Account successfully purchased!'
                 this.overlayStatus = 'success'
                 // this.overlay = false
-                this.redirect()
+                // this.redirect()
+                this.$emit('upgradePlanComplited')
               }
             }
           })
           .catch(error => {
             console.error(error)
-            this.makeToast('Error', `Something wrong! ${error}`)
+            this.toast('Error', `Something wrong! ${error}`)
 
             // OVERLAY
             this.overlayStatus = 'error'
@@ -234,23 +236,24 @@
 
             if(response.errors) {
               for (const type of Object.keys(response[i].data.errors)) {
-                this.makeToast('Error', `Something wrong! ${response[i].data.errors[type]}`)
+                this.toast('Error', `Something wrong! ${response[i].data.errors[type]}`)
               }
             }
 
             if(!response.errors) {
-              this.makeToast('Success', `Update seat subscribe successfully finished!`)
+              this.toast('Success', `Update seat subscribe successfully finished!`)
 
               // OVERLAY
-              this.overlayStatusText = `Account and ${countPayedUsers} seats successfully purchased, you will be redirect to the dashboard...`
+              this.overlayStatusText = `Account and ${countPayedUsers} seats successfully purchased!`
               this.overlayStatus = 'success'
               // this.overlay = false
-              this.redirect()
+              // this.redirect()
+              this.$emit('upgradePlanComplited')
             }
           })
           .catch(error => {
             console.error(error)
-            this.makeToast('Error', `Something wrong! ${error}`)
+            this.toast('Error', `Something wrong! ${error}`)
 
             // OVERLAY
             this.overlayStatus = 'error'

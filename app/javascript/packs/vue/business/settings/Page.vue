@@ -6,7 +6,7 @@
           .col-md-9.mx-auto.my-2
             .card
               .card-body
-                component(v-bind:is="componentUpgrade")
+                component(v-bind:is="componentUpgrade" @upgradePlanComplited="upgradePlanComplited")
       .row.p-t-3(v-if='!componentUpgrade')
         .col-md-3
           .panel-default
@@ -83,9 +83,14 @@
         // const baseUrl = new URL(window.location.origin);
         // window.history.pushState({}, name, `${baseUrl}business/settings/${name.toLowerCase()}`);
       },
-      upgradOpen() {
+      upgradOpen () {
         // console.log('open')
         this.componentUpgrade = SelectPlan
+      },
+      upgradePlanComplited () {
+        // console.log('open')
+        this.componentUpgrade = ''
+        this.toast('Success', 'Plan upgraded.')
       }
     },
     computed: {

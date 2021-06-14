@@ -151,7 +151,7 @@
       };
     },
     methods: {
-      makeToast(title, str) {
+      toast(title, str) {
         this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
       },
       // submit () {
@@ -174,14 +174,14 @@
           .dispatch('generatePaymentMethod', dataToSend)
           .then(response => {
             this.$emit('complitedPaymentMethod', response)
-            this.makeToast('Success', `Payment Method successfully added!`)
+            this.toast('Success', `Payment Method successfully added!`)
             this.isActive = false
             this.cardOptions.push({ text: `Credit Card${this.cardOptions.length===0 ? ' (primary)' : ''}`, value: response.id, number: `**** **** **** ${response.last4}`, type: response.brand, id: response.id })
             this.cardSelected = response.id
           })
           .catch(error => {
             console.error(error)
-            this.makeToast('Error', `Something wrong! ${error}`)
+            this.toast('Error', `Something wrong! ${error}`)
           })
       },
       // addCardDetail() {
@@ -205,11 +205,11 @@
             const index = this.cardOptions.findIndex(record => record.id === payload.id);
             this.cardOptions.splice(index, 1)
             if (response.message)
-              this.makeToast('Success', `${response.message}`)
+              this.toast('Success', `${response.message}`)
           })
           .catch(error => {
             console.error(error)
-            this.makeToast('Error', `Something wrong! ${error}`)
+            this.toast('Error', `Something wrong! ${error}`)
           })
       },
       addBankAccount() {
