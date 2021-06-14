@@ -10,7 +10,9 @@ class Business::SettingsController < ApplicationController
   # end
 
   def show
-    render html: content_tag('business-settings-page', '').html_safe, layout: 'vue_business'
+    render html: content_tag('business-settings-page', '',
+                             ':states': State.fetch_all_usa.to_json,
+                             ':timezones': timezones_json,
+                             ':user-id': current_user.id).html_safe, layout: 'vue_business'
   end
-
 end
