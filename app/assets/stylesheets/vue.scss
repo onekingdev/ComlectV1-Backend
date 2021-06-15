@@ -161,6 +161,8 @@ html {
 }
 
 .btn.btn-default { border: 1px solid #dadadc; background-color: #fff; }
+.btn.btn-default:hover,
+.btn.btn-default:active { background-color: #F3F6F9; }
 
 table.table, table.table thead tr th {
   border: 0px;
@@ -381,11 +383,15 @@ table.table, table.table thead tr th {
         }
       }
 
-      &:hover,
-      &:active {
-        color: #2e304f;
-        background-color: #dee2e6;
-        border-color: #dee2e6;
+      &.disabled {
+        opacity: 1;
+      }
+      &:hover, &:active {
+        &:not(.disabled) {
+          color: #2e304f;
+          background-color: #dee2e6;
+          border-color: #dee2e6;
+        }
       }
 
       &:not(:last-child) {
@@ -429,6 +435,10 @@ table.table, table.table thead tr th {
       }
     }
   }
+}
+
+.portal {
+  min-height: 100vh;
 }
 
 @import '../../../node_modules/bootstrap/scss/bootstrap.scss';
