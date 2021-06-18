@@ -7,7 +7,7 @@ class Subscription < ActiveRecord::Base
   belongs_to :specialist_payment_source, class_name: 'Specialist::PaymentSource',
                                          foreign_key: :specialist_payment_source_id, optional: true
 
-  SPECIALIST_PLANS = %w[specialist_pro specialist_freemium].freeze
+  SPECIALIST_PLANS = %w[specialist_pro free].freeze
 
   enum plan: %w[
     seats_monthly
@@ -24,7 +24,7 @@ class Subscription < ActiveRecord::Base
   enum status: { active: 0, canceled: 1 }
 
   scope :base, -> { find_by(kind_of: 0) }
-  scope :active, -> { find_by(status: 0) }
+  scope :active, -> { where(status: 0) }
 
   # unsure stripe customer business.payment_profile.stripe_customer
   # create one-time payment via InvoiceItem to customer

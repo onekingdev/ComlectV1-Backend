@@ -19,6 +19,7 @@ import PropertiesTable from '@/common/PropertiesTable'
 import CommonHeader from '@/common/CommonHeader'
 import Get from '@/common/rest/Get'
 import Post from '@/common/rest/Post'
+import PostMultipart from '@/common/rest/PostMultipart'
 import Put from '@/common/rest/Put'
 import Delete from '@/common/rest/Delete'
 import ModelLoader from '@/common/rest/ModelLoader'
@@ -27,6 +28,7 @@ import { extractToastMessage } from '@/common/Toast'
 import ToasterMixin from '@/mixins/ToasterMixin'
 import RedirectMixin from '@/mixins/RedirectMixin'
 import HistoryMixin from '@/mixins/HistoryMixin'
+import vueDebounce from 'vue-debounce'
 
 const data = () => ({
   isProfileMenuOpen: false
@@ -35,6 +37,7 @@ const data = () => ({
 const init = configuration => {
   Vue.use(BootstrapVue)
   Vue.use(IconsPlugin)
+  Vue.use(vueDebounce)
 
   Vue.mixin(ToasterMixin)
   Vue.mixin(RedirectMixin)
@@ -63,6 +66,7 @@ const init = configuration => {
   Vue.component('CommonHeader', CommonHeader)
   Vue.component('Get', Get)
   Vue.component('Post', Post)
+  Vue.component('PostMultipart', PostMultipart)
   Vue.component('Put', Put)
   Vue.component('Delete', Delete)
   Vue.component('ModelLoader', ModelLoader)

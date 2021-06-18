@@ -8,35 +8,27 @@
     .container-fluid.p-x-0
       .row
         .col-12.px-0
-          .card-body.white-card-body
+          .card-body.white-card-body.height-80
             .container
-              .row
-                .col-12
-                  Loading
               .row.p-x-1
                 .col-md-7.col-sm-12.pl-0
                   .card
-                    RegulatoryExams(:exams="exams")
+                    RegulatoryExamsTable(:exams="exams")
                 .col-md-5.col-sm-12.pl-0
-                  .card
-                    .card-header.d-flex.justify-content-between
-                      h3.m-y-0 Tasks
-                      button.btn.btn-dark New Task
-                    .card-body
-                      Tasks
-
+                  Tasks(:shortTable="true")
 </template>
 
 <script>
   import { mapActions, mapGetters } from "vuex"
-  import Loading from '@/common/Loading/Loading'
-  import RegulatoryExams from './components/RegulatoryExams'
-  import Tasks from './components/Tasks'
+  import { DateTime } from 'luxon'
+  import RegulatoryExamsTable from './components/ExamsTable'
+  import TaskFormModal from '@/common/TaskFormModal'
+  import Tasks from '@/business/tasks/Page'
 
   export default {
     components: {
-      Loading,
-      RegulatoryExams,
+      RegulatoryExamsTable,
+      TaskFormModal,
       Tasks
     },
     data() {
@@ -44,18 +36,12 @@
         pageTitle: "Exam Management",
       };
     },
-    created() {
-
-    },
     methods: {
       ...mapActions({
         getExams: 'exams/getExams',
       }),
     },
     computed: {
-      loading() {
-        return this.$store.getters.loading;
-      },
       ...mapGetters({
         exams: 'exams/exams',
       }),

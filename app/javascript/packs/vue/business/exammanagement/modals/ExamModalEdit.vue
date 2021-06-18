@@ -3,7 +3,7 @@
     div(v-b-modal="modalId" :class="{'d-inline-block':inline}")
       slot
 
-    b-modal.fade(:id="modalId" title="Edit Exam")
+    b-modal.fade(:id="modalId" title="Edit Exam" @shown="getData")
       .row
         .col-12.m-b-2
           label.form-label Name
@@ -22,9 +22,19 @@
 </template>
 
 <script>
+  import { DateTime } from 'luxon'
+  import EtaggerMixin from '@/mixins/EtaggerMixin'
   const rnd = () => Math.random().toFixed(10).toString().replace('.', '')
 
+  const initialExam = () => ({
+    id: '',
+    name: '',
+    starts_on: '',
+    ends_on: ''
+  })
+
   export default {
+    mixins: [EtaggerMixin()],
     props: {
       inline: {
         type: Boolean,
@@ -38,12 +48,8 @@
     data() {
       return {
         modalId: `modal_${rnd()}`,
-        exam_management: {
-          id: '',
-          name: '',
-          starts_on: '',
-          ends_on: ''
-        },
+        exam_management: initialExam(),
+        errors: []
       }
     },
     methods: {
@@ -66,13 +72,23 @@
 
         try {
           await this.$store.dispatch('exams/updateExam', this.exam_management)
-          this.makeToast('Success', `Exam Management successfully updated!`)
-          this.$emit('saved')
-          this.$bvModal.hide(this.modalId)
+            .then(response => {
+              this.makeToast('Success', `Exam Management successfully updated!`)
+              this.$emit('saved')
+              this.$bvModal.hide(this.modalId)
+              this.newEtag()
+            })
+            .catch(error => {
+              console.error(error)
+              throw error
+            })
         } catch (error) {
           this.makeToast('Error', error.message)
         }
       },
+      getData() {
+        this.exam_management = Object.assign({}, this.exam_management, this.exam)
+      }
     },
     computed: {
       datepickerOptions() {
@@ -82,9 +98,7 @@
       },
     },
     mounted() {
-      this.exam_management = {
-        ...this.exam
-      }
+
     },
   }
 </script>

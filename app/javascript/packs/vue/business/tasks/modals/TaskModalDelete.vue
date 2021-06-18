@@ -3,12 +3,12 @@
     div(v-b-modal="modalId" :class="{'d-inline-block':inline}")
       slot
 
-    b-modal.fade(:id="modalId" title="Delete Exam")
+    b-modal.fade(:id="modalId" title="Delete task")
       .row
         .col-md-1.text-center.px-0
           b-icon.mt-2.ml-3(icon="exclamation-circle-fill" scale="2" variant="danger")
         .col
-          p Removing this exam will delete any progress and tasks associated with the file.
+          p Removing this task will delete any progress and tasks associated with the file.
             br
             b Do you want to continue?
 
