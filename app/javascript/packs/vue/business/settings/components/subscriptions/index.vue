@@ -3,7 +3,7 @@
     .row
       .col
         Loading
-    .row(v-if='!loading')
+    .row
       .col
         .card.settings__card
           .card-title.px-3.px-xl-5.py-xl-4.mb-0
@@ -16,7 +16,7 @@
                     b Plan
               .row
                 .col
-                  Plan(@upgradOpen="$emit('upgradOpen')")
+                  Plan(@openComponent="openComponent")
             hr
             .settings___card--internal.p-y-1
               .row
@@ -48,7 +48,9 @@
       };
     },
     methods: {
-
+      openComponent (value) {
+        this.$emit('openComponent', value)
+      }
     },
     computed: {
       loading() {
