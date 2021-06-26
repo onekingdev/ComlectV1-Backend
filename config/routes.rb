@@ -321,7 +321,8 @@ Rails.application.routes.draw do
       end
       resources :specialist_roles, only: :update
       resources :specialists, only: :index
-      post '/seats/:seat_id/assign', to: 'seats#assign'
+      get '/seats', to: 'seats#index'
+      post '/seats', to: 'seats#assign'
       resources :annual_reports, only: %i[index show create update destroy]
       get '/annual_reports/:id/clone' => 'annual_reports#clone'
       scope 'annual_reports/:report_id' do
