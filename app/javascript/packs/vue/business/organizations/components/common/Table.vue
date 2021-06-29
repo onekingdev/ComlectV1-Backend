@@ -3,25 +3,27 @@
     thead
       tr
         th Name
-          b-icon.ml-2(icon='chevron-expand' font-scale="1")
+          b-icon.ml-2(icon='chevron-expand')
         th Role
-          RoleTypesModalInfo
-            b-icon.ml-2.mb-1(icon="exclamation-circle-fill" variant="secondary" v-b-tooltip.hover title="Toooooooltip" font-scale="1")
-        th Status
+          b-icon.ml-2(icon='chevron-expand')
+        th Reason
+          b-icon.ml-2(icon='chevron-expand')
+        th Access Person
+          b-icon.ml-2(icon='chevron-expand')
+        th Start Date
+          b-icon.ml-2(icon='chevron-expand')
+        th Date Disabled
           b-icon.ml-2(icon='chevron-expand')
         th(width="35px")
     tbody
-      RoleItem(v-for="item in sortedData" :key="item.id" :item="item")
+      Item(v-for="item in sortedData" :key="item.id" :item="item")
 </template>
 
 <script>
-
-  import RoleItem from "./Item"
-  import RoleTypesModalInfo from "./modals/RoleTypesModalInfo";
+  import Item from "./Item"
   export default {
     components: {
-      RoleTypesModalInfo,
-      RoleItem
+      Item
     },
     props: {
       users: {
