@@ -6,14 +6,21 @@
         h3.mb-0 Compilance Spend
       .card-body.white-card-body
         .card-body
-          .chart abc
+          .chart
+            .d-flex.justify-content-end
+              p.mb-0
+                b Ytd:
+                span $24,560
+            Chart
 </template>
 
 <script>
   import Loading from '@/common/Loading/Loading'
+  import Chart from "./chart";
 
   export default {
     components: {
+      Chart,
       Loading,
     },
     data() {
