@@ -22,8 +22,8 @@ Rails.application.routes.draw do
   rescue ActiveRecord::StatementInvalid, PG::UndefinedTable => e
     Rails.logger.info "ActiveAdmin could not load: #{e.message}"
   end
-
   devise_for :users, controllers: {
+    confirmations: 'users/confirmations',
     sessions: 'users/sessions',
     registrations: 'users/registrations',
     passwords: 'users/passwords'
@@ -283,6 +283,8 @@ Rails.application.routes.draw do
       patch 'password' => 'password#update'
       get 'notifications' => 'notifications#index'
       patch 'notifications' => 'notifications#update'
+      post 'email' => 'email#create'
+      patch 'email' => 'email#update'
     end
 
     get 'local_projects/:project_id/messages' => 'project_messages#index'
@@ -370,8 +372,8 @@ Rails.application.routes.draw do
     resource :business, only: %i[update] do
       patch '/' => 'businesses#update', as: :update
     end
-    put 'users/:user_id/confirm_email', to: 'email_confirmation#update'
-    get 'users/:user_id/resend_email', to: 'email_confirmation#resend'
+    put 'users/confirm_email', to: 'email_confirmation#update'
+    get 'users/resend_email', to: 'email_confirmation#resend'
     resources :specialists, only: :create
     resource :specialist, only: %i[update] do
       patch '/' => 'specialists#update', as: :update
