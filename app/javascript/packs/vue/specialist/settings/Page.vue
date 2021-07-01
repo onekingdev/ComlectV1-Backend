@@ -1,14 +1,20 @@
 <template lang="pug">
   div.settings
     .container-fluid
-      .row.p-t-3
+      template(v-if='componentUpgrade')
+        .row
+          .col-md-9.mx-auto.my-2
+            .card
+              .card-body
+                component(v-bind:is="componentUpgrade" @upgradePlanComplited="upgradePlanComplited")
+      .row.p-t-3(v-if='!componentUpgrade')
         .col-md-3
           .panel-default
             ul.settings-nav
-              li.settings-nav__item(v-for='(item, idx) in menu' :key="idx" @click="openSetting(item.name, $event)" :class="{ active: idx === 0 }")
+              li.settings-nav__item(v-for='(item, idx) in menu' :key="idx" @click="openSetting(item.link, $event)" :class="{ active: item.link === component }")
                 a.settings-nav__link(:href='item.link') {{ item.name }}
         .col-md-9
-          component(v-bind:is="component")
+          component(v-bind:is="component" @addMethodOpen="addMethodOpen")
 
 </template>
 
@@ -21,6 +27,7 @@
   import ClientPermisssions from "./components/roles";
   import Billings from "./components/billings";
   import Notifications from "./components/notifications";
+  import SelectBilling from './components/billings/components/SelectBilling'
 
   export default {
     components: {
@@ -32,6 +39,7 @@
       ClientPermisssions,
       Billings,
       Notifications,
+      SelectBilling,
     },
     created() {
       this.component = General;
@@ -49,30 +57,40 @@
     data() {
       return {
         component: '',
+        componentUpgrade: '',
         menu: [
-          { name: 'General', link: '#' },
-          { name: 'ClientPermisssions', link: '#' },
-          { name: 'Users', link: '#' },
-          { name: 'Security', link: '#' },
-          { name: 'Subscriptions', link: '#' },
-          { name: 'Billings', link: '#' },
-          { name: 'Notifications', link: '#' },
+          { name: 'General', link: 'General' },
+          { name: 'Client Permisssions', link: 'ClientPermisssions' },
+          { name: 'Users', link: 'Users' },
+          { name: 'Security', link: 'Security' },
+          { name: 'Subscriptions', link: 'Subscriptions' },
+          { name: 'Billings', link: 'Billings' },
+          { name: 'Notifications', link: 'Notifications' },
         ]
       };
     },
     methods: {
       openSetting (name, event) {
         this.component = name;
-
-        // const allLinks = document.querySelectorAll('.settings-nav__item')
-        // console.log(allLinks)
-
         document.querySelectorAll('.settings-nav__item').forEach(function (link, i) {
           link.classList.remove('active')
         });
-        event.target.classList.add('active')
-        // const baseUrl = new URL(window.location.origin);
-        // window.history.pushState({}, name, `${baseUrl}business/settings/${name.toLowerCase()}`);
+        if(event) event.target.classList.add('active')
+
+        this.navigate(name)
+      },
+      addMethodOpen () {
+        // console.log('open')
+        this.componentUpgrade = SelectBilling
+      },
+      upgradePlanComplited () {
+        // console.log('open')
+        this.componentUpgrade = ''
+        this.toast('Success', 'Plan upgraded.')
+      },
+      navigate(name) {
+        const baseUrl = new URL(window.location.origin);
+        window.history.pushState({}, name, `${baseUrl}business/settings/${name.toLowerCase()}`);
       }
     },
     computed: {
