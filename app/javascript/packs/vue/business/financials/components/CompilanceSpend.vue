@@ -7,20 +7,20 @@
       .card-body.white-card-body
         .card-body
           .chart
-            .d-flex.justify-content-end
+            .d-flex.justify-content-end.mb-3
               p.mb-0
                 b Ytd:
                 span $24,560
-            Chart
+            CompilanceSpendChart
 </template>
 
 <script>
   import Loading from '@/common/Loading/Loading'
-  import Chart from "./chart";
+  import CompilanceSpendChart from "./CompilanceSpendChart";
 
   export default {
     components: {
-      Chart,
+      CompilanceSpendChart,
       Loading,
     },
     data() {

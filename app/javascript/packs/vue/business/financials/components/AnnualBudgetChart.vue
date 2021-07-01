@@ -1,6 +1,6 @@
 <template lang="pug">
   div.chart-wrapper
-    apexchart(width="770" height="180" type="bar" :options="options" :series="series")
+    apexchart(height="180" type="bar" :options="options" :series="series")
 </template>
 
 <script>
@@ -18,18 +18,8 @@
           },
           xaxis: {
             categories: [
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec"
+              "Spent",
+              "Annual Budget",
             ]
           },
           // title: {
@@ -39,11 +29,11 @@
           //     fontSize:  '20px',
           //   },
           // },
-          colors: ['#ffc900']
+          colors: ['#1ab27f']
         },
         series: [{
-          name: 'series-1',
-          data: [5, 10, 14, 3, 2, 1, 0, 1, 5, 0, 0, 12]
+          // name: 'series-1',
+          data: [5, 10]
         }]
       }
     },
@@ -52,9 +42,8 @@
 
 <style scoped>
   div.chart-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-width: 650px;
+    /*display: flex;*/
+    /*align-items: center;*/
+    /*justify-content: center;*/
   }
 </style>
