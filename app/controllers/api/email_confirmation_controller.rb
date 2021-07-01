@@ -5,9 +5,9 @@ class Api::EmailConfirmationController < ApiController
   skip_before_action :verify_authenticity_token
 
   def update
-    user = User.find(params[:user_id])
+    user = User.find_by(email: params[:email])
     if !user.confirmed_at && user.verify_otp(params[:otp_secret])
-      user.update(confirmed_at: DateTime.now)
+      user.update(confirmed_at: Time.zone.now)
       sign_in(:user, user)
       if user.business
         render json: { message: 'Email was successfully confirmed', token: JsonWebToken.encode(sub: user.id),
@@ -22,7 +22,7 @@ class Api::EmailConfirmationController < ApiController
   end
 
   def resend
-    user = User.find(params[:user_id])
+    user = User.find_by(email: params[:email])
     if user.confirmed_at
       respond_with errors: 'You have already confirmed email'
     else

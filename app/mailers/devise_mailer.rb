@@ -13,7 +13,7 @@ class DeviseMailer < ApplicationMailer
       template_id: ENV.fetch('POSTMARK_TEMPLATE_ID'),
       template_model: {
         subject: 'Email change confirmation',
-        message_html: render('confirmation_instructions.html'),
+        message_html: render('confirmation_instructions.html')
       }
     )
   end
