@@ -22,8 +22,8 @@ Rails.application.routes.draw do
   rescue ActiveRecord::StatementInvalid, PG::UndefinedTable => e
     Rails.logger.info "ActiveAdmin could not load: #{e.message}"
   end
-
   devise_for :users, controllers: {
+    confirmations: 'users/confirmations',
     sessions: 'users/sessions',
     registrations: 'users/registrations',
     passwords: 'users/passwords'
@@ -31,7 +31,6 @@ Rails.application.routes.draw do
   end
 
   devise_scope :user do
-    get 'users/sign_out/force' => 'users/sessions#destroy'
     get '/squarespace' => 'users/sessions#squarespace'
     get '/squarespace_destroy' => 'users/sessions#squarespace_destroy'
   end
@@ -249,6 +248,7 @@ Rails.application.routes.draw do
     resources :users, only: [] do
       collection do
         post :sign_in, to: 'authentication#create'
+        delete :sign_out, to: 'authentication#destroy'
         post :password, to: 'passwords#create'
         put :password, to: 'passwords#update'
       end
@@ -273,6 +273,8 @@ Rails.application.routes.draw do
       get 'notifications' => 'notifications#index'
       patch 'notifications' => 'notifications#update'
       delete 'profile' => 'profile#destroy'
+      post 'email' => 'email#create'
+      patch 'email' => 'email#update'
     end
 
     get 'local_projects/:project_id/messages' => 'project_messages#index'
@@ -361,8 +363,8 @@ Rails.application.routes.draw do
     resource :business, only: %i[update] do
       patch '/' => 'businesses#update', as: :update
     end
-    put 'users/:user_id/confirm_email', to: 'email_confirmation#update'
-    get 'users/:user_id/resend_email', to: 'email_confirmation#resend'
+    put 'users/confirm_email', to: 'email_confirmation#update'
+    get 'users/resend_email', to: 'email_confirmation#resend'
     resources :specialists, only: :create
     resource :specialist, only: %i[update] do
       patch '/' => 'specialists#update', as: :update
