@@ -7,8 +7,7 @@ class Api::AuthenticationController < ApiController
   def create
     user = User.find_first_by_auth_conditions(email: params[:user][:email])
 
-    # maybe need to add re-send email confirmation option
-    respond_with(errors: 'Please, confirm your email') && return unless user.email_confirmed
+    respond_with(errors: 'Please, confirm your email') && return unless user.confirmed_at
 
     if user&.valid_password?(params[:user][:password])
       unless params[:otp_secret]
@@ -37,12 +36,12 @@ class Api::AuthenticationController < ApiController
   def destroy
     # de-auth all
     session.delete(:employee_business_id)
-    signed_out = (Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name))
+    Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
 
-    token = request.headers["Authorization"]
+    token = request.headers['Authorization']
     payload = JsonWebToken.decode(token)
     user = User.find(payload['sub'])
     user.update(jwt_hash: SecureRandom.hex(10))
-    render json: { result: "signed_out" }
+    render json: { result: 'signed_out' }
   end
 end

@@ -8,7 +8,7 @@ module Devise
       end
 
       def authenticate!
-        token = request.headers["Authorization"]
+        token = request.headers['Authorization']
         payload = JsonWebToken.decode(token)
         user = User.find(payload['sub'])
         success! if user.jwt_hash == payload['jwt_hash']
