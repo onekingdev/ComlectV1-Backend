@@ -188,7 +188,7 @@ RSpec.describe Api::Business::AnnualReportsController, type: :controller do
       it { expect(JSON.parse(response.body)['name']).to eq(annual_report.name) }
     end
 
-    context 'bad_request' do
+    context 'bad request' do
       let!(:annual_report) { create(:annual_report, business: Business.last) }
 
       before do
