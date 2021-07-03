@@ -491,18 +491,11 @@ export default {
     },
     async resendOTP({commit}, payload) {
       try {
-        commit("clearError");
-        commit("setLoading", true);
-
         const response = await axios.post(`/otp_secrets`, payload)
-        // if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
-
       } catch (error) {
         console.error(error);
         throw error
-      } finally {
-        commit("setLoading", false)
       }
     },
   },

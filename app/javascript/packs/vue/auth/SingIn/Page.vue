@@ -28,7 +28,7 @@
                     // p Forget your password?&nbsp;
                     //  a.link(href="#") Restore
                     a.link.o-8.forgot-password(data-remote='true' href='/users/password/new') Forgot Password
-                    h4.text-uppercase.m-t-1.m-b-1 Don't have an account yet?&nbsp;
+                    h4.text-uppercase.m-t-1 Don't have an account yet?&nbsp;
                       a.link(data-remote='true' href='/users/sign_up') Sign up
             #step2.form(v-if='!loading' :class="step2 ? 'd-block' : 'd-none'")
               // OtpConfirm(@otpSecretConfirmed="otpConfirmed", :form="form")
@@ -132,18 +132,18 @@
 
         this.$store.dispatch('singIn', data)
           .then((response) => {
-            console.log('response.errors', response.errors)
             if (response.errors) {
-              for (const type of Object.keys(response.errors)) {
-                this.errors = response.errors[type]
-                this.toast('Error', `Form has errors! Please recheck fields! ${error}`)
-                this.error = `${response.errors[type]}`
-              }
               this.error = `${response.errors}`
               this.showAlert()
+
+              // for (const type of Object.keys(response.errors)) {
+              //   this.errors = response.errors[type]
+              //   // this.toast('Error', `Form has errors! Please recheck fields! ${error}`)
+              //   this.error = `${response.errors[type]}`
+              // }
             }
             if (!response.errors) {
-              this.toast('Success', `${response.message}`)
+              // this.toast('Success', `${response.message}`)
               // open step 2
               this.step1 = false
               this.step2 = true
@@ -153,17 +153,17 @@
             const { data } = error
             if(data.errors) {
               for (const type of Object.keys(data.errors)) {
-                this.toast('Error', `${data.errors[type]}`)
+                // this.toast('Error', `${data.errors[type]}`)
                 this.error = `Error! ${data.errors[type]}`
               }
               this.showAlert()
             }
-            if (error.errors) {
-              this.toast('Error', `Couldn't submit form! ${error.message}`)
-            }
-            if (!error.errors) {
-              this.toast('Error', `${error.status} (${error.statusText})`)
-            }
+            // if (error.errors) {
+            //   this.toast('Error', `Couldn't submit form! ${error.message}`)
+            // }
+            // if (!error.errors) {
+            //   this.toast('Error', `${error.status} (${error.statusText})`)
+            // }
           })
       },
       onSubmitStep2(event) {
@@ -191,7 +191,7 @@
               const properties = Object.keys(response.errors);
               for (const type of Object.keys(response.errors)) {
                 this.errors = response.errors[type]
-                this.toast('Error', `Form has errors! Please recheck fields! ${error}`)
+                // this.toast('Error', `Form has errors! Please recheck fields! ${error}`)
                 // Object.keys(response.errors[type]).map(prop => response.errors[prop].map(err => this.toast(`Error`, `${prop}: ${err}`)))
               }
               return
@@ -211,7 +211,10 @@
               }, 3000)
             }
           })
-          .catch((error) => this.toast('Error', `Couldn't submit form! ${error}`))
+          .catch((error) => {
+            console.error(error)
+            // this.toast('Error', `Couldn't submit form! ${error}`)
+          })
       },
       onCodeChange(e){
         this.errors = []

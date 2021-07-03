@@ -28,7 +28,7 @@
                   b-button.w-100(type='submit' variant='dark') Next
                   hr
                   b-form-group.text-center
-                    p Already have a Complect account?&nbsp;
+                    p.mb-0 Already have a Complect account?&nbsp;
                       a.link(href="/users/sign_in") Sign In
             #step1.form(v-if='!loading' :class="step1 ? 'd-block' : 'd-none'")
               h1.text-center Let's get you started!
@@ -60,16 +60,16 @@
                   hr
                   b-form-group.text-center
                     p Already have a Complect account?&nbsp;
-                      a.link(href="#") Sign In
+                      a.link(href="/users/sign_in") Sign In
             #step2.form(v-if='!loading' :class="step2 ? 'd-block' : 'd-none'")
               // OtpConfirm(@otpSecretConfirmed="otpConfirmed", :userId="userId", :form="form")
-              h1.text-center Confirm your email!
-              p.text-center We send a 6 digit code to email.com. Please enter it below.
+              h1.text-center Confirm Your Email!
+              p.text-center We sent a 6 digit code to {{ form.email }}. Please enter it below.
               div
                 b-form(@submit='onSubmitStep2' @keyup="onCodeChange" v-if='show' autocomplete="off")
                   b-form-group
                     .col.text-center
-                      ion-icon(name="mail-outline")
+                      img(src='@/assets/mail.svg' width="180" height="110")
                   b-form-group
                     .row
                       .col-12.mx-0
@@ -88,7 +88,7 @@
                   b-form-group
                     .row
                       .col-12.text-center
-                        a.link(href="#" @click.stop="resendOTP") Send new code
+                        button.btn.link(type="button" @click.stop="resendOTP" :disabled="disabled") Resend code
             #step3.form(v-if='!loading'  :class="step3 ? 'd-block' : 'd-none'")
               h1.text-center You successfuly registered!
               p.text-center You will be redirect to finish steps for updating your account
@@ -145,7 +145,8 @@
         childDataLoaded: false,
         childdata : [],
         component: '',
-        seat_id: 1
+        seat_id: 1,
+        disabled: false,
       }
     },
     methods: {
@@ -167,7 +168,7 @@
 
         if (this.form.password !== this.form.passwordConfirm) {
           this.errors = { passwordConfirm : 'Password does not match'}
-          this.toast('Error', `Password does not match`)
+          // this.toast('Error', `Password does not match`)
           return
         }
 
@@ -235,15 +236,13 @@
           })
           // .catch((error) => this.toast('Error', `Couldn't submit form! ${error}`))
       },
+      otpConfirmed(value) {
+        console.log(value)
+      },
       onSubmitStep2(event) {
-        event.preventDefault()
+        if (event) event.preventDefault()
         // clear errors
         this.errors = []
-
-        // const urlUserId = location.search.split('userid=')[1]
-        // if(urlUserId) this.userId = urlUserId
-        // const otpSecret = location.search.split('otp_secret=')[1]
-        // if(otpSecret) this.otpSecret = otpSecret
 
         if(this.form2.code.length !== 6) {
           this.toast('Error', `Code length incorrect!`)
@@ -259,8 +258,7 @@
           .then((response) => {
             if(!response.token) {
               this.errors = {code: response.message}
-              this.toast('Error', `Errors ${response.message}`)
-              return
+              // this.toast('Error', `Errors ${response.message}`)
             }
 
             if(response.token) {
@@ -281,9 +279,9 @@
               //   if (this.userType === 'specialist') window.location.href = `${window.location.origin}/specialists/new`
               // }, 5000)
             }
-
           })
-          .catch((error) => this.toast('Error', `Couldn't submit form! ${error}`))
+          // .catch((error) => this.toast('Error', `Couldn't submit form! ${error}`))
+          .catch((error) => console.error(`${error}`))
       },
       onCodeChange(e){
         this.errors = []
