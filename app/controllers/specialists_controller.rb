@@ -60,6 +60,9 @@ class SpecialistsController < ApplicationController
     )
     @specialist.apply_quiz(cookies)
     @specialist.username = @specialist.generate_username
+
+    @specialist.skip_confirmation!
+
     if @specialist.save(context: :signup)
       @invitation&.accepted!(@specialist)
       sign_in @specialist.user

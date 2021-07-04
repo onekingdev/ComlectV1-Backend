@@ -59,6 +59,8 @@ class BusinessesController < ApplicationController
     @business.client_account_cnt = business_params[:client_account_cnt].to_i
     @business.total_assets = Business.fix_aum(business_params[:total_assets])
 
+    @business.skip_confirmation!
+
     if @business.save
       sign_in @business.user
 
