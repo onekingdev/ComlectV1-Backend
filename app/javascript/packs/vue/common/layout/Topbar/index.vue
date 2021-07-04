@@ -66,26 +66,13 @@
       }
     },
     methods: {
-      // ...mapActions({
-      //   singOut: 'auth/singOut',
-      // }),
+      ...mapActions({
+        signOut: 'auth/signOut',
+      }),
       signOut() {
-        // this.singOut()
-        //   .then(response => console.log(response))
-        //   .catch(error => console.error(error))
-        fetch('/users/sign_out/force', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': JSON.parse(localStorage.getItem('app.currentUser.token'))
-          }
-        })
-          .then(response => response.json())
-          .then(data => {
-            console.log(data)
-            // localStorage.removeItem('app.currentUser');
-            // localStorage.removeItem('app.currentUser.token');
-          });
+        this.signOut()
+          .then(response => console.log(response))
+          .catch(error => console.error(error))
       },
       openLink (value) {
         if(value === 'documents') this.$store.commit('changeSidebar', 'documents')
