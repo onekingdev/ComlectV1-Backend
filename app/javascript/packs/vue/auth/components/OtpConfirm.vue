@@ -83,7 +83,7 @@
             },
             "otp_secret": this.form2.code
           }
-          method = 'singIn'
+          method = 'signIn'
         }
 
         this.$store.dispatch(method, data)

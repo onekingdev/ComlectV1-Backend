@@ -128,7 +128,7 @@ export default {
 
         // const response = await axios.put(`/users/${payload.userId}/confirm_email`, { "otp_secret": payload.code })
         const response = await axios.put(`/users/confirm_email`, {
-          "email": payload.user.email,
+          "email": payload.email,
           "otp_secret": payload.code
         })
         // if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
