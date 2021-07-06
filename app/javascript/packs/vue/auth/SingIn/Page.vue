@@ -32,13 +32,13 @@
                       a.link(data-remote='true' href='/users/sign_up') Sign up
             #step2.form(:class="step2 ? 'd-block' : 'd-none'")
               // OtpConfirm(@otpSecretConfirmed="otpConfirmed", :form="form")
-              h1.text-center Confirm your email!
-              p.text-center We send a 6 digit code to email.com. Please enter it below.
+              h1.text-center Confirm Your Email!
+              p.text-center We sent a 6 digit code to {{ form.email }}. Please enter it below.
               div
                 b-form(@submit='onSubmitStep2' @keyup="onCodeChange" v-if='show' autocomplete="off")
                   b-form-group
                     .col.text-center
-                      ion-icon(name="mail-outline")
+                      img(src='@/assets/mail.svg' width="180" height="110")
                   b-form-group
                     .row
                       .col-12.mx-0
