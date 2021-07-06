@@ -103,14 +103,21 @@ export default {
         commit("setLoading", false)
       }
     },
-    async signOut({commit}, payload) {
+    async signOut({commit}) {
+      console.log('signOut test')
+
       try {
         commit("clearError");
         commit("setLoading", true);
 
         // const endPoint = payload.business ? 'businesses' : 'specialists'
         // const response = await axios.delete(`/${endPoint}`, payload)
-        const response = await axios.delete(`/users/sign_out`, payload)
+        const response = await axios.delete(`/users/sign_out`)
+        console.log('response in auth', response)
+        if(response.data) {
+          localStorage.removeItem('app.currentUser');
+          localStorage.removeItem('app.currentUser.token');
+        }
         // if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
 
@@ -127,10 +134,11 @@ export default {
         commit("setLoading", true);
 
         // const response = await axios.put(`/users/${payload.userId}/confirm_email`, { "otp_secret": payload.code })
-        const response = await axios.put(`/users/confirm_email`, {
-          "email": payload.email,
-          "otp_secret": payload.code
-        })
+        const response = await axios.put(`/users/confirm_email`, payload)
+        //   {
+        //   "email": payload.email,
+        //   // "otp_secret": payload.code
+        // })
         // if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         if (response.data) {
           if(response.data.token) {

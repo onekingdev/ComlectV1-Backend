@@ -26,14 +26,14 @@
           ion-icon.topbar-right-dropdown__icon(name='chevron-down-outline')
         li(@click="openLink('documents')")
           router-link.dropdown-item(:to='`/${userType}/settings`' active-class="active") Settings
-        b-dropdown-item(@click="signOut") Sign Out
+        b-dropdown-item(@click="signOutAct") Sign Out
       a.btn.btn-topbar.btn-topbar_help(href="#")
         b-icon.mr-2( icon="question-circle-fill" aria-label="Help")
         | Help
 </template>
 
 <script>
-  // import { mapActions, mapGetters } from "vuex"
+  import { mapActions, mapGetters } from "vuex"
   import UserAvatar from '@/common/UserAvatar'
 
   export default {
@@ -66,12 +66,26 @@
       }
     },
     methods: {
-      ...mapActions({
-        signOut: 'auth/signOut',
-      }),
-      signOut() {
-        this.signOut()
-          .then(response => console.log(response))
+      // ...mapActions({
+      //   signOut: 'auth/signOut',
+      // }),
+      signOutAct() {
+
+        // const accessTokenLocalStorage = localStorage.getItem('app.currentUser.token') ? localStorage.getItem('app.currentUser.token') : ''
+        // fetch('/api/users/sign_out', {
+        //   method: 'DELETE',
+        //   headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+        //   token: JSON.stringify(accessTokenLocalStorage)
+        // })
+        //   .then(response => response.json())
+        //   .then(data => console.log(data));
+
+        this.$store.dispatch('signOut')
+          .then(response => {
+            console.log(response)
+            window.location.href = `${window.location.origin}`
+            // router.push('home')
+          })
           .catch(error => console.error(error))
       },
       openLink (value) {
