@@ -36,18 +36,18 @@ class BusinessesController < ApplicationController
     #        layout: 'vue_onboarding'
 
     render html: content_tag('main-layoyt', '',
-                                 ':industry-ids': Industry.all.map(&proc { |ind|
-                                                                      { id: ind.id,
-                                                                        name: ind.name }
-                                                                    }).to_json,
-                                 ':jurisdiction-ids': Jurisdiction.all.map(&proc { |ind|
-                                                                              { id: ind.id,
-                                                                                name: ind.name }
-                                                                            }).to_json,
-                                 ':sub-industry-ids': sub_industries(false).to_json,
-                                 ':states': State.fetch_all_usa.to_json,
-                                 ':timezones': timezones_json).html_safe,
-               layout: 'vue_main_layout'
+                             ':industry-ids': Industry.all.map(&proc { |ind|
+                                                                  { id: ind.id,
+                                                                    name: ind.name }
+                                                                }).to_json,
+                             ':jurisdiction-ids': Jurisdiction.all.map(&proc { |ind|
+                                                                          { id: ind.id,
+                                                                            name: ind.name }
+                                                                        }).to_json,
+                             ':sub-industry-ids': sub_industries(false).to_json,
+                             ':states': State.fetch_all_usa.to_json,
+                             ':timezones': timezones_json).html_safe,
+           layout: 'vue_main_layout'
   end
 
   def create
@@ -58,6 +58,8 @@ class BusinessesController < ApplicationController
     @business.username = @business.generate_username
     @business.client_account_cnt = business_params[:client_account_cnt].to_i
     @business.total_assets = Business.fix_aum(business_params[:total_assets])
+
+    @business.skip_confirmation!
 
     if @business.save
       sign_in @business.user
