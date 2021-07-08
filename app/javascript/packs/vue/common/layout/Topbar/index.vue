@@ -73,8 +73,8 @@
         // this.singOut()
         //   .then(response => console.log(response))
         //   .catch(error => console.error(error))
-        fetch('/users/sign_out/force', {
-          method: 'GET',
+        fetch('/api/users/sign_out', {
+          method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': JSON.parse(localStorage.getItem('app.currentUser.token'))
