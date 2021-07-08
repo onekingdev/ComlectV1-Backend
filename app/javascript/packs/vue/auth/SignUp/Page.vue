@@ -5,7 +5,7 @@
     .container-fluid(v-if='!childDataLoaded')
       TopNavbar
       main.row#main-content
-        .col-xl-5.col-lg-6.col-md-8.m-x-auto
+        .col-xl-4.col-lg-6.col-md-8.m-x-auto
           .card-body.white-card-body.registration
             Loading
             #step0.form(v-if='!loading' :class="step0 ? 'd-block' : 'd-none'")

@@ -3,7 +3,7 @@
     .container-fluid(v-if='!childDataLoaded')
       TopNavbar
       main.row#main-content
-        .col-xl-5.col-lg-6.col-md-8.m-x-auto
+        .col-xl-4.col-lg-6.col-md-8.m-x-auto
           .card-body.white-card-body.registration
             Loading
 
@@ -28,8 +28,10 @@
                     // p Forget your password?&nbsp;
                     //  a.link(href="#") Restore
                     a.link.o-8.forgot-password(data-remote='true' href='/users/password/new') Forgot Password
+                    // router-link.link.o-8.forgot-password(to='/users/password/new') Forgot Password
                     h4.text-uppercase.m-t-1 Don't have an account yet?&nbsp;
                       a.link(data-remote='true' href='/users/sign_up') Sign up
+                      // router-link.link(to='/users/sign_up') Sign up
             #step2.form(:class="step2 ? 'd-block' : 'd-none'")
               // OtpConfirm(@otpSecretConfirmed="otpConfirmed", :form="form")
               h1.text-center Confirm Your Email!

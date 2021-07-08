@@ -170,7 +170,7 @@
               //   b-form-file(v-model='formStep2.file' :state='Boolean(formStep2.file)' accept="application/pdf" placeholder='Choose a file or drop it here...' drop-placeholder='Drop file here...')
               //   .m-t-3 Selected file: {{ formStep2.file ? formStep2.file.name : '' }}
               // hr
-              h3.onboarding__title.m-b-3.m-t-2 (Optional) Upload you resume:
+              h3.onboarding__title.m-b-3.m-t-2 (Optional) Upload your resume:
               label.dropbox.w-100(v-if="!formStep2.file" for="upload-file")
                 input.input-file(type="file" id="upload-file" accept="application/pdf" ref="file" @change="selectFile")
                 p(v-if="!formStep2.file") Drag your resume here
@@ -191,7 +191,7 @@
                       b-dropdown(size="sm" variant="none" class="m-0 p-0" right)
                         template(#button-content)
                           b-icon(icon="three-dots")
-                        b-dropdown-item.delete(@click="removeFile") Delete file
+                        b-dropdown-item.delete(@click="removeFile") Delete File
               hr
               .text-right.m-t-2
                 b-button.mr-2(type='button' variant='default' @click="prevStep(1)") Go back
