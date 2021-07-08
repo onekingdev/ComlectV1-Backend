@@ -26,7 +26,7 @@
           ion-icon.topbar-right-dropdown__icon(name='chevron-down-outline')
         li(@click="openLink('documents')")
           router-link.dropdown-item(:to='`/${userType}/settings`' active-class="active") Settings
-        b-dropdown-item(@click="signOutAct") Sign Out
+        b-dropdown-item(@click="signOut") Sign Out
       a.btn.btn-topbar.btn-topbar_help(href="#")
         b-icon.mr-2( icon="question-circle-fill" aria-label="Help")
         | Help
