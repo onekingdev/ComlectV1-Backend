@@ -252,9 +252,9 @@
         }
 
         const dataToSend = {
-          // userId: this.userId,
-          email: this.form.email,
-          otp_secret: this.form2.code
+          userId: this.userId,
+          code: this.form2.code,
+          email: this.form.email
         }
 
         this.$store.dispatch('confirmEmail', dataToSend)

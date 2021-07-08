@@ -77,11 +77,16 @@
       // ...mapActions({
       //   signOut: 'auth/signOut',
       // }),
-      signOutAct() {
-        const accessTokenLocalStorage = localStorage.getItem('app.currentUser.token') ? localStorage.getItem('app.currentUser.token') : ''
+      signOut() {
+        // this.singOut()
+        //   .then(response => console.log(response))
+        //   .catch(error => console.error(error))
         fetch('/api/users/sign_out', {
           method: 'DELETE',
-          headers: {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': JSON.parse(accessTokenLocalStorage)},
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': JSON.parse(localStorage.getItem('app.currentUser.token'))
+          }
         })
           .then(response => response.json())
           .then(data => {
