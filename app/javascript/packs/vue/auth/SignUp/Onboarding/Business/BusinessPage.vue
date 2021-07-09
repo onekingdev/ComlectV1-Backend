@@ -220,8 +220,6 @@
             @updateBiliing="onBiliingChange"
             @updateAdditionalUsers="updateAdditionalUsers"
             @complitedPaymentMethod="complitedPaymentMethod"
-            @addPaymentMethodStart="addPaymentMethodStart"
-            @addPaymentMethodEnd="addPaymentMethodEnd"
             )
         PurchaseSummary(
         v-if="isSidebarOpen"
