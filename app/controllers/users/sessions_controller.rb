@@ -9,6 +9,7 @@ class Users::SessionsController < Devise::SessionsController
   respond_to :js, :html
 
   def new
+  #  render html: content_tag('auth-layoyt', '').html_safe, layout: 'vue_onboarding'
     render html: content_tag('signin-page', '').html_safe, layout: 'vue_onboarding'
   end
 
@@ -90,7 +91,8 @@ class Users::SessionsController < Devise::SessionsController
   protected
 
   def after_sign_in_path_for(resource)
-    @eaten_redirect || (resource.business ? business_dashboard_path : specialists_dashboard_path)
+    # fix session redirects
+    #@eaten_redirect || (resource.business ? business_dashboard_path : specialists_dashboard_path)
     # if resource.business
     #   business_dashboard_path
     # else

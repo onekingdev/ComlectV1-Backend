@@ -15,9 +15,9 @@
                 h4.step__name 2. Skills and education
               .step(:class="navStep3 ? 'active' : ''")
                 h4.step__name 3. Choose plan
-          Loading
+          // Loading
           b-form(@submit='onSubmit' @change="onChangeInput" v-if='show')
-            #step1.form(v-if='!loading' :class="step1 ? 'd-block' : 'd-none'")
+            #step1.form(:class="step1 ? 'd-block' : 'd-none'")
               .row
                 .col
                   h3 What jurisdiction does your expertise extend to?
@@ -40,7 +40,7 @@
                       .invalid-feedback.d-block(v-if="errors.jurisdiction") {{ errors.jurisdiction }}
               .row
                 .col-xl-6
-                  b-form-group#inputB-group-7(label='Time Zone' label-for='selectB-7' label-class="required")
+                  b-form-group#inputB-group-7(label='Your Time Zone' label-for='selectB-7' label-class="required")
                     div(
                     :class="{ 'invalid': errors.time_zone }"
                     )
@@ -123,14 +123,14 @@
                           .invalid-feedback.d-block(v-if="errors.regulator") {{ errors.regulator }}
               .text-right
                 b-button(type='button' variant='dark' @click="nextStep(2)") Next
-            #step2.form(v-if='!loading'  :class="step2 ? 'd-block' : 'd-none'")
+            #step2.form(:class="step2 ? 'd-block' : 'd-none'")
               b-alert.d-none(show variant="primary" dismissible)
                 h4 Verify information
                 p.mb-0 The following fields were filled in based on the CRD number you provided. Please carefully review each field before proceeding.
               div.d-flex.justify-content-between
                 .text-left
                   h3.onboarding__title Tell us more about yourself:
-                  p.onboarding__sub-title Enter any relevant skills and education to better match with ideal clients.
+                  p.onboarding__sub-title Enter any relevant skills to better match you with suitable projects.
                 // .text-right
                 //   SpecialistModalSkipStep(@skipConfirmed="skipStep(3)", :inline="false")
                 //     b-button.mr-2(type='button' variant='outline-primary') Skip this step
@@ -153,14 +153,14 @@
                   .invalid-feedback.d-block(v-if="errors.skills") {{ errors.skills }}
               hr
               h3.onboarding__title.m-t-2 What's your experience?
-              p.onboarding__sub-title Select one that the best matches your level of your expertise.
+              p.onboarding__sub-title Select one that best matches your level of your expertise.
               b-form-group(class="onboarding-group")
                 b-button.exp__btn(variant="default" :class="formStep2.experience === 0 ? 'active' : ''" type='button' data-toggle="button" aria-pressed="false" autocomplete="off" @click="onexperienceChange($event, 0)")
                   span.exp__btn--main Junior
-                  span.exp__btn--sub Begining consulting with some experience in the field.
+                  span.exp__btn--sub Beginner consultant with some industry experience.
                 b-button.exp__btn(variant="default" :class="formStep2.experience === 1 ? 'active' : ''" type='button' data-toggle="button" aria-pressed="false" autocomplete="off" @click="onexperienceChange($event, 1)")
                   span.exp__btn--main Intermediate
-                  span.exp__btn--sub Good experience and knowlage of the industry.
+                  span.exp__btn--sub Good experience and solid knowledge of the industry.
                 b-button.exp__btn(variant="default" :class="formStep2.experience === 2 ? 'active' : ''" type='button' data-toggle="button" aria-pressed="false" autocomplete="off" @click="onexperienceChange($event, 2)")
                   span.exp__btn--main Expert
                   span.exp__btn--sub Deep understanding of industry with varied experience.
@@ -170,7 +170,7 @@
               //   b-form-file(v-model='formStep2.file' :state='Boolean(formStep2.file)' accept="application/pdf" placeholder='Choose a file or drop it here...' drop-placeholder='Drop file here...')
               //   .m-t-3 Selected file: {{ formStep2.file ? formStep2.file.name : '' }}
               // hr
-              h3.onboarding__title.m-b-3.m-t-2 (Optional) Upload you resume:
+              h3.onboarding__title.m-b-3.m-t-2 (Optional) Upload your resume:
               label.dropbox.w-100(v-if="!formStep2.file" for="upload-file")
                 input.input-file(type="file" id="upload-file" accept="application/pdf" ref="file" @change="selectFile")
                 p(v-if="!formStep2.file") Drag your resume here
@@ -191,12 +191,12 @@
                       b-dropdown(size="sm" variant="none" class="m-0 p-0" right)
                         template(#button-content)
                           b-icon(icon="three-dots")
-                        b-dropdown-item.delete(@click="removeFile") Delete file
+                        b-dropdown-item.delete(@click="removeFile") Delete File
               hr
               .text-right.m-t-2
                 b-button.mr-2(type='button' variant='default' @click="prevStep(1)") Go back
                 b-button(type='button' variant='dark' @click="nextStep(3)") Next
-            #step3.form(v-if='!loading'  :class="step3 ? 'd-block' : 'd-none'")
+            #step3.form(:class="step3 ? 'd-block' : 'd-none'")
               .row
                 .col.mb-2.text-center
                   h2.mb-3 Choose your Membership plan
@@ -222,14 +222,14 @@
                 .col.text-right
                   b-button(type='button' variant='default' @click="prevStep(2)") Go back
 
-        b-sidebar#BillingPlanSidebar(@hidden="closeSidebar" v-model="isSidebarOpen" backdrop-variant='dark' backdrop left no-header width="60%")
-          .card
-            .card-header.borderless
-              .d-flex.justify-content-between
+        b-sidebar#BillingPlanSidebar(@hidden="closeSidebar" v-model="isSidebarOpen" backdrop-variant='dark' backdrop left no-header width="60%" no-close-on-backdrop)
+          .card.registration-card
+            .card-header.borderless.m-b-80.px-0
+              .d-flex.justify-content-between.m-b-40
                 b-button(variant="default" @click="isSidebarOpen = false")
                   b-icon.mr-2(icon="chevron-left" variant="dark")
                   | Back
-              .d-block.m-t-1
+              .d-block
                 h2 Time to power up
                 p Review and confirm your subscription
             BillingDetails(
@@ -252,25 +252,25 @@
 </template>
 
 <script>
-  const {DateTime} = require('luxon')
-  const {zones} = require('tzdata')
-  const luxonValidTimeZoneName = function (zoneName) {
-    let hours = (DateTime.local().setZone(zoneName).offset / 60);
-    let rhours = Math.floor(hours)
-    let rhoursView = Math.floor(hours) < 10 && Math.floor(hours) >= 0 ? '0'+Math.round(hours) : '-0'+Math.abs(hours)
-    let minutes = (hours - rhours) * 60;
-    let rminutes = Math.round(minutes) === 0 ? '0'+Math.round(minutes) : Math.round(minutes)
-    let zoneNameView = zoneName.split('/')[1] ? zoneName.split('/')[1].replace('_', ' ') : zoneName
+  // const {DateTime} = require('luxon')
+  // const {zones} = require('tzdata')
+  // const luxonValidTimeZoneName = function (zoneName) {
+  //   let hours = (DateTime.local().setZone(zoneName).offset / 60);
+  //   let rhours = Math.floor(hours)
+  //   let rhoursView = Math.floor(hours) < 10 && Math.floor(hours) >= 0 ? '0'+Math.round(hours) : '-0'+Math.abs(hours)
+  //   let minutes = (hours - rhours) * 60;
+  //   let rminutes = Math.round(minutes) === 0 ? '0'+Math.round(minutes) : Math.round(minutes)
+  //   let zoneNameView = zoneName.split('/')[1] ? zoneName.split('/')[1].replace('_', ' ') : zoneName
+  //
+  //   return `(GMT ${rhoursView}:${rminutes}) ${zoneNameView}`
+  // }
+  // const luxonValidTimezones = Object.entries(zones)
+  //   .filter(([zoneName, v]) => Array.isArray(v))
+  //   .map(([zoneName, v]) => zoneName)
+  //   .filter(tz => DateTime.local().setZone(tz).isValid)
+  //   .map(zoneName => `${luxonValidTimeZoneName(zoneName)}`)
 
-    return `(GMT ${rhoursView}:${rminutes}) ${zoneNameView}`
-  }
-  const luxonValidTimezones = Object.entries(zones)
-    .filter(([zoneName, v]) => Array.isArray(v))
-    .map(([zoneName, v]) => zoneName)
-    .filter(tz => DateTime.local().setZone(tz).isValid)
-    .map(zoneName => `${luxonValidTimeZoneName(zoneName)}`)
-
-  import Loading from '@/common/Loading/Loading'
+  // import Loading from '@/common/Loading/Loading'
   import TopNavbar from "@/auth/components/TopNavbar";
   import Multiselect from 'vue-multiselect'
   import BillingDetails from './BillingDetails'
@@ -283,7 +283,7 @@
   export default {
     props: ['industryIds', 'jurisdictionIds', 'subIndustryIds', 'states', 'userInfo', 'timezones'],
     components: {
-      Loading,
+      // Loading,
       TopNavbar,
       Multiselect,
       BillingDetails,
@@ -293,12 +293,21 @@
     },
     created() {
       // if(luxonValidTimezones) this.formStep1.timeZoneOptions = luxonValidTimezones;
-      if(luxonValidTimezones) {
-        for (const value of luxonValidTimezones) {
-          const [ gmt, zone ] = value.split(') ')
+      // if(luxonValidTimezones) {
+      //   for (const value of luxonValidTimezones) {
+      //     const [ gmt, zone ] = value.split(') ')
+      //     this.formStep1.timeZoneOptions.push({
+      //       value: zone,
+      //       name: value
+      //     })
+      //   }
+      // }
+      if(this.timezones) {
+        for (const value of this.timezones) {
+          const [ zone, city ] = value
           this.formStep1.timeZoneOptions.push({
-            value: zone,
-            name: value
+            value: city,
+            name: zone
           })
         }
       }
@@ -427,9 +436,6 @@
       }
     },
     methods: {
-      makeToast(title, str) {
-        this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
-      },
       addTag (newTag) {
         const tag = {
           name: newTag,
@@ -534,12 +540,12 @@
                 this['step'+stepNum] = true
                 this.currentStep = stepNum
                 this.navigation(this.currentStep)
-                this.makeToast('Success', `Company info successfully sended!`)
+                // this.toast('Success', `Company info successfully sended!`)
               }
             })
             .catch(error => {
               console.error(error)
-              this.makeToast('Error', `Something wrong! ${error.error}`)
+              // this.toast('Error', `Something wrong! ${error.error}`)
             })
         }
       },
@@ -559,19 +565,26 @@
       // },
       openDetails(plan) {
         if(plan.id === 1) {
-          const dataToSend = {
+          this.overlay = true
+          this.overlayStatusText = 'Setting up account...'
+
+          const data = {
             userType: this.userType,
             planName: 'free',
             paymentSourceId : null,
           }
 
-          this.$store.dispatch('updateSubscribe', dataToSend)
+          this.$store.dispatch('updateSubscribe', data)
             .then(response => {
-              this.makeToast('Success', `Update subscribe successfully finished! You will be redirect.`)
+              // this.toast('Success', `Update subscribe successfully finished! You will be redirect.`)
               this.currentPlan = { id: 1, status: true }
+              this.overlayStatus = 'success'
               this.redirect()
             })
-            .catch(error =>this.makeToast('Error', `Something wrong!`))
+            .catch(error =>{
+              console.error(error)
+              // this.toast('Error', `Something wrong!`)
+            })
 
           return
         }
@@ -623,19 +636,19 @@
           .then(response => {
             if(response.errors) {
               for (const [key, value] of Object.entries(response.errors)) {
-                // this.makeToast('Error', `${key}: ${value}`)
+                // this.toast('Error', `${key}: ${value}`)
                 // this.errors = Object.assign(this.errors, { [key]: value })
                 throw new Error(`${[key]} ${value}`)
               }
             }
 
             if(!response.errors) {
-              this.makeToast('Success', `Update subscribe successfully finished!`)
+              // this.toast('Success', `Update subscribe successfully finished!`)
 
               // OVERLAY
               if(+this.additionalUsers === 0) {
-                this.overlayStatusText = 'Account successfully purchased, you will be redirect to the dashboard...'
                 this.overlayStatus = 'success'
+                this.overlayStatusText = 'Payment complete! Setting up account...'
                 // this.overlay = false
                 this.redirect()
               }
@@ -643,7 +656,7 @@
           })
           .catch(error => {
             console.error(error)
-            this.makeToast('Error', `Something wrong! ${error}`)
+            // this.toast('Error', `Something wrong! ${error}`)
 
             // OVERLAY
             this.overlayStatus = 'error'
@@ -685,6 +698,7 @@
         delete this.errors.state
       },
       redirect() {
+        localStorage.setItem('app.currentUser.firstEnter', JSON.stringify(true))
         const dashboard = this.userType === 'business' ? '/business' : '/specialist'
         setTimeout(() => {
           window.location.href = `${dashboard}`;
@@ -695,9 +709,9 @@
       },
     },
     computed: {
-      loading() {
-        return this.$store.getters.loading;
-      },
+      // loading() {
+      //   return this.$store.getters.loading;
+      // },
       currentUser() {
         return this.$store.getters.getUser
       },
@@ -775,7 +789,7 @@
     box-shadow: inset 5px 0 0 #0479ff;
   }
   .alert-dismissible .close {
-    top: 10px;
+    /*top: 10px;*/
     font-size: 1.8rem;
   }
 
