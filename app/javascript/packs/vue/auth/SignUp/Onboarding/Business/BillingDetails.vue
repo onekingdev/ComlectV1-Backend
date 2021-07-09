@@ -28,13 +28,13 @@
       .d-flex.justify-content-between
         div
           h4.m-t-1 Users
-          p Enter the amount of applicable employees to join your plan
+          p Enter the number of users for your plan (this is often your employee headcount
         .d-flex.justify-content-end.align-items-center
           b-form-input(v-model="additionalUsersCount" type="number" min="1" max="100" @keyup="onChangeUserCount")
     .card-header.registration-card-header.p-y-20.px-0
       .d-flex.justify-content-between
         h4.m-t-1 Payment Method
-        div.m-t-1
+        div.m-t-1.d-none
           a.btn.btn-light(@click="addBankAccount") Add Bank Account
     .card-body(v-if="cardOptions")
       dl.row(v-for="(card, i) in cardOptions")
@@ -96,8 +96,13 @@
       .row
         .col.text-right
           b-button(type='button' variant='outline-primary' @click="submit")
-            b-icon.mr-2(icon="arrow-clockwise" animation="spin" font-scale="1" v-show="loading")
-            | Add
+            // b-icon.mr-2(icon="arrow-clockwise" animation="spin" font-scale="1" v-show="loading")
+            .lds-ring.lds-ring-small(v-show="loading")
+              div
+              div
+              div
+              div
+            span(v-show="!loading") Add
 </template>
 
 <script>
@@ -145,9 +150,6 @@
       };
     },
     methods: {
-      makeToast(title, str) {
-        this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
-      },
       // submit () {
       //   // You will be redirected to Stripe's secure checkout page
       //   this.$refs.checkoutRef.redirectToCheckout();
@@ -168,14 +170,16 @@
           .dispatch('generatePaymentMethod', dataToSend)
           .then(response => {
             this.$emit('complitedPaymentMethod', response)
-            this.makeToast('Success', `Payment Method successfully added!`)
+            this.toast('Success', `Payment Method successfully added!`)
             this.isActive = false
+            this.$refs.elementRef.clear()
             this.cardOptions.push({ text: `Credit Card${this.cardOptions.length===0 ? ' (primary)' : ''}`, value: response.id, number: `**** **** **** ${response.last4}`, type: response.brand, id: response.id })
             this.cardSelected = response.id
           })
           .catch(error => {
             console.error(error)
-            this.makeToast('Error', `Something wrong! ${error}`)
+            // this.toast('Error', `Something wrong! ${error}`)
+            this.toast('Error', 'Payment method could not be added.')
           })
       },
       // addCardDetail() {
@@ -188,23 +192,19 @@
         // })
       // },
       deletePaymentMethod(cardId) {
-        const dataToSend = {
+        const data = {
           userType: this.userType,
           id: cardId,
         }
 
         this.$store
-          .dispatch('deletePaymentMethod', dataToSend)
+          .dispatch('deletePaymentMethod', data)
           .then(response => {
             const index = this.cardOptions.findIndex(record => record.id === payload.id);
             this.cardOptions.splice(index, 1)
-            if (response.message)
-              this.makeToast('Success', `${response.message}`)
+            this.toast('Success', `Card removed`)
           })
-          .catch(error => {
-            console.error(error)
-            this.makeToast('Error', `Something wrong! ${error}`)
-          })
+          .catch(error => console.error(error))
       },
       addBankAccount() {
         this.isActive = true

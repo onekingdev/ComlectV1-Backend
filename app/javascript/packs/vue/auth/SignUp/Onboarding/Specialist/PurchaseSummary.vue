@@ -2,6 +2,8 @@
   .card.m-t-1.purchase-summary
     .card-header.purchase-summary-header
       | Purchase Summary
+    .card-body.purchase-summary-body.p-40.pb-3
+      Coupon
     .card-body.purchase-summary-body.pb-0
       dl.row.mb-0
         dt.col-sm-6
@@ -30,11 +32,14 @@
 </template>
 
 <script>
+  import Coupon from '@/auth/components/Coupon'
   export default {
     props: ['billingTypeSelected', 'billingTypeOptions', 'plan', 'additionalUsers', 'disabled'],
+    components: { Coupon },
     data() {
       return {
-
+        promo_code: '',
+        errors: {}
       }
     },
     methods: {
@@ -64,6 +69,12 @@
       complitePurchase() {
         const value = this.planComputed
         this.$emit('complitePurchaseConfirmed', value)
+      },
+      activatePromoCode () {
+        console.log(this.promo_code)
+
+        this.toast('Success', 'Discount successfully applied.')
+        this.toast('Error', 'Invalid code. Discount was not applied.')
       }
     },
     computed: {
