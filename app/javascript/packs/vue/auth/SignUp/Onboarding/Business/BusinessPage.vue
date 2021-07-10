@@ -342,6 +342,11 @@
             value: subIndfromOpt.value
           }
         }) : []
+
+        this.formStep2.business.time_zone = {
+          name: accountInfoParsed.time_zone,
+          value: accountInfoParsed.time_zone
+        }
       }
 
       const url = new URL(window.location);
@@ -521,6 +526,9 @@
       },
       openDetails(plan) {
         if(plan.id === 1) {
+          this.overlay = true
+          this.overlayStatusText = 'Setting up account...'
+
           const dataToSend = {
             userType: this.userType,
             planName: 'free',
@@ -531,11 +539,13 @@
             .then(response => {
               // this.toast('Success', `Update subscribe successfully finished! You will be redirect.`)
               this.currentPlan = { id: 1, status: true }
+              this.overlayStatus = 'success'
               this.redirect();
             })
             .catch(error => {
-              // this.toast('Error', `Something wrong!`)
               console.error(error)
+              this.toast('Error', `Something wrong! ${error}`)
+              this.overlay = false
             })
 
           return

@@ -343,8 +343,17 @@
         this.formStep1.jurisdiction = accountInfoParsed.jurisdictions || []
         // this.formStep1.regulatorSelected = accountInfoParsed.former_regulator ? 'yes' : 'no';
 
+        this.formStep1.time_zone = {
+          name: accountInfoParsed.time_zone,
+          value: accountInfoParsed.time_zone
+        }
+
         this.formStep2.skills = accountInfoParsed.skills || []
         this.formStep2.experience = accountInfoParsed.experience
+        this.formStep2.file = {
+          name: "Uploaded File",
+          file_url: accountInfoParsed.resume_url
+        }
       }
 
       const url = new URL(window.location);
@@ -509,7 +518,7 @@
               // industry_ids: this.formStep1.industry.map(record => record.id),
               // jurisdiction_ids: this.formStep1.jurisdiction.map(record => record.id),
 
-              time_zone: this.formStep1.time_zone,
+              time_zone: this.formStep1.time_zone.value,
               first_name: this.currentUser.first_name,
               last_name: this.currentUser.last_name,
               former_regulator: this.formStep1.regulatorSelected === 'yes',
@@ -583,7 +592,8 @@
             })
             .catch(error =>{
               console.error(error)
-              // this.toast('Error', `Something wrong!`)
+              this.toast('Error', `Something wrong! ${error}`)
+              this.overlay = false
             })
 
           return

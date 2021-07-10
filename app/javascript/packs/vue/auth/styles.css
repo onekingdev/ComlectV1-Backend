@@ -355,12 +355,12 @@ a.link,
 
 }
 @media (max-width: 575px) {
-  .logo {
-    width: 100%;
-    max-width: 100%;
-  }
+  /*.logo {*/
+    /*width: 100%;*/
+    /*max-width: 100%;*/
+  /*}*/
   .logo__img {
-    width: 100%;
+    /*width: 100%;*/
     max-width: 150px;
   }
 }
@@ -414,6 +414,14 @@ legend, .label {
   color: #797b7e;
 }
 
+.otp-icon {}
+@media (max-width: 575px) {
+  .otp-icon {
+    width: 9.375rem; /* 150px; */
+    height: 5rem; /*80px;*/
+  }
+}
+
 /* ---------- NAVBAR ---------- */
 .navbar .dropdown {
   transition: all 200ms ease-in;
@@ -422,6 +430,17 @@ legend, .label {
 .navbar .dropdown:active {
   background-color: #f6f6f8;
   cursor: pointer;
+}
+.dropdown-menu-right {
+  margin: 0;
+  padding: 0;
+}
+.dropdown-menu-right li {
+  padding: 0.75rem 0.625rem 0.75rem 0.625rem;
+}
+.dropdown-menu-right li:hover,
+.dropdown-menu-right li:active {
+  background-color: #F3F6F9;
 }
 
 /* ---------- Files List view ---------- */
