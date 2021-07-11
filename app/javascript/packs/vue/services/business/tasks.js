@@ -52,7 +52,7 @@ export async function createTask(payload) {
 }
 
 export async function updateTask(payload) {
-  return await axios.patch(`${END_POINT}/${payload.id}`, payload)
+  return await axios.post(`${END_POINT}/${payload.id}`, payload.task)
     .then(response => {
       if (response) {
         return response
@@ -106,7 +106,7 @@ export async function getTaskMessagesById(payload) {
     .catch(err => err)
 }
 
-export async function postTaskMessagesById(payload) {
+export async function postTaskMessageById(payload) {
   return await axios.post(`${END_POINT}/${payload.id}/messages`, payload.message)
     .then(response => {
       if (response) {

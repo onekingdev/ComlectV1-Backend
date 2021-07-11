@@ -10,14 +10,14 @@
       .row.mb-3
         .col
           div
-            b-dropdown.m-r-1(variant="default")
+            b-dropdown.actions.m-r-1(variant="default")
               template(#button-content)
                 | Show: All Tasks
                 ion-icon.ml-2(name="chevron-down-outline" size="small")
               b-dropdown-item All Tasks
               b-dropdown-item My Tasks
               b-dropdown-item Completed Tasks
-            b-dropdown.m-r-1(variant="default")
+            b-dropdown.actions.m-r-1(variant="default")
               template(#button-content)
                 | All Links
                 ion-icon.ml-2(name="chevron-down-outline" size="small")
@@ -32,7 +32,7 @@
         .col
           Loading
           TaskTable(v-if="tasks" :shortTable="shortTable", :tasks="tasks" :perPage="perPage" :currentPage="currentPage")
-          b-pagination(v-model='currentPage' :total-rows='rows' :per-page='perPage' aria-controls='tasks-table')
+          b-pagination(v-model='currentPage' :total-rows='rows' :per-page='perPage' :shortTable="!shortTable",  aria-controls='tasks-table')
 </template>
 
 <script>
@@ -42,10 +42,9 @@
   // import { toEvent, isOverdue, splitReminderOccurenceId } from '@/common/TaskHelper'
 
   import Loading from '@/common/Loading/Loading'
-  import TaskFormModal from '@/common/TaskFormModal'
-  import TaskModalCreate from './modals/TaskModalCreate'
-
   import TaskTable from './components/TaskTable'
+  import TaskModalCreate from './modals/TaskModalCreate'
+  // import TaskModalEdit from './modals/TaskModalEdit'
 
   // const endpointUrl = '/api/business/reminders/'
   // const overdueEndpointUrl = '/api/business/overdue_reminders'
@@ -69,8 +68,8 @@
     components: {
       Loading,
       TaskTable,
-      TaskFormModal,
-      TaskModalCreate
+      TaskModalCreate,
+      // TaskModalEdit
     },
     data() {
       return {

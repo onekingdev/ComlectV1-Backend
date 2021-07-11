@@ -3,7 +3,9 @@
     td
       b-icon.m-r-1.pointer(:icon="item.done_at ? 'check-circle-fill' : 'check-circle'" @click="toggleDone(item)" v-bind:class="{ done_task: item.done_at }")
       //ion-icon.m-r-1.pointer(@click="toggleDone(item)" v-bind:class="{ done_task: item.done_at }" name='checkmark-circle-outline')
-      TaskFormModal(:task-id="item.taskId" :occurence-id="item.oid" @saved="$emit('saved')") {{ item.body }} {{ item.name }}
+      TaskModalEdit.link(:taskProp="item" @saved="$emit('saved')")
+        span(v-if="!item.done_at" ) {{ item.body }}
+        s(v-else) {{ item.body }}
     td(v-if="!shortTable") {{ item.linkable_type }}
     td(v-if="!shortTable") {{ item.assignee }}
     td.text-right(v-if="!shortTable" :class="{ overdue: isOverdue(item) }") {{ item.remind_at | dateToHuman}}
@@ -15,7 +17,7 @@
         template(#button-content)
           b-icon(icon="three-dots")
         //b-dropdown-item(:href="`/business/reminders/${item.id}`") Edit
-        TaskModalCreate(@editConfirmed="editConfirmed(item.id)", :taskId="item.id" :inline="false")
+        TaskModalEdit(@editConfirmed="editConfirmed", :taskProp="item", :inline="false")
           b-dropdown-item Edit
         //b-dropdown-item {{ item.done_at ? 'Incomplite' : 'Complite' }}
         //b-dropdown-item(@click="duplicateTask(item.id)") Duplicate
@@ -27,7 +29,7 @@
 import { DateTime } from 'luxon'
 import { toEvent, isOverdue, splitReminderOccurenceId } from '@/common/TaskHelper'
 import TaskFormModal from '@/common/TaskFormModal'
-import TaskModalCreate from '../modals/TaskModalCreate'
+import TaskModalEdit from '../modals/TaskModalEdit'
 import TaskModalDelete from '../modals/TaskModalDelete'
 
 export default {
@@ -35,7 +37,7 @@ export default {
   props: ['item', 'shortTable'],
   components: {
     TaskFormModal,
-    TaskModalCreate,
+    TaskModalEdit,
     TaskModalDelete,
   },
   computed: {
@@ -77,8 +79,8 @@ export default {
         .then(response => this.toast('Success', `The Task has been deleted!`))
         .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
     },
-    editConfirmed(id) {
-      console.log(id)
+    editConfirmed() {
+      console.log('editConfirmed')
     }
   },
   filters: {

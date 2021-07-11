@@ -11,7 +11,7 @@ const mapAuthProviders = {
     deleteTask: jwt.deleteTask,
     getTaskById: jwt.getTaskById,
     getTaskMessagesById: jwt.getTaskMessagesById,
-    postTaskMessagesById: jwt.postTaskMessagesById,
+    postTaskMessageById: jwt.postTaskMessageById,
   },
 }
 
@@ -82,7 +82,7 @@ export default {
                 ))
               }
               commit('SET_TASKS', tasks)
-              return success
+              return data
             }
             if (!success) {
               console.error('Not success', success)
@@ -135,7 +135,7 @@ export default {
                 ))
               }
               commit('SET_TASKS', tasks)
-              return success.data
+              return data.data
             }
             if (!success) {
               console.error('Not success', success)
@@ -188,7 +188,7 @@ export default {
                 ))
               }
               commit('SET_TASKS', tasks)
-              return success.data
+              return data.data
             }
             if (!success) {
               console.error('Not success', success)
@@ -234,7 +234,7 @@ export default {
                 data.starts_on,
                 data.updated_at,
               ))
-              return success
+              return data
             }
             if (!success) {
               commit("setError", success.message, { root: true });
@@ -315,7 +315,7 @@ export default {
                 data.skip_occurencies,
                 data.updated_at,
               ))
-              return success
+              return data
             }
             if (!success) {
               commit("setError", success.message, { root: true });
@@ -396,7 +396,7 @@ export default {
                 data.skip_occurencies,
                 data.updated_at,
               ))
-              return success
+              return data
             }
             if (!success) {
               commit("setError", success.message, { root: true });
@@ -436,7 +436,7 @@ export default {
               commit('DELETE_TASK', new Task(
                 data.id,
               ))
-              return success
+              return data
             }
             if (!success) {
               commit("setError", success.message, { root: true });
@@ -513,7 +513,7 @@ export default {
                 data.skip_occurencies,
                 data.updated_at,
               ))
-              return success
+              return data
             }
             if (!success) {
               console.error('Not success', success)
@@ -607,7 +607,7 @@ export default {
         throw error;
       }
     },
-    async postTaskMessagesById({state, commit, rootState}, payload) {
+    async postTaskMessageById({state, commit, rootState}, payload) {
       commit("clearError", null, {
         root: true
       });
@@ -615,8 +615,8 @@ export default {
         root: true
       });
       try {
-        const postTaskMessagesById = mapAuthProviders[rootState.shared.settings.authProvider].postTaskMessagesById
-        postTaskMessagesById(payload)
+        const postTaskMessageById = mapAuthProviders[rootState.shared.settings.authProvider].postTaskMessageById
+        postTaskMessageById(payload)
           .then((success) => {
             commit("clearError", null, { root: true });
             commit("setLoading", false, { root: true });
