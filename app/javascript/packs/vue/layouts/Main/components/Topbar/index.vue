@@ -1,11 +1,17 @@
 <template lang="pug">
   .topbar
+    .logo.logo_small
+      a.logo__link(href="/")
+        // img.logo__img(src='@/assets/logo_wordmark.svg')
+        img.logo__img(src='@/assets/primary.svg' width="24" height="24")
     b-navbar.p-0(toggleable='lg')
-      b-navbar-toggle(target='nav-collapse')
+      b-navbar-toggle.justify-content-center(target='nav-collapse')
+        | Menu
+        ion-icon.ml-2(name='chevron-down-outline')
       b-collapse#nav-collapse.topbar-menu(is-nav)
         ul.topbar-menu__list
           li.nav-item.topbar-menu__item(@click="openLink('default')")
-            router-link.topbar-menu__link(:to='`/${userType}`' active-class="active" exact) Home
+            router-link.topbar-menu__link(:to='`/${userType}/dashboard`' active-class="active" exact) Home
           li.nav-item.topbar-menu__item(@click="openLink('documents')")
             router-link.topbar-menu__link(:to='`/${userType}/file_folders`' active-class="active") Documents
           li.nav-item.topbar-menu__item(@click="openLink('default')")
@@ -27,13 +33,13 @@
         li(@click="openLink('documents')")
           router-link.dropdown-item(:to='`/${userType}/settings`' active-class="active") Settings
         b-dropdown-item(@click="signOut") Sign Out
-      a.btn.btn-topbar.btn-topbar_help(href="#")
-        b-icon.mr-2( icon="question-circle-fill" aria-label="Help")
-        | Help
+      //a.btn.btn-topbar.btn-topbar_help.d-none(href="#")
+      //  b-icon.mr-2( icon="question-circle-fill" aria-label="Help")
+      //  | Help
 </template>
 
 <script>
-  // import { mapActions, mapGetters } from "vuex"
+  import { mapActions, mapGetters } from "vuex"
   import UserAvatar from '@/common/UserAvatar'
 
   export default {
@@ -53,8 +59,8 @@
       //   this.$store.commit('auth/UPDATE_LOGIN_STATUS', true)
       // }
 
-      const splittedUrl = window.location.pathname.split('/') // ["", "business", "reminders"]
-      this.userType = splittedUrl[1]
+      // const splittedUrl = window.location.pathname.split('/') // ["", "business", "reminders"]
+      // this.userType = splittedUrl[1]
     },
     data() {
       return {
@@ -62,12 +68,20 @@
           first_name: '',
           last_name: ''
         },
-        userType: ''
+        // userType: '',
+        // businessMenu: {
+        //   link: `/${this.userType}`,
+        //   title: ''
+        // },
+        // specialistMenu: {
+        //   link: '',
+        //   title: ''
+        // }
       }
     },
     methods: {
       // ...mapActions({
-      //   singOut: 'auth/singOut',
+      //   signOut: 'auth/signOut',
       // }),
       signOut() {
         // this.singOut()
@@ -83,9 +97,20 @@
           .then(response => response.json())
           .then(data => {
             console.log(data)
-            // localStorage.removeItem('app.currentUser');
-            // localStorage.removeItem('app.currentUser.token');
-          });
+            localStorage.removeItem('app.currentUser');
+            localStorage.removeItem('app.currentUser.token');
+            localStorage.removeItem('app.currentUser.userType');
+            window.location.href = `${window.location.origin}`
+          })
+          .catch(error => console.error(error))
+
+        // this.$store.dispatch('signOut')
+        //   .then(response => {
+        //     console.log(response)
+        //     window.location.href = `${window.location.origin}`
+        //     // router.push('home')
+        //   })
+        //   .catch(error => console.error(error))
       },
       openLink (value) {
         if(value === 'documents') this.$store.commit('changeSidebar', 'documents')
@@ -105,6 +130,9 @@
       //     last_name: this.currentUser.contact_last_name ? `${this.currentUser.contact_last_name}` : `${this.currentUser.last_name}`,
       //   }
       // }
+      userType () {
+        return this.$store.getters.userType
+      }
     },
   }
 </script>
