@@ -707,6 +707,26 @@ table.table thead tr th {
   border-color: #dcdee4;
 }
 
+.badge-primary {
+  color: white;
+  background-color: $black;
+  border-color: $black;
+}
+
+.badge.badge-risk {
+  color: white;
+}
+
+.badge.badge-success.badge-risk {
+  background-color: #1ab27f;
+}
+.badge.badge-warning.badge-risk {
+  background-color: #ffc900;
+}
+.badge.badge-danger.badge-risk {
+  background-color: #ce1938;
+}
+
 
 
 /* ---------- NOT CHECKED STYLES - START ---------- */
