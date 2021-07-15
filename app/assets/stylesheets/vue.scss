@@ -783,9 +783,12 @@ table.table thead tr th {
 }
 
 .badge-light {
-  color: $gray-3;
-  background-color: $gray-hover;
-  border-color: $gray-hover;
+  //color: $gray-3;
+  //background-color: $gray-hover;
+  //border-color: $gray-hover;
+  color: #2180C2;
+  background-color: #ECF4FF;
+  border-color: #ECF4FF;
 }
 
 .badge-secondary {
@@ -1485,7 +1488,7 @@ table.table thead tr th {
     &:hover,
     &:active,
     &:focus {
-      border-color: #0479ff;
+      border-color: $blue;
       box-shadow: none;
     }
 
