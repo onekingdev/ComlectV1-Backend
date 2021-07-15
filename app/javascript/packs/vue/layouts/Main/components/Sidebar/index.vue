@@ -42,12 +42,11 @@
                 //ion-icon(name='warning-outline')
                 | Risk Register
       //.sidebar-menu__separator
-      div
-        div(class="dropdown-divider")
-        li.nav-item.sidebar-menu__item(@click="openLink('settings')")
-          router-link.sidebar-menu__link(:to='`/${userType}/settings`' active-class="active")
-            ion-icon(name='settings-outline')
-            | Settings
+      div(class="dropdown-divider")
+      .nav-item.sidebar-menu__item(@click="openLink('settings')")
+        router-link.sidebar-menu__link(:to='`/${userType}/settings`' active-class="active")
+          ion-icon(name='settings-outline')
+          span(v-if="!toggleMobileMenu") Settings
     div.sidebar-menu__central(v-if="userType !== 'specialist' && leftSidebar === 'documents'")
      h3.sidebar-menu__title(role="button" v-b-toggle.files="")
       ion-icon(name='document-text-outline')
