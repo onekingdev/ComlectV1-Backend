@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     .page
-      h2.page__title Welcome, {{currentBusiness}}
+      h2.page__title Welcome, {{currentSpecialist}}
       .page__actions
         b-dropdown.m-r-1(text='Admin View')
           b-dropdown-item Action
@@ -54,20 +54,19 @@ export default {
       localStorage.removeItem('app.currentUser.firstEnter')
     }
   },
-  props: {
-    pdfUrl: {
-      type: String,
-      required: false
-    },
-    currentBusiness: {
-      type: String,
-      required: false
-    }
-  },
   components: {
     Calendar,
     UpcomingTasks,
     EmptyPlan,
+  },
+  computed: {
+    pdfUrl() {
+      return '/specialist/reminders.pdf'
+    },
+    currentSpecialist() {
+      // @TODO Must be fetched from API
+      return ''
+    }
   }
 }
 </script>
