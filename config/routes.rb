@@ -243,6 +243,7 @@ Rails.application.routes.draw do
   end
 
   namespace :api do
+    get 'static_collection' => 'static_collection#index'
     post 'exams/:uuid' => 'exams#email'
     patch 'exams/:uuid' => 'exams#show'
 
