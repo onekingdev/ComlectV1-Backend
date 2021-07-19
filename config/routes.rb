@@ -111,6 +111,7 @@ Rails.application.routes.draw do
       resource :questions
     end
     resource :projects, only: %i[index]
+    get '/projects/new/:local_project_id' => 'projects#new'
     get 'settings' => 'settings#show'
     get 'settings/:id' => 'settings#show'
 
