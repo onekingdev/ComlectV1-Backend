@@ -19,7 +19,7 @@
                 :id="`#sectionIcon-${el.id ? el.id : idxEl+'_'+randomNum}`"
                 @click="toogleSections(el.id ? el.id : idxEl+'_'+randomNum)"
                 :class="{active : shortTable}")
-                b-icon.mr-2(icon="chevron-right" font-scale="0.5")
+                b-icon.mr-2(icon="chevron-right")
               //a.link(v-if="el.id" :href="`/business/compliance_policies/${el.id}`") {{ el.title }}
               router-link.link(v-if="el.id" :to='`/business/compliance_policies/${el.id}`') {{ el.title }}
               .link(v-else) {{ el.title }}

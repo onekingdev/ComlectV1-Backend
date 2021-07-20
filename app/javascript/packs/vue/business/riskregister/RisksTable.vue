@@ -16,17 +16,22 @@
           thead(v-if="filteredRisksComputed && filteredRisksComputed.length")
             tr
               th Name
+                b-icon.ml-2(icon='chevron-expand')
               th Impact
+                b-icon.ml-2(icon='chevron-expand')
               th Likelihood
+                b-icon.ml-2(icon='chevron-expand')
               th Risk level
+                b-icon.ml-2(icon='chevron-expand')
               th.text-right Date created
+                b-icon.ml-2(icon='chevron-expand')
               th.text-right(width="35px")
           tbody
             tr(v-for="risk in filteredRisksComputed" :key="risk.id")
               td
                 .d-flex.align-items-center.link
                   .dropdown-toggle(v-if="risk.compliance_policies.length !== 0" :id="`#sectionIcon-${risk.id}`", @click="toogleSections(risk.id)")
-                    b-icon.mr-2(icon="chevron-right" font-scale="0.5")
+                    b-icon.m-r-1(icon="chevron-right")
                   a(:href="`/business/risks/${risk.id}`") {{ risk.name }}
                 .dropdown-items.mb-2(v-if="risk.compliance_policies" :id="`#section-${risk.id}`")
                   ul.list-unstyled.ml-3

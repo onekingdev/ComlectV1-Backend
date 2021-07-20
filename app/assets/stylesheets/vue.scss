@@ -787,7 +787,7 @@ html {
 .form-control_search {
   padding: 0.625rem 2.0625rem; // 10 33px
   //max-width: 25rem; //400px
-  border-color: #DCDEE4;
+  border-color: $gray-1;
 
   &::placeholder {
     color: $gray-2;
@@ -842,7 +842,7 @@ a.btn,
   border-color: $black;
 }
 .btn.btn-default {
-  border-color: #DCDEE4 !important;
+  border-color: $gray-1 !important;
 }
 
 .btn.btn-default {
@@ -1125,63 +1125,6 @@ a:hover {
 
 
 /* ---------- TABLES ---------- */
-.table th {
-  white-space: nowrap;
-}
-
-.table td {
-  &:first-child {
-
-    @include media-breakpoint-down(lg) {
-      max-width: 50px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-}
-
-.table th, .table td {
-
-  @include media-breakpoint-down(lg) {
-  //@media (max-width: 1000px) {
-    padding: 0.75rem 0.35em;
-
-
-    .link,
-    a.link {
-      max-width: 50px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      //border: solid 1px blue;
-
-      a,
-      span {
-        max-width: 50px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      ion-icon {
-        font-size: 90%;
-      }
-    }
-
-    .m-r-1 {
-      margin-right: .2em;
-    }
-
-    .btn.dropdown-toggle {
-      padding: 0;
-    }
-
-    .b-icon.bi {
-      font-size: 100%;
-    }
-  }
-}
 
 table.table,
 table.table thead tr th {
@@ -1224,6 +1167,75 @@ table.table thead tr th {
     color: #1AB27F;
   }
 }
+
+.table th {
+  color: $gray-3;
+  white-space: nowrap;
+}
+
+.table td {
+  color: $black;
+
+  &:first-child {
+
+    @include media-breakpoint-down(lg) {
+      max-width: 50px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.table th, .table td {
+  padding: 0.625rem;
+  border-top: 1px solid $gray-1;
+
+  .btn.dropdown-toggle {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  @include media-breakpoint-down(lg) {
+  //@media (max-width: 1000px) {
+    padding: 0.75rem 0.35em;
+
+
+    .link,
+    a.link {
+      max-width: 50px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      //border: solid 1px blue;
+
+      a,
+      span {
+        max-width: 50px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      ion-icon {
+        font-size: 90%;
+      }
+    }
+
+    .m-r-1 {
+      margin-right: .2em;
+    }
+
+    .btn.dropdown-toggle {
+      padding: 0;
+    }
+
+    .b-icon.bi {
+      font-size: 100%;
+    }
+  }
+}
+
 
 
 //table {
@@ -2106,7 +2118,7 @@ legend, .label {
   display: flex;
   align-items: center;
   padding: 1rem;
-  border: solid 1px #dcdee4;
+  border: solid 1px $gray-1;
   background-color: $blue-light;
 }
 
