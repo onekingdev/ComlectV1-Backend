@@ -9,7 +9,7 @@ class Api::Specialist::UpgradeController < ApiController
     if service.success?
       respond_with message: 'You have successfully subscribed', status: :created
     else
-      respond_with message: service.error, status: :unprocessable_entity
+      render json: { message: service.error }, status: :unprocessable_entity
     end
   end
 
