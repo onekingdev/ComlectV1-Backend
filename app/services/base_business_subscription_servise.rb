@@ -29,7 +29,7 @@ class BaseBusinessSubscriptionServise < ApplicationService
 
   def set_plan_seat_count
     @plan_seat_count = turnkey_params[:seats_count].to_i
-    @plan_seat_count = free_seat_count if plan_seat_count.zero?
+    @plan_seat_count = free_seat_count if plan_seat_count.zero? && new_plan.present?
   end
 
   def handel_stripe_error(error_msg)

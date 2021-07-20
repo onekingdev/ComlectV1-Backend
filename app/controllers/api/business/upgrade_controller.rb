@@ -29,7 +29,7 @@ class Api::Business::UpgradeController < ApiController
   end
 
   def payment_source
-    current_business.payment_profile.default_payment_source
+    current_business.payment_profile&.default_payment_source
   end
 
   def serialize_subs(subs)
