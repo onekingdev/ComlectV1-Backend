@@ -62,6 +62,9 @@ body, html {
 }
 
 html {
+  //This define what 1rem is
+  //font-size: 87.5%; // 1rem = 16px: 14px / 16px = 87.5%
+
   //font-size: 68%;
   //font-size: 14px;
   //font-family: 'Varela', sans-serif;
@@ -157,7 +160,7 @@ html {
     padding: 0;
     list-style: none;
 
-    @media (max-width: 991.98px) {
+    @media (max-width: 1000px) {
       flex-direction: column;
     }
   }
@@ -165,7 +168,7 @@ html {
   &__item {
     margin-right: 2.5rem; // 40px;
 
-    @media (max-width: 991.98px) {
+    @media (max-width: 1000px) {
       margin-right: 0;
       width: 100%;
     }
@@ -184,7 +187,7 @@ html {
       text-decoration: none;
     }
 
-    @media (max-width: 991.98px) {
+    @media (max-width: 1000px) {
       display: flex;
       width: 100%;
       padding: 1rem;
@@ -200,7 +203,7 @@ html {
   }
 
   //@media (max-width: 991.98px) {
-  @include media-breakpoint-down(md) {
+  @media (max-width: 1000px) {
     position: fixed;
     top: 5rem; //80px;
     right: 0;
@@ -210,7 +213,7 @@ html {
     height: 100%;
     min-height: calc(100vh - 5rem);
     color: $white;
-    background-color: $black;
+    background-color: $primary-dark;
     z-index: 10;
     margin-left: 0;
   }
@@ -732,6 +735,11 @@ html {
 
   &__actions {
     margin-right: 2.5rem; // 40px
+
+    @include media-breakpoint-down(lg) {
+      min-width: 250px;
+      text-align: right;
+    }
   }
 }
 
@@ -886,10 +894,18 @@ a.link,
 .table th, .table td {
 
   @include media-breakpoint-down(lg) {
-    padding: 0.35em;
+  //@media (max-width: 1000px) {
+    padding: 0.75rem 0.35em;
     //word-break: break-all;
     //text-overflow: ellipsis;
     font-size: 12px;
+
+    th:first-child,
+    td:first-child {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     .link,
     a.link {
