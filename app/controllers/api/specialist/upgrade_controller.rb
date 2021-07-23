@@ -4,7 +4,7 @@ class Api::Specialist::UpgradeController < ApiController
   before_action :require_specialist!
 
   def subscribe
-    service = StripeSpecialistSubscriptionServise.call(current_specialist, turnkey_params)
+    service = StripeSpecialistSubscriptionService.call(current_specialist, turnkey_params)
 
     if service.success?
       respond_with message: 'You have successfully subscribed', status: :created

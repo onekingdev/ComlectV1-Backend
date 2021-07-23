@@ -11,7 +11,7 @@
 # 2. All Access Membership Annual (Jul 12) => Free (Oct 12)
 #    User charged $400 on Jul 12. Subscription cancelled on Oct 12. No refunds
 
-class StripeSpecialistSubscriptionServise < ApplicationService
+class StripeSpecialistSubscriptionService < ApplicationService
   attr_reader :current_specialist, :new_plan, :error, :subscription
 
   def initialize(current_specialist, turnkey_params)
@@ -29,7 +29,7 @@ class StripeSpecialistSubscriptionServise < ApplicationService
       return self if active_subscription.blank? && create_new_subscription
       return self if nothing_to_change?
     rescue Stripe::StripeError => e
-      handel_stripe_error(e.message)
+      handle_stripe_error(e.message)
     end
 
     self
@@ -41,7 +41,7 @@ class StripeSpecialistSubscriptionServise < ApplicationService
 
   private
 
-  def handel_stripe_error(error_msg)
+  def handle_stripe_error(error_msg)
     @success = false
     @error = error_msg
   end
