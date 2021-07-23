@@ -5,7 +5,7 @@ class Api::Business::UpgradeController < ApiController
   skip_before_action :verify_authenticity_token
 
   def subscribe
-    service = StripeBusinessSubscriptionServise.call(
+    service = StripeBusinessSubscriptionService.call(
       current_business, payment_source, turnkey_params
     )
 

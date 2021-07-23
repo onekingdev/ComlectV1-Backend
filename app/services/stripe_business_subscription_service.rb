@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class StripeBusinessSubscriptionServise < BaseBusinessSubscriptionServise
+class StripeBusinessSubscriptionService < BaseBusinessSubscriptionService
   # Business plans:
   # 1 => 'free'
   # 2 => 'team_tier_monthly'
@@ -20,7 +20,7 @@ class StripeBusinessSubscriptionServise < BaseBusinessSubscriptionServise
 
       __send__("#{action_name}_#{current_plan}_to_#{new_plan}")
     rescue Stripe::StripeError => e
-      handel_stripe_error(e.message)
+      handle_stripe_error(e.message)
     end
 
     self
