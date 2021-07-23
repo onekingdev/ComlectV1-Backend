@@ -76,6 +76,9 @@
     padding: 1.25em 0;
     font-size: 0.875em;
   }
+  .registration .form-control {
+    padding: 0.4375rem 0.525rem;
+  }
 }
 
 .account-select {
@@ -182,77 +185,6 @@ input[type=number] {
 }
 .registration-onboarding .card-body {
   padding: 2.125rem 2.5rem;
-}
-
-.registration-card {
-  padding: 2.5rem;
-  min-height: 100vh;
-}
-.registration-card__header {
-
-}
-
-.registration-card__main-title {
-  margin-bottom: 0.625rem;
-  font-size: 1.5rem;
-  color: #303132;
-}
-.registration-card__main-subtitle {
-  margin: 0;
-  color: #303132;
-  font-size: 1rem;
-}
-
-.registration-card-header {
-  padding-top: 0;
-  border-bottom: solid 1px #DCDEE4;
-}
-
-.registration-card-header__title {
-  font-size: 1.25rem;
-  font-weight: bold;
-}
-.registration-card-header__subtitle {
-  margin-bottom: 0;
-  font-size: 1rem;
-  color: #797B7E;
-}
-
-/* ---------- purchase-summary ---------- */
-.purchase-summary {
-  position: absolute;
-  z-index: 1050;
-  right: 2rem;
-  top: 0;
-  width: 31.875rem;
-  /*transform: translateY(-30%);*/
-}
-.purchase-summary-header{
-  padding: 1.5625rem 2.5rem;
-  font-size: 1.25rem;
-  color: #303132;
-  border-bottom: solid 1px #DCDEE4;
-}
-.purchase-summary-body {
-  padding: 2.5rem;
-  font-size: 1rem;
-  border-bottom: solid 1px #DCDEE4;
-}
-.purchase-summary-footer {
-  background-color: white;
-}
-.b-sidebar-backdrop {
-  opacity: 1;
-}
-.bg-dark {
-  background-color: #f6f6f8 !important;
-}
-
-.purchase-summary__btn {
-  width: 100%;
-  height: 2.8125rem; /*45px;*/
-  font-weight: bold;
-  font-size: 0.875rem;
 }
 
 

@@ -2,7 +2,7 @@
   .container-fluid
     TopNavbar(:userInfo="userInfo")
     main.row#main-content
-      .col-xl-10.col-md-9.m-x-auto
+      .col.m-x-auto(v-if="!isSidebarOpen")
         Overlay(v-if="overlay", :status="overlayStatus", :statusText="overlayStatusText", :show="overlay")
         .card.registration-onboarding
           .card-header
@@ -218,25 +218,25 @@
                   .col
                     .text-right.m-t-30
                       b-button(type='button' variant='default' @click="prevStep(2)") Go back
+      .select-plan(v-if="isSidebarOpen")
+        .card.registration-card
+          .card-header.borderless.m-b-80.px-0.pt-0
+            .d-flex.justify-content-between.m-b-40
+              b-button(variant="default" @click="isSidebarOpen = false")
+                b-icon.mr-2(icon="chevron-left" variant="dark")
+                | Back
+            .registration-card__header
+              h2.registration-card__main-title Time to power up
+              p.registration-card__main-subtitle Review and confirm your subscription
+          BillingDetails(
+          :billingTypeSelected="billingTypeSelected"
+          :billingTypeOptions="billingTypeOptions"
+          :plan="selectedPlan"
+          @updateBiliing="onBiliingChange"
+          @updateAdditionalUsers="updateAdditionalUsers"
+          @complitedPaymentMethod="complitedPaymentMethod"
+          )
 
-        b-sidebar#BillingPlanSidebar(@hidden="closeSidebar" v-model="isSidebarOpen" backdrop-variant='dark' backdrop left no-header width="60%" no-close-on-backdrop)
-          .card.registration-card
-            .card-header.borderless.m-b-80.px-0.pt-0
-              .d-flex.justify-content-between.m-b-40
-                b-button(variant="default" @click="isSidebarOpen = false")
-                  b-icon.mr-2(icon="chevron-left" variant="dark")
-                  | Back
-              .registration-card__header
-                h2.registration-card__main-title Time to power up
-                p.registration-card__main-subtitle Review and confirm your subscription
-            BillingDetails(
-            :billingTypeSelected="billingTypeSelected"
-            :billingTypeOptions="billingTypeOptions"
-            :plan="selectedPlan"
-            @updateBiliing="onBiliingChange"
-            @updateAdditionalUsers="updateAdditionalUsers"
-            @complitedPaymentMethod="complitedPaymentMethod"
-            )
         PurchaseSummary(
         v-if="isSidebarOpen"
         :billingTypeSelected="billingTypeSelected"

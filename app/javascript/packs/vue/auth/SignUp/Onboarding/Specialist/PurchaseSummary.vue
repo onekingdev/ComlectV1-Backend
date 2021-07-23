@@ -6,24 +6,24 @@
       Coupon(@couponApplied="addDiscount")
     .card-body.purchase-summary-body.p-40
       dl.row.mb-0
-        dt.col-sm-6
+        dt.col-6
           b {{ planComputed.name }} plan
-        dd.col-sm-6.text-right.font-weight-bold {{ billingTypeSelected === 'annually' ?  planComputed.coastAnnuallyFormatted : planComputed.coastMonthlyFormatted }}
-        //dt.col-sm-6 {{ additionalUsers }} Users ({{ planComputed.usersCount }} Free)
-        //dd.col-sm-6.text-right {{ planComputed.additionalUserCoast }}
-        //dt.col-sm-6.text-success {{ billingTypeSelected === 'annually' ? 'Billed Annualy' : 'Billed Monthly' }}
-        //dd.col-sm-6.text-right.text-success(v-if="billingTypeSelected === 'annually'") You saved {{ planComputed.saved }}
+        dd.col-6.text-right.font-weight-bold {{ billingTypeSelected === 'annually' ?  planComputed.coastAnnuallyFormatted : planComputed.coastMonthlyFormatted }}
+        //dt.col-6 {{ additionalUsers }} Users ({{ planComputed.usersCount }} Free)
+        //dd.col-6.text-right {{ planComputed.additionalUserCoast }}
+        //dt.col-6.text-success {{ billingTypeSelected === 'annually' ? 'Billed Annualy' : 'Billed Monthly' }}
+        //dd.col-6.text-right.text-success(v-if="billingTypeSelected === 'annually'") You saved {{ planComputed.saved }}
       //.card-body.purchase-summary-body.p-x-40.p-y-20(v-if="planComputed.tax")
       //  dl.row.mb-0
-      //    dt.col-sm-6
+      //    dt.col-6
       //      b Tax
-      //    dd.col-sm-6.text-right.m-b-0
+      //    dd.col-6.text-right.m-b-0
       //      b {{ planComputed.tax }}
       hr
       dl.row.mb-0
-        dt.col-sm-6
+        dt.col-6
           b Total
-        dd.col-sm-6.text-right.m-b-0
+        dd.col-6.text-right.m-b-0
           b {{ planComputed.total }}
     .card-footer.purchase-summary-footer.p-40
       b-button.purchase-summary__btn(type='button' variant='dark' @click="complitePurchase" :disabled="disabled")
