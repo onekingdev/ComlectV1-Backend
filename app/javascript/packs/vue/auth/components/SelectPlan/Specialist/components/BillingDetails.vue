@@ -1,100 +1,34 @@
 <template lang="pug">
   div
+    .card-header.registration-card-header.p-b-20.px-0
+      .row
+        .col
+          h4.registration-card-header__title Plan
     .card-header.registration-card-header.p-y-20.px-0
       .row
         .col
-          h4 Plan
+          h4.registration-card-header__title {{ planComputed.name }}
+          p.registration-card-header__subtitle {{ planComputed.description }}
         .col.text-right
-          b-form-group(v-if="planComputed.id !== 1", v-slot="{ ariaDescribedby }")
-            b-form-radio-group(id="btn-radios-plan"
-            :checked="billingTypeSelected"
-            :options="billingTypeOptions"
-            :aria-describedby="ariaDescribedby"
-            button-variant="outline-primary"
-            size="lg"
-            name="radio-btn-outline"
-            buttons
-            @change="onBiliingChange"
-            )
-    .card-header.registration-card-header.p-y-20.px-0
-      .row
-        .col
-          h4.m-t-1 {{ planComputed.name }}
-          p {{ planComputed.description }}
-        .col.text-right
-          h4(:class="planComputed.id !== 1 ? 'm-t-1' : 'm-t-2'") {{ billingTypeSelected === 'annually' ?  planComputed.coastAnnuallyFormatted : planComputed.coastMonthlyFormatted }}
-          p(v-if="planComputed.id !== 1") {{ billingTypeSelected === 'annually' ?  planComputed.usersCount + ' free users plus $' + planComputed.additionalUserAnnually + '/year per person' : planComputed.usersCount + ' free users plus $' + planComputed.additionalUserMonthly + '/mo per person' }}
-    .card-header.registration-card-header.p-y-20.px-0(v-if="planComputed.id !== 1")
-      .d-flex.justify-content-between
-        div
-          h4 Users
-          p Enter the number of users for your plan (this is often your employee headcount
-        .d-flex.justify-content-end.align-items-center
-          b-form-input(v-model="additionalUsersCount" type="number" min="1" max="100" @keyup="onChangeUserCount")
+          h4.registration-card-header__title {{ billingTypeSelected === 'annually' ?  planComputed.coastAnnuallyFormatted : planComputed.scratched }}
+          //p {{ billingTypeSelected === 'annually' ?  planComputed.usersCount + ' free users plus $' + planComputed.additionalUserAnnually + '/year per person' : planComputed.usersCount + ' free users plus $' + planComputed.additionalUserMonthly + '/mo per person' }}
     .card-header.registration-card-header.p-y-20.px-0
       .d-flex.justify-content-between
-        h4 Payment Method
+        h4.registration-card-header__title Payment Method
         div(v-show="!cardOptions.length")
           plaid-link(env='sandbox' :publicKey='plaidPK' clientName='Test App' product='transactions' v-bind='{ onSuccess }')
             template(slot='button' slot-scope='props')
-              a.btn.btn-light(@click="props.onClick") Add Bank Account
+              a.btn.btn-default(@click="props.onClick") Add Bank Account
     .card-body(v-if="cardOptions")
       dl.row(v-for="(card, i) in cardOptions")
-        dt.col-sm-7
+        dt.col-7
           input.mr-2.mt-1(:id="'card'+card.id" type='radio' name='card' :value='card.id' v-model="cardSelected" @click="onPaymentMethodChange(card.id)")
           label(:for="'card'+card.id") {{ card.text }}
         dd.col-sm-5.text-right.m-b-0
           | {{ card.number }} {{ card.type }}
           a.link.ml-2(href="#" @click.stop="deletePaymentMethod(card.id)") Remove
-    //.card-header.registration-card-header.p-y-20.px-0
-      //div
-      //  StripeCheckout(:pk="pk")
-      //hr
-      //div
-      //  .row
-      //    .col
-      //      b-form-group#inputBilling-group-1(label='Name on Card' label-for='inputBilling-1')
-      //        b-form-input#inputBilling-1(v-model='cardDetail.nameOnCard' type='text' placeholder='Name on Card' required)
-      //        .invalid-feedback.d-block(v-if="errors.nameOnCard") {{ errors.nameOnCard }}
-      //  .row
-      //    .col-8.pr-2
-      //      b-form-group#inputBilling-group-2(label='Card Number' label-for='inputBilling-2')
-      //        b-form-input#inputBilling-2(v-model='cardDetail.cardNumber' type='text' placeholder='Card Number' required)
-      //        .invalid-feedback.d-block(v-if="errors.cardNumber") {{ errors.cardNumber }}
-      //    .col-1.px-2
-      //      b-form-group#inputBilling-group-3(label='Exp date' label-for='inputBilling-3')
-      //        b-form-input#inputBilling-3(v-model='cardDetail.expDate' type='text' placeholder='MM' required)
-      //        .invalid-feedback.d-block(v-if="errors.expDate") {{ errorMonths.expDateMonth }}
-      //    .col-1.px-2
-      //      b-form-group#inputBilling-group-4(label='.' label-for='inputBilling-4')
-      //        b-form-input#inputBilling-4(v-model='cardDetail.expDateYear' type='text' placeholder='YY' required)
-      //        .invalid-feedback.d-block(v-if="errors.expDateYear") {{ errors.expDateYear }}
-      //    .col-2.pl-2
-      //      b-form-group#inputBilling-group-5(label='CVC/CVV' label-for='inputBilling-5')
-      //        b-form-input#inputBilling-5(v-model='cardDetail.CVV' type='text' placeholder='3 or 4 digits' required)
-      //        .invalid-feedback.d-block(v-if="errors.CVV") {{ errors.CVV }}
-      //  .row
-      //    .col.pr-2
-      //      b-form-group#inputBilling-group-6(label='Country' label-for='inputBilling-6')
-      //        b-form-input#inputBilling-6(v-model='cardDetail.country' type='text' placeholder='Country' required)
-      //        .invalid-feedback.d-block(v-if="errors.country") {{ errors.country }}
-      //    .col.pl-2
-      //      b-form-group#inputBilling-group-7(label='Zip' label-for='inputBilling-7')
-      //        b-form-input#inputBilling-7(v-model='cardDetail.zip' type='text' placeholder='Enter zip code' required)
-      //        .invalid-feedback.d-block(v-if="errors.zip") {{ errors.zip }}
-      //  .row
-      //    .col.text-right
-      //      b-button(type='button' variant='secondary' @click="addCardDetail") Add
-      //hr
-      //div
-      //  p stripe-checkout:
-      //  stripe-checkout(ref='checkoutRef' mode='payment' :pk='publishableKey' :line-items='lineItems' :success-url='successURL' :cancel-url='cancelURL' @loading='v => loading = v')
-      //  button(@click='submit') Pay now!
-      //hr
-    .card-header.registration-card-header.p-y-20.px-0(v-show="!cardOptions.length")
-      //p stripe-element-card:
+    .card-header.registration-card-header.bordeless.p-t-20.px-0(v-show="!cardOptions.length")
       stripe-element-card(ref="elementRef" :pk="pk" @token="tokenCreated")
-      // button(@click="submit") Generate token
       .row
         .col.text-right
           b-button(type='button' variant='outline-primary' @click="submit")
@@ -105,6 +39,7 @@
               div
               div
             span(v-show="!loading") Add
+
 </template>
 
 <script>
@@ -116,20 +51,12 @@
     components: {
       StripeCheckout,
       StripeElementCard,
-      PlaidLink
+      PlaidLink,
     },
     data() {
       return {
-        userType: 'business',
+        userType: 'specialist',
         // loading: false,
-        // lineItems: [
-        //   {
-        //     price: 'price_1IiDiaGXaxE41NmqapXysseR', // The id of the one-time price you created in your Stripe dashboard
-        //     quantity: 1,
-        //   },
-        // ],
-        // successURL: 'https://example.com/success',
-        // cancelURL: 'https://example.com/cancel',
         token: null,
         cardDetail: {
           nameOnCard: '',
@@ -150,7 +77,7 @@
         // ],
         errors: [],
         additionalUsersCount: 0,
-        // isActive: true,
+        isActive: true,
       };
     },
     methods: {
@@ -174,7 +101,7 @@
           .dispatch('generatePaymentMethod', dataToSend)
           .then(response => {
             this.$emit('complitedPaymentMethod', response)
-            this.toast('Success', `Payment method successfully added!`)
+            this.toast('Success', `Payment Method successfully added!`)
             this.isActive = false
             this.$refs.elementRef.clear()
             this.cardOptions.push({ text: `Credit Card${this.cardOptions.length===0 ? ' (primary)' : ''}`, value: response.id, number: `**** **** **** ${response.last4}`, type: response.brand, id: response.id })
@@ -186,15 +113,6 @@
             this.toast('Error', 'Payment method could not be added.')
           })
       },
-      // addCardDetail() {
-        // this.cardOptions = Object.assign(this.cardOptions, {
-        //   text: this.cardDetail.nameOnCard,
-        //   value: this.cardOptions.length + 1,
-        //   number: this.cardDetail.cardNumber,
-        //   type: 'Visa',
-        //   id: Math.floor(Math.random()) * 100
-        // })
-      // },
       deletePaymentMethod(cardId) {
         const data = {
           userType: this.userType,
