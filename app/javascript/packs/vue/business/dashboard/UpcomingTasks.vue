@@ -1,24 +1,24 @@
 <template lang="pug">
   div
     .card-header.d-flex.justify-content-between
-      h3.m-y-0 Upcoming
+      h3.upcoming__header.m-y-0 Upcoming
       TaskFormModal(@saved="$emit('saved')")
         button.btn.btn-dark.float-end New Task
     .card-body.p-x-20.p-y-30
-      b.d-flex.justify-content-between.mb-3(role="button" v-b-toggle.upcoming_tasks_collapse="")
+      b.upcoming__title.d-flex.justify-content-between.m-b-10(role="button" v-b-toggle.upcoming_tasks_collapse="")
         | Tasks
         ion-icon(name="chevron-down-outline")
       b-collapse#upcoming_tasks_collapse(:visible="true")
         TaskTable(:tasks="tasks" :shortTable="true" @saved="$emit('saved')")
-        .d-flex.justify-content-end.mb-2
-          router-link.link(:to='`/business/reminders`') More
-      b.d-flex.justify-content-between.mb-3(role="button" v-b-toggle.upcoming_projects_collapse="")
+        .d-flex.justify-content-end.mb-2(v-if="tasks.length")
+          router-link.link.upcoming__more(:to='`/business/reminders`') More
+      b.upcoming__title.d-flex.justify-content-between.m-b-10(role="button" v-b-toggle.upcoming_projects_collapse="")
         | Projects
         ion-icon(name="chevron-down-outline")
       b-collapse#upcoming_projects_collapse(:visible="true")
         ProjectTable(:projects="projects")
-        .d-flex.justify-content-end
-          router-link.link(:to='`/business/projects`') More
+        .d-flex.justify-content-end(v-if="projects.length")
+          router-link.link.upcoming__more(:to='`/business/projects`') More
 </template>
 
 <script>

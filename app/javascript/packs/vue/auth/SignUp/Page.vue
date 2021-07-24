@@ -31,35 +31,36 @@
                             p.account-select__subtitle Looking to work with potential clients on compliance projects
                     b-button.registration__btn.w-100(type='submit' variant='dark') Next
               #step1.form(:class="step1 ? 'd-block' : 'd-none'")
-                h1.text-center Let's get you started!
-                p.text-center Create your FREE account
+                .registration-welcome
+                  h1.registration__title Let's get you started!
+                  p.registration__subtitle Create your FREE account
                 div
                   b-form(@submit='onSubmit1' v-if='show')
                     .row
                       .col-md-6.pr-md-2
-                        b-form-group#input-group-1(label='First Name:' label-for='input-1')
+                        b-form-group#input-group-1.m-b-20(label='First Name:' label-for='input-1')
                           b-form-input#input-1(v-model='form.firstName' type='text' placeholder='First Name' min="3" required)
                       .col-md-6.pl-md-2
-                        b-form-group#input-group-2(label='Last Name:' label-for='input-2')
+                        b-form-group#input-group-2.m-b-20(label='Last Name:' label-for='input-2')
                           b-form-input#input-2(v-model='form.lastName' type='text' placeholder='Last Name' min="3" required)
-                    b-form-group#input-group-3(label='Email:' label-for='input-3')
+                    b-form-group#input-group-3.m-b-20(label='Email:' label-for='input-3')
                       b-form-input#input-3(v-model='form.email' type='email' placeholder='Email' required)
                       .invalid-feedback.d-block(v-if="errors['user.email']") This email {{ errors['user.email'][0] }}
-                    b-form-group#input-group-4(label='Password:' label-for='input-4')
+                    b-form-group#input-group-4.m-b-20(label='Password:' label-for='input-4')
                       b-form-input#input-4(v-model='form.password' type='password' placeholder='Password' required)
                       .invalid-feedback.d-block(v-if="errors['user.password']") 'Password' {{ errors['user.password'][0] }}
-                    b-form-group#input-group-5(label='Repeat Password:' label-for='input-5')
+                    b-form-group#input-group-5.m-b-20(label='Repeat Password:' label-for='input-5')
                       b-form-input#input-5(v-model='form.passwordConfirm' type='password' placeholder='Repeat Password' required)
                       .invalid-feedback.d-block(v-if="errors.passwordConfirm") {{ errors.passwordConfirm }}
-                    b-form-group
+                    b-form-group.text-center.m-b-20
                       p By signing up, I accept the&nbsp;
                         a.link(href="#") Complect Terms of Use&nbsp;
                         | and acknowledge the&nbsp;
                         a.link(href="#") Privacy Policy
-                    b-button.registration__btn.w-100(type='submit' variant='dark') Sign Up
+                    b-button.registration__btn.m-b-40.w-100(type='submit' variant='dark') Sign Up
               #step2.form(:class="step2 ? 'd-block' : 'd-none'")
                 // OtpConfirm(@otpSecretConfirmed="otpConfirmed", :userId="userId", :form="form")
-                .registration-welcome.text-center
+                .registration-welcome
                   h1.registration__title Confirm Your Email!
                   p.registration__subtitle We sent a 6 digit code to {{ form.email }}. Please enter it below.
                 div
@@ -92,7 +93,7 @@
                   b-icon.ml-2(icon="circle-fill" animation="throb" font-scale="1")
                 .text-center
                   ion-icon(name="checkmark-circle-outline")
-            .card-footer
+            .card-footer(v-if='!loading && step1')
               b-form-group.text-center.mb-0
                 p.mb-0 Already have a Complect account?&nbsp;
                   a.link(href="/users/sign_in") Sign In
@@ -175,6 +176,8 @@
           // this.toast('Error', `Password does not match`)
           return
         }
+
+        this.form.email = this.form.email.toLowerCase()
 
         let dataToSend;
 
@@ -360,6 +363,12 @@
         return this.$store.getters.logIn;
       },
     },
+    watch: {
+      email (newValue, oldValue) {
+        newValue.toLowerCase()
+        console.log(newValue, oldValue)
+      },
+    }
   }
 </script>
 
