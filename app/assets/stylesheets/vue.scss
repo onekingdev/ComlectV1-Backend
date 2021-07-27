@@ -1184,7 +1184,8 @@ table.table thead tr th {
     align-items: center;
   }
 
-  tbody ion-icon {
+  tbody ion-icon,
+  tbody .b-icon.bi {
     font-size: 20px;
     vertical-align: middle;
     color: $gray-1;
@@ -1207,8 +1208,19 @@ table.table thead tr th {
     color: #AD841D;
   }
 
-  .done_task {
+  .done_task,
+  .b-icon.bi.done_task{
     color: #1AB27F;
+  }
+
+  ion-icon.yellow {
+    color: $yellow;
+  }
+  ion-icon.black {
+    color: $black;
+  }
+  ion-icon.blue {
+    color: $blue;
   }
 }
 
