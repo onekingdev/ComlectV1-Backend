@@ -41,6 +41,7 @@ import ProjectReviewS from '@/specialist/projects/MyProjectShowPage'
 import SettingsS from '@/specialist/settings/Page'
 import SettingsNotificationsS from '@/specialist/notifications/Page'
 import ProjectsMarketplaceS from '@/specialist/projects/IndexPage'
+import ProfileS from '@/specialist/profile/Page'
 
 Vue.use(Router)
 
@@ -114,6 +115,7 @@ export default new Router({
     },
     { path: '/specialist/settings/notification-center', name: 'settings-notification-center-specialist', component: SettingsNotificationsS },
     { path: '/specialist/projects-marketpalce', name: 'projects-marketpalce-specialist', component: ProjectsMarketplaceS },
+    { path: '/specialist/profile', name: 'profile-specialist', component: ProfileS },
   ],
   mode: 'history'
 })
