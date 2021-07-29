@@ -855,11 +855,24 @@ input, button, select, optgroup, textarea {
 }
 
 
-// NAV TABS
+/* ---------- NAV TABS ---------- */
 //.nav-tabs {
 //  padding-left: 2.5rem;
 //}
 //
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background-color: white;
+}
+
+.nav-tabs {
+  //background-color: $gray-background;
+  //border-bottom: 1px solid $gray-1;
+}
+
 .nav-tabs .nav-item .nav-link {
   //margin-left: 0;
   //margin-right: 2.5rem; // 40px
@@ -2015,17 +2028,6 @@ table.table thead tr th {
   //border-top: solid 1px $gray-1;
 }
 
-.tabs {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  background-color: white;
-}
-
-.nav-tabs {
-  background-color: $gray-background;
-  border-bottom: 1px solid $gray-1;
-}
 
 .pointer {
   //color: $gray-1;
@@ -2483,29 +2485,41 @@ legend, .label {
 }
 
 /* ---------- MODAL ---------- */
-.modal {
-  text-align: center;
-  padding: 0!important;
-}
+//.modal {
+//  text-align: center;
+//  padding: 0!important;
+//}
+//
+//.modal:before {
+//  content: '';
+//  display: inline-block;
+//  height: 100%;
+//  vertical-align: middle;
+//  margin-right: -4px;
+//}
 
-.modal:before {
-  content: '';
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
-  margin-right: -4px;
-}
+//.modal-dialog {
+//  display: inline-block;
+//  text-align: left;
+//  vertical-align: middle;
+//  min-width: 37.5rem; //600px;
+//  min-height: 43.5rem; // 696px;
+//
+//  @include media-breakpoint-down(md) {
+//    min-width: 1px;
+//    min-height: auto;
+//  }
+//}
 
+// Make pop-up in center
 .modal-dialog {
-  display: inline-block;
-  text-align: left;
-  vertical-align: middle;
-  min-width: 37.5rem; //600px;
-  min-height: 43.5rem; // 696px;
-
-  @include media-breakpoint-down(md) {
-    min-width: 1px;
-    min-height: auto;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: auto;
+  @media(max-width: 768px) {
+    min-height: calc(100vh - 20px);
   }
 }
 
@@ -2523,6 +2537,10 @@ legend, .label {
 .modal-header .close {
   font-size: 1.75rem;
   padding: .85rem;
+}
+
+.modal-body {
+  padding: 1.5625rem 1.25rem;
 }
 
 /* ---------- RADIO BUTTONS---------- */
