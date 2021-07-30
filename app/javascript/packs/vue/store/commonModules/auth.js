@@ -508,6 +508,21 @@ export default {
         throw error
       }
     },
+    async getStaticCollection({commit}) {
+      try {
+        commit("clearError");
+        commit("setLoading", true);
+
+        const response = await axios.get(`/static_collection`)
+        return response.data
+
+      } catch (error) {
+        console.error(error);
+        return error
+      } finally {
+        commit("setLoading", false)
+      }
+    },
   },
   getters: {
     getUser(state) {
