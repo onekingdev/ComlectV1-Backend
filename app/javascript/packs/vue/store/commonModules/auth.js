@@ -11,6 +11,7 @@ export default {
     currentUser: currentUserLocalStorage ? JSON.parse(currentUserLocalStorage) : {},
     accessToken: accessTokenLocalStorage ? JSON.parse(accessTokenLocalStorage) : '',
     loggedIn: false,
+    staticCollection: {},
   },
   mutations: {
     UPDATE_USER(state, payload) {
@@ -21,7 +22,10 @@ export default {
     },
     UPDATE_LOGIN_STATUS(state, payload) {
       state.loggedIn = payload
-    }
+    },
+    SET_STATIC_COLLECTION (state, payload) {
+      state.staticCollection = payload
+    },
   },
   actions: {
     async signIn({commit}, payload) {
