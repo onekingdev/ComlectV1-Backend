@@ -518,6 +518,7 @@ export default {
         commit("setLoading", true);
 
         const response = await axios.get(`/static_collection`)
+        if (response.data) commit('SET_STATIC_COLLECTION', response.data)
         return response.data
 
       } catch (error) {
