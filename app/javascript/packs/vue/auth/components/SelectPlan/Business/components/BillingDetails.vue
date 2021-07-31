@@ -165,18 +165,14 @@
         })
       },
       onSuccess (publicToken, metadata) {
-        console.log('plaidPK', this.plaidPK)
-        console.log('plaid info', publicToken, metadata)
-        // form.find('#payment_form_plaid_token').val(publicToken);
-        // form.find('#payment_form_plaid_account_id').val(metadata.account_id);
-        // form.find('#payment_form_plaid_institution').val(metadata.institution.name);
-
         const data = {
           userType: this.userType,
           plaid: {
-            plaid_token: this.plaidPK,
-            plaid_account_id: metadata.account_id,
-            plaid_institution: metadata.institution.name
+            payment_source_ach: {
+              plaid_token: publicToken,
+              plaid_account_id: metadata.account_id,
+              plaid_institution: metadata.institution.name
+            }
           }
         }
 
