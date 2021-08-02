@@ -123,6 +123,11 @@ input, button, select, optgroup, textarea {
 
 // need remove or rewrite
 #main-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+
   min-height: calc(100vh - 80px);
   background-color: $gray-background;
 }
@@ -935,6 +940,10 @@ a.btn,
   &:focus {
     outline: none !important;
     box-shadow: none;
+  }
+
+  .b-icon.bi {
+    font-size: 100%;
   }
 }
 .btn.btn-primary,
