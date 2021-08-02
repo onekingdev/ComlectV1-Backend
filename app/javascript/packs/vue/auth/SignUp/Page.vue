@@ -31,17 +31,17 @@
               .col-md-6.pr-md-2
                 b-form-group#input-group-1.m-b-20(label='First Name:' label-for='input-1')
                   b-form-input#input-1(v-model='form.firstName' type='text' placeholder='First Name' :class="{'is-invalid': errors.firstName }")
-                  .invalid-feedback.d-block(v-if="errors.firstName") {{ errors.firstName }}
+                  .invalid-feedback.d-block(v-if="errors.contact_first_name") {{ errors.contact_first_name }}
               .col-md-6.pl-md-2
                 b-form-group#input-group-2.m-b-20(label='Last Name:' label-for='input-2')
                   b-form-input#input-2(v-model='form.lastName' type='text' placeholder='Last Name' :class="{'is-invalid': errors.lastName }")
-                  .invalid-feedback.d-block(v-if="errors.lastName") {{ errors.lastName }}
+                  .invalid-feedback.d-block(v-if="errors.contact_last_name") {{ errors.contact_last_name[0] }}
             b-form-group#input-group-3.m-b-20(label='Email:' label-for='input-3')
               b-form-input#input-3(v-model='form.email' type='text' placeholder='Email' :class="{'is-invalid': errors.email }")
-              .invalid-feedback.d-block(v-if="errors.email") {{ errors.email }}
+              .invalid-feedback.d-block(v-if="errors.user.email") {{ errors.user.email[0] }}
             b-form-group#input-group-4.m-b-20(label='Password:' label-for='input-4')
               b-form-input#input-4(v-model='form.password' type='password' placeholder='Password' :class="{'is-invalid': errors.password }")
-              .invalid-feedback.d-block(v-if="errors.password") {{ errors.password }}
+              .invalid-feedback.d-block(v-if="errors.user.password") {{ errors.user.password[0] }}
             b-form-group#input-group-5.m-b-20(label='Repeat Password:' label-for='input-5')
               b-form-input#input-5(v-model='form.passwordConfirm' type='password' placeholder='Repeat Password' :class="{'is-invalid': errors.passwordConfirm }")
               .invalid-feedback.d-block(v-if="errors.passwordConfirm") {{ errors.passwordConfirm }}
@@ -105,7 +105,10 @@
           code: '',
         },
         show: true,
-        errors: {},
+        error: '',
+        errors: {
+          user: {}
+        },
         step0: true,
         step1: false,
         step2: false,
@@ -203,6 +206,7 @@
             if (response.errors) {
               for (const [key, value] of Object.entries(response.errors[this.userType])) {
                 console.log(`${key}: ${value}`);
+                this.errors = Object.assign(this.errors, { [key]: value })
               }
             }
             if (!response.errors) {

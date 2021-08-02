@@ -28,7 +28,7 @@
             b-form-group.mb-0
               .row
                 .col-12.text-center
-                  a.link(@click.stop="resendOTP" :disabled="disabled") Resend code
+                  a.link(@click.stop="resendOTP") Resend code
 </template>
 
 <script>
@@ -48,10 +48,6 @@
           codePart6: '',
           code: '',
         },
-        disabled: false,
-        dismissSecs: 8,
-        dismissCountDown: 0,
-        showDismissibleAlert: false,
       }
     },
     methods: {
@@ -111,7 +107,8 @@
             .then((response) => {
               console.log('response', response)
               if (response.errors) {
-
+                this.error = response.message
+                this.toast('Error', 'Verification code failed. Try again.')
               }
 
               if (!response.errors && response.token) {
@@ -124,13 +121,12 @@
                 // this.$router.push(`${dashboard}/onboarding`)
                 // this.$router.push(`${dashboard}`)
               }
-
-              this.error = response.message
             })
             .catch((error) => {
               console.error('error', error.data)
               console.error('error', error.data.errors)
               console.error('error', error.data.errors.invalid)
+              this.toast('Error', 'Verification code failed. Try again.')
               if (error.data.errors) {
                 this.error = error.data.errors.invalid
               }
@@ -185,12 +181,6 @@
         this.$store.dispatch('resendOTP', data)
           .then((response) => this.toast('Success', `${response.message}`))
           .catch((error) => this.toast('Error', `${error.status} (${error.statusText})`))
-      },
-      countDownChanged(dismissCountDown) {
-        this.dismissCountDown = dismissCountDown
-      },
-      showAlert() {
-        this.dismissCountDown = this.dismissSecs
       },
     },
     computed: {
