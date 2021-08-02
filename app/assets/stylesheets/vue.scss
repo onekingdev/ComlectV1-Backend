@@ -3077,10 +3077,10 @@ legend, .label {
 
 /* ---------- purchase-summary ---------- */
 .purchase-summary {
-  width: 31.875rem;
+  min-width: 31.875rem;
 
   @media (max-width: 800px) {
-    width: 100%;
+    min-width: 100%;
   }
 }
 .purchase-summary-header{

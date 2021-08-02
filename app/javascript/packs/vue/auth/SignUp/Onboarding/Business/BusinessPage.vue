@@ -1,5 +1,5 @@
 <template lang="pug">
-  div.registration-onboarding
+  div.registration-onboarding(:class="{ full: isSidebarOpen }")
     Overlay(v-if="overlay.active")
     .col.m-x-auto(v-if="!isSidebarOpen")
       .card
