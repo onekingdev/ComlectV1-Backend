@@ -6,7 +6,7 @@
         p.registration__subtitle We sent a 6 digit code to {{ form.email }}. Please enter it below.
       div
         b-form(@submit='onSubmit' @keyup="onCodeChange" v-if='show' autocomplete="off")
-          b-form-group.m-b-40
+          b-form-group
             .col.text-center
               img.otp-icon(src='@/assets/mail.svg' width="180" height="110")
           b-form-group.m-b-40
