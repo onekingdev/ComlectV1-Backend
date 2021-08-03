@@ -9,7 +9,7 @@
           b-form-group.m-b-40
             .col.text-center
               img.otp-icon(src='@/assets/mail.svg' width="180" height="110")
-          b-form-group.mb-0
+          b-form-group.m-b-40
             .row
               .col-12.mx-0
                 .d-flex.justify-content-space-around.mx-auto
