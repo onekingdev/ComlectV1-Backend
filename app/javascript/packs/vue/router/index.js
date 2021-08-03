@@ -2,13 +2,17 @@ import Vue from 'vue'
 import Router from 'vue-router'
 // import AuthGuard from './auth-guard'
 
-// AUTH
-// import signIn from '@/auth/SingIn/Page'
-// import signUp from '@/auth/SignUp/Page'
-// import ResetPassword from '@/auth/ResetPassword/Page'
-// import ChangePassword from '@/auth/ChangePassword/Page'
-
+// NOT FOUND
 import PageNotFound from '@/common/PageNotFound'
+
+// AUTH
+import SignIn from '@/auth/SingIn/Page'
+import SignUp from '@/auth/SignUp/Page'
+import ResetPassword from '@/auth/ResetPassword/Page'
+import ChangePassword from '@/auth/ChangePassword/Page'
+import OtpConfirm from '@/auth/components/OtpConfirm'
+import BusinessOnboarding from '@/auth/SignUp/Onboarding/Business/BusinessPage'
+import SpecialistOnboarding from '@/auth/SignUp/Onboarding/Specialist/SpecialistPage'
 
 // BUSINESS
 import Dashboard from '@/business/dashboard/Page'
@@ -54,6 +58,9 @@ const paramsToInts = paramNames =>
 
 export default new Router({
   routes: [
+    //NOT FOUND
+    { path: "*", component: PageNotFound },
+
     // REDIRECTS
     // { path: '/business', redirect: '/business/dashboard' },
     // { path: '/business/dashboard', redirect: '/business/dashboard' },
@@ -61,12 +68,14 @@ export default new Router({
     // { path: '/specialist/dashboard', redirect: '/specialist/dashboard' },
 
     // AUTH
-    // { path: '/users/sign_in', name: 'sign-in', component: signIn },
-    // { path: '/users/sign_up', name: 'sign-up', component: signUp },
-    // { path: '/users/password/new', name: 'password-new', component: ResetPassword },
-    // { path: '/users/password/change', name: 'password-change', component: ChangePassword },
-
-    { path: "*", component: PageNotFound },
+    { path: '/', name: 'home', component: SignIn },
+    { path: '/users/sign_in', name: 'sign-in', component: SignIn },
+    { path: '/users/sign_up', name: 'sign-up', component: SignUp },
+    { path: '/users/password/new', name: 'password-new', component: ResetPassword },
+    { path: '/users/password/change', name: 'password-change', component: ChangePassword },
+    { path: '/otp-confirm', name: 'otp-confirm', component: OtpConfirm, props: true },
+    { path: '/business/onboarding', name: 'business-onboarding', component: BusinessOnboarding, props: true },
+    { path: '/specialist/onboarding', name: 'specialist-onboarding', component: SpecialistOnboarding, props: true },
 
     // BUSINESS
     { path: '/business', name: 'dashboard', component: Dashboard },
@@ -105,7 +114,6 @@ export default new Router({
     },
     { path: '/business/settings/notification-center', name: 'settings-notification-center', component: SettingsNotifications },
     { path: '/specialistmarketplace', name: 'specialists-marketplace', component: SpecialistsMarketplace },
-    { path: '/business/profile', name: 'profile', component: Profile },
 
 
     // SPECIALISTS
