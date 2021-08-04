@@ -33,14 +33,10 @@
         .d-flex.justify-content-end.align-items-center
           b-form-input.form-control-number(v-model="additionalUsersCount" type="number" min="1" max="100" @keyup="onChangeUserCount")
     AddPaymentMethod(:billingTypeSelected="billingTypeSelected", :billingTypeOptions="billingTypeOptions", :plan="plan", :userType="userType" @complitedPaymentMethod="complitedPaymentMethod")
-
 </template>
 
 <script>
   import AddPaymentMethod from "../../../AddPaymentMethod";
-
-  /* Will be deleted soon after we test it on staging */
-  console.warn("process.env.STRIPE_PUBLISHABLE_KEY > ", process.env.STRIPE_PUBLISHABLE_KEY)
 
   export default {
     props: ['billingTypeSelected', 'billingTypeOptions', 'plan'],
