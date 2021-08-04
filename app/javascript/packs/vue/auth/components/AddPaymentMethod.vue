@@ -1,8 +1,8 @@
 <template lang="pug">
   div
-    .card-header.registration-card-header.p-y-20.px-0
-      .d-flex.justify-content-between
-        h4.registration-card-header__title Payment Method
+    .card-header.registration-card-header.borderless.p-y-20.px-0
+      .d-flex.justify-content-between.align-items-center
+        h4.registration-card-header__title.mb-0 Payment Method
         div(v-show="!cardOptions.length")
           plaid-link(env='sandbox' :publicKey='plaidPK' clientName='Test App' product='auth' v-bind='{ onSuccess }')
             template(slot='button' slot-scope='props')
