@@ -5,6 +5,6 @@ class Specialists::ProfileController < ApplicationController
   before_action :require_specialist!
 
   def show
-    render html: content_tag('main-layoyt', '').html_safe, layout: 'vue_main_layout'
+    render html: content_tag('main-layoyt', '').html_safe, layout: 'vue_specialist_layout'
   end
 end

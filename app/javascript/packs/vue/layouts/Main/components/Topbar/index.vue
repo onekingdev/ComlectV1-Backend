@@ -12,7 +12,7 @@
         ul.topbar-menu__list
           li.nav-item.topbar-menu__item(@click="openLink('default')")
             router-link.topbar-menu__link(:to='`/${userType}`' active-class="active" exact) Home
-          li.nav-item.topbar-menu__item(@click="openLink('documents')")
+          li.nav-item.topbar-menu__item(v-if="userType === 'business'" @click="openLink('documents')")
             router-link.topbar-menu__link(:to='`/${userType}/file_folders`' active-class="active") Documents
           li.nav-item.topbar-menu__item(@click="openLink('default')")
             router-link.topbar-menu__link(:to='`/${userType}/reports/risks`' active-class="active") Reports
@@ -25,7 +25,7 @@
     // Right aligned nav items
     b-navbar-nav.flex-row.align-items-center.ml-auto
       router-link.btn.btn-warning.btn-topbar.btn-topbar_find(v-if="userType === 'business'" :to='`/specialistmarketplace`') Find an Expert
-      router-link.btn.btn-warning.btn-topbar.btn-topbar_find(v-if="userType === 'specialist'" :to='`/${userType}/projects-marketpalce`') Browse Projects
+      router-link.btn.btn-warning.btn-topbar.btn-topbar_find(v-if="userType === 'specialist'" :to='`/projects`') Browse Projects
       router-link.btn.btn-topbar.btn-topbar_notify(:to='`/${userType}/settings/notification-center`')
         ion-icon(name='notifications-outline')
       b-nav-item-dropdown.topbar-right-dropdown.actions(right)
@@ -60,6 +60,7 @@
         first_name: user.contact_first_name ? `${user.contact_first_name}` : `${user.first_name}`,
         last_name: user.contact_last_name ? `${user.contact_last_name}` : `${user.last_name}`,
       }
+      this.$store.commit('UPDATE_USER', user)
       const token = localStorage.getItem('app.currentUser.token');
       // if (token) {
       //   this.$store.commit('auth/UPDATE_TOKEN', token)
