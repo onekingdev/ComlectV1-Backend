@@ -1,13 +1,11 @@
 <template lang="pug">
   div
     Loading
-    .card
-      .card-title
-        .d-flex.justify-content-between.pb-1.pt-3.px-3
-          div
-            h3.mb-0 Paymnet Detals
-          div
-            button.btn.btn.btn-default.mr-3 Export
+    .card.m-b-20
+      .card-title.p-20
+        h2.card-title__name Paymnet Detals
+        .card-title__actions
+          button.btn.btn.btn-default.mr-3 Export
       .card-body.white-card-body
         b-tabs(content-class="mt-2")
           b-tab(title="Upcomming" active)

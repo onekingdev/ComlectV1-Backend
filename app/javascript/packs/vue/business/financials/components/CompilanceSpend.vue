@@ -1,9 +1,9 @@
 <template lang="pug">
   div
     Loading
-    .card
-      .card-title.p-3.mb-0
-        h3.mb-0 Compilance Spend
+    .card.m-b-20
+      .card-title.p-20
+        h2.card-title__name Compilance Spend
       .card-body.white-card-body
         .card-body
           .chart

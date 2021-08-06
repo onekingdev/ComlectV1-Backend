@@ -31,6 +31,11 @@ $font-size-24: 1.5rem;
   font-weight: 700;
 }
 
+@mixin font-regular-20 {
+  font-size: $font-size-20;
+  font-weight: $font-weight-regular;
+}
+
 /* ---------- MAIN STYLES ---------- */
 #app, body, html {
   margin: 0;
@@ -3579,3 +3584,54 @@ select.custom-select {
     }
   }
 }
+
+/* ---------- TITLES ---------- */
+.card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+  border: 0;
+  border-bottom: solid 1px $gray-1;
+
+  &__name {
+    margin-bottom: 0;
+    @include font-regular-20;
+  }
+
+  &__actions {
+    margin: 0;
+    margin-right: 0;
+  }
+}
+
+
+/* ---------- FINACNCIAL PAGE / REPORS ---------- */
+.payments {
+  display: flex;
+  width: 100%;
+
+  &__item {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    width: 25%;
+  }
+  &__item:not(:first-child) {
+    padding: .5rem 1.25rem;
+  }
+  &__item:not(:last-child) {
+    border-right: solid 1px #dcdee4;
+  }
+  &__name {
+    margin-bottom: 5px;
+    font-size: $font-size-12;
+    color: $gray-3;
+  }
+  &__coast {
+    margin-bottom: 0;
+    font-size: $font-size-24;
+    font-weight: $font-weight-semi-bold;
+    color: $black;
+  }
+}
+

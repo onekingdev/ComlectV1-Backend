@@ -1,23 +1,16 @@
 <template lang="pug">
-  div
-    .container-fluid
-      .row
-        .col-12
-          .row.p-x-1
-            .col-md-12.p-t-3.d-flex.justify-content-between.p-b-1
-              div
-                h2: b Financials
-          .row
-            .col-lg-7.col-12.mb-3
-              CompilanceSpend
-            .col-lg-5.col-12.mb-3
-              AnnualBudget
-          .row.mb-3
-            .col
-              Payments
-          .row
-            .col
-              PaymentDetails
+  div.p-x-40.p-y-20
+    .row
+      .col-lg-7.col-12.mb-3
+        CompilanceSpend
+      .col-lg-5.col-12.mb-3
+        AnnualBudget
+    .row.mb-3
+      .col
+        Payments
+    .row
+      .col
+        PaymentDetails
 </template>
 
 <script>

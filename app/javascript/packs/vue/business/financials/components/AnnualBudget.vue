@@ -1,13 +1,11 @@
 <template lang="pug">
   div
     Loading
-    .card
-      .card-title
-        .d-flex.justify-content-between.pb-1.pt-3.px-3
-          div
-            h3.mb-0 Annual Budget
-          div
-            button.btn.btn.btn-default.mr-3 Edit
+    .card.m-b-20
+      .card-title.p-20
+        h2.card-title__name Annual Budget
+        .card-title__actions
+          button.btn.btn.btn-default.mr-3 Edit
       .card-body.white-card-body
         .card-body
           .chart

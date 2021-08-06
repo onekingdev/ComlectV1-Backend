@@ -1,63 +1,43 @@
 <template lang="pug">
-  div
-    .container-fluid
-      .row.mb-3
-        .col-12
-          .card
-            .card-title
-              .d-flex.justify-content-between.pb-1.pt-3.px-3
-                div
-                  h2 Access Persons
-                div
-                  button.btn.btn.btn-default.mr-3 Export
-                  button.btn.link View all
-            .card-body.white-card-body
-              Loading
-              AccessPersonTable(v-if="!loading && accessPersons.length" :users="accessPersons")
-              div(v-if="!loading")
-                .col-12
-                  .table(v-if="!loading && accessPersons.length === 0")
-                    .table__row
-                      .table__cell.text-center
-                        h3 Access persons not exist
-      .row.mb-3
-        .col-12
-          .card
-            .card-title
-              .d-flex.justify-content-between.pb-1.pt-3.px-3
-                div
-                  h2 Terminated Employees
-                div
-                  button.btn.btn.btn-default.mr-3 Export
-                  button.btn.link View all
-            .card-body.white-card-body
-              Loading
-              TerminatedEmployees(v-if="!loading && terminatedEmployees.length" :users="terminatedEmployees")
-              div(v-if="!loading")
-                .col-12
-                  .table(v-if="!loading && terminatedEmployees.length === 0")
-                    .table__row
-                      .table__cell.text-center
-                        h3 Terminated employees not exist
-      .row
-        .col-12
-          .card
-            .card-title
-              .d-flex.justify-content-between.pb-1.pt-3.px-3
-                div
-                  h2 Resignations
-                div
-                  button.btn.btn.btn-default.mr-3 Export
-                  button.btn.link View all
-            .card-body.white-card-body
-              Loading
-              Resignations(v-if="!loading && resignations.length" :users="resignations")
-              div(v-if="!loading")
-                .col-12
-                  .table(v-if="!loading && resignations.length === 0")
-                    .table__row
-                      .table__cell.text-center
-                        h3 Resignations not exist
+  div.p-x-40.p-y-20
+    .card.m-b-20
+      .card-title.p-20
+        h2.card-title__name Access Persons
+        .card-title__actions
+          button.btn.btn.btn-default.mr-3 Export
+          button.btn.link View all
+      .card-body.white-card-body
+        Loading
+        AccessPersonTable(v-if="!loading && accessPersons.length" :users="accessPersons")
+        .row.h-100(v-if="!accessPersons.length && !loading")
+          .col.h-100.text-center
+            EmptyState
+
+    .card.m-b-20
+      .card-title.p-20
+        h2.card-title__name Terminated Employees
+        .card-title__actions
+          button.btn.btn.btn-default.mr-3 Export
+          button.btn.link View all
+      .card-body.white-card-body
+        Loading
+        TerminatedEmployees(v-if="!loading && terminatedEmployees.length" :users="terminatedEmployees")
+        .row.h-100(v-if="!terminatedEmployees.length && !loading")
+          .col.h-100.text-center
+            EmptyState
+
+    .card
+      .card-title.p-20
+        h2.card-title__name Resignations
+        .card-title__actions
+          button.btn.btn.btn-default.mr-3 Export
+          button.btn.link View all
+      .card-body.white-card-body
+        Loading
+        Resignations(v-if="!loading && resignations.length" :users="resignations")
+        .row.h-100(v-if="!resignations.length && !loading")
+          .col.h-100.text-center
+            EmptyState
 </template>
 
 <script>
