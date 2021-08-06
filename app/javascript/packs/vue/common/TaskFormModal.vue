@@ -7,7 +7,7 @@
       InputText(v-model="task.body" :errors="errors.body" placeholder="Enter the name of your task") Task Name
 
       label.m-t-1.form-label Link to
-      ComboBox(V-model="task.link_to" :options="linkToOptions" placeholder="Select projects, annual reviews, or policies to link the task to")
+      ComboBox(V-model="task.link_to" :options="linkToOptions" placeholder="Select projects, internal reviews, or policies to link the task to")
       .form-text.text-muted Optional
       Errors(:errors="errors.link_to")
 
@@ -47,7 +47,7 @@
         .col-sm.m-l-1(v-if="task.repeats === repeatsValues.REPEAT_MONTHLY")
           label.form-label Every
           input.form-control(type="number" min="1" max="1000" step="1" v-model="task.repeat_every")
-          .form-text Months(s)
+          .form-text Month(s)
         .col-sm.m-l-1(v-if="task.repeats === repeatsValues.REPEAT_MONTHLY")
           label.form-label On
           Dropdown(v-model="task.on_type" :options="['Day', 'First', 'Second', 'Third', 'Fourth']")
@@ -68,18 +68,24 @@
           Dropdown(v-model="task.repeat_on" v-else :options="daysOfWeek")
       Errors(:errors="errors.repeats || errors.repeat_every || errors.repeat_on || errors.on_type")
 
+      b-row.m-t-1(v-if="task.repeats" no-gutters )
+        .col-sm-6.m-r-1
+          label.form-label End By Date
+          DatePicker(v-model="task.end_by_date")
+          Errors(:errors="errors.end_by_date")
+
       InputTextarea.m-t-1(v-model="task.description" :errors="errors.description") Description
       .form-text.text-muted Optional
 
       template(slot="modal-footer")
         .d-flex.justify-content-between(style="width: 100%")
           div
-            button.btn.btn-default(v-if="null === occurenceId" @click="deleteTask(task)") Delete Task
+            button.btn.btn-delete(v-if="null === occurenceId" @click="deleteTask(task)") Delete Task
             b-dropdown(v-else-if="taskId" variant="dark" text="Delete Task")
               b-dropdown-item(@click="deleteTask(task, true)") Delete Occurence
               b-dropdown-item(@click="deleteTask(task)") Delete Series
           div
-            button.btn(@click="$bvModal.hide(modalId)") Cancel
+            button.btn.btn-link.m-r-1(@click="$bvModal.hide(modalId)") Cancel
             button.btn.btn-default.m-r-1(v-if="taskId && !task.done_at" @click="toggleDone(task)") Mark as Complete
             button.btn.btn-default.m-r-1(v-if="taskId && task.done_at" @click="toggleDone(task)") Mark as Incomplete
             button.btn.btn-dark(v-if="!taskId" @click="submit()") Create
@@ -103,6 +109,7 @@ const initialTask = defaults => ({
   assignee: null,
   remind_at: null,
   end_date: null,
+  end_by_date: null,
   repeats: REPEAT_NONE,
   repeat_every: null,
   repeat_on: null,
@@ -145,7 +152,10 @@ export default {
       fetch('/api/business/reminders/' + this.taskId + occurenceParams, {
         method: 'DELETE',
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
-      }).then(response => this.$emit('saved'))
+      }).then(response => {
+        this.$emit('saved')
+        this.$router.push('/business')
+      })
     },
     toggleDone(task) {
       const { taskId, oid } = splitReminderOccurenceId(task.id)
@@ -155,7 +165,10 @@ export default {
       fetch(`/api/business/reminders/${taskId}?done=${target_state}${oidParam}${src_id_params}`, {
         method: 'POST',
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
-      }).then(response => this.$emit('saved'))
+      }).then(response => {
+        this.$emit('saved')
+        this.$bvModal.hide(this.modalId)
+      })
     },
     submit(saveOccurence) {
       this.errors = []
@@ -207,7 +220,7 @@ export default {
     repeatsOptions: () => REPEAT_OPTIONS.map(value => ({ value, text: REPEAT_LABELS[value] })),
     linkToOptions() {
       return [{...toOption('Projects'), children: ['Some project', 'Another', 'One'].map(toOption)},
-        {...toOption('Annual Reviews'), children: ['Annual Review 2018', 'Annual Review 1337', 'Some Review'].map(toOption)},
+        {...toOption('Internal Reviews'), children: ['Internal Review 2018', 'Internal Review 1337', 'Some Review'].map(toOption)},
         {...toOption('Policies'), children: ['Pol', 'Icy', 'Policy 3'].map(toOption)}]
     },
     assigneeOptions() {

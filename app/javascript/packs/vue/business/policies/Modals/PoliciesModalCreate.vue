@@ -9,7 +9,7 @@
       Errors(:errors="errors")
 
       template(slot="modal-footer")
-        button.btn(@click="$bvModal.hide(modalId)") Cancel
+        button.btn.btn-link(@click="$bvModal.hide(modalId)") Cancel
         button.btn.btn-dark(@click="submit") Create
 </template>
 
@@ -81,7 +81,8 @@
               this.policy.name = ''
 
               setTimeout(() => {
-                window.location.href = `${window.location.origin}/business/compliance_policies/${response.id}`
+                // window.location.href = `${window.location.origin}/business/compliance_policies/${response.id}`
+                this.$router.push(`/business/compliance_policies/${response.id}`)
               }, 1000)
             }
           })

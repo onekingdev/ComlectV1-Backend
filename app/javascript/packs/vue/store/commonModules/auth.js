@@ -11,6 +11,18 @@ export default {
     currentUser: currentUserLocalStorage ? JSON.parse(currentUserLocalStorage) : {},
     accessToken: accessTokenLocalStorage ? JSON.parse(accessTokenLocalStorage) : '',
     loggedIn: false,
+    staticCollection: {
+      GOOGLE_PLACES_API_KEY: '',
+      PLAID_PUBLIC_KEY: '',
+      STRIPE_PUBLISHABLE_KEY: '',
+      countries: [],
+      industries: [],
+      jurisdictions: [],
+      states: [],
+      sub_industries_business: [],
+      sub_industries_specialist: [],
+      timezones: [],
+    },
   },
   mutations: {
     UPDATE_USER(state, payload) {
@@ -21,10 +33,24 @@ export default {
     },
     UPDATE_LOGIN_STATUS(state, payload) {
       state.loggedIn = payload
-    }
+    },
+    SET_STATIC_COLLECTION (state, payload) {
+      const timezones = payload.timezones.map(tz => {
+          const [ zone, city ] = tz
+          return {
+            value: city,
+            name: zone
+          }
+        }
+      )
+      state.staticCollection = {
+        ...payload,
+        timezones
+      }
+    },
   },
   actions: {
-    async singIn({commit}, payload) {
+    async signIn({commit}, payload) {
       try {
         commit("clearError");
         commit("setLoading", true);
@@ -85,12 +111,13 @@ export default {
         commit("setLoading", false)
       }
     },
-    async singUp({commit}, payload) {
+    async signUp({commit}, payload) {
       try {
         commit("clearError");
         commit("setLoading", true);
 
-        const endPoint = payload.business ? 'businesses' : 'specialists'
+        let endPoint = payload.business ? 'businesses' : 'specialists'
+        endPoint = payload.seat_id ? `business/seats/${payload.seat_id}/assign` : endPoint
         const response = await axios.post(`/${endPoint}`, payload)
         // if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
@@ -102,13 +129,21 @@ export default {
         commit("setLoading", false)
       }
     },
-    async singOut({commit}, payload) {
+    async signOut({commit}) {
+      console.log('signOut test')
+
       try {
         commit("clearError");
         commit("setLoading", true);
 
-        const endPoint = payload.business ? 'businesses' : 'specialists'
-        const response = await axios.delete(`/${endPoint}`, payload)
+        // const endPoint = payload.business ? 'businesses' : 'specialists'
+        // const response = await axios.delete(`/${endPoint}`, payload)
+        const response = await axios.delete(`/users/sign_out`)
+        console.log('response in auth', response)
+        if(response.data) {
+          localStorage.removeItem('app.currentUser');
+          localStorage.removeItem('app.currentUser.token');
+        }
         // if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
 
@@ -124,10 +159,9 @@ export default {
         commit("clearError");
         commit("setLoading", true);
 
-        const response = await axios.put(`/users/${payload.userId}/confirm_email`, {
-          "otp_secret": payload.code
-        })
-        // if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
+        // const response = await axios.put(`/users/${payload.userId}/confirm_email`, { "otp_secret": payload.code })
+        const response = await axios.put(`/users/confirm_email`, payload)
+
         if (response.data) {
           if(response.data.token) {
             commit('UPDATE_TOKEN', response.data.token)
@@ -349,14 +383,16 @@ export default {
         commit("clearError");
         commit("setLoading", true);
 
-        const { userType, paymentSourceId, planName } = { ...payload }
+        const { userType, paymentSourceId, planName, additionalUsers } = { ...payload }
 
         const endPoint = userType === 'business' ? 'business' : 'specialist'
         // WAIT LONGER
         axios.defaults.timeout = 10000;
-        const response = await axios.post(`/${endPoint}/upgrade/subscribe`, { plan: planName }, { params: {
-            payment_source_id: paymentSourceId
-          }})
+        const response = await axios.post(`/${endPoint}/upgrade/subscribe`, {
+          plan: planName,
+          payment_source_id: paymentSourceId,
+          seats_count: additionalUsers
+        })
         // if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
 
@@ -377,9 +413,8 @@ export default {
 
         // WAIT LONGER
         axios.defaults.timeout = 60000;
-        const response = await axios.post(`/${endPoint}/upgrade/subscribe`, { plan: planName, cnt: countPayedUsers }, { params: {
-            payment_source_id: paymentSourceId
-          }})
+        // const response = await axios.post(`/${endPoint}/upgrade/subscribe`, { plan: planName, cnt: countPayedUsers }, { params: { payment_source_id: paymentSourceId }})
+        const response = await axios.post(`/${endPoint}/upgrade/subscribe`, { plan: planName, seats_count: countPayedUsers })
         return response.data
 
         // let ids = [];
@@ -411,13 +446,15 @@ export default {
         // WAIT LONGER
         axios.defaults.timeout = 10000;
 
-        const { userType, stripeToken } = { ...payload }
+        const { userType, stripeToken, plaid } = { ...payload }
 
         const endPoint = userType === 'business' ? 'business/payment_settings' : 'specialist/payment_settings/create_card'
         // const response = await axios.post(`/${endPoint}/payment_settings?stripeToken=${payload.stripeToken}`)
-        const response = await axios.post(`/${endPoint}`, null, { params: {
+        let response
+        if (stripeToken) response = await axios.post(`/${endPoint}`, null, { params: {
             stripeToken: stripeToken,
           }})
+        if (plaid) response = await axios.post(`/${endPoint}`, plaid)
         // if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
 
@@ -452,7 +489,7 @@ export default {
 
         const { userType, id } = {...payload}
         const response = await axios.delete(`/${userType}/payment_settings/${id}`)
-        if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
+        // if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
         return response.data
 
       } catch (error) {
@@ -490,16 +527,25 @@ export default {
     },
     async resendOTP({commit}, payload) {
       try {
+        const response = await axios.post(`/otp_secrets`, payload)
+        return response.data
+      } catch (error) {
+        console.error(error);
+        throw error
+      }
+    },
+    async getStaticCollection({commit}) {
+      try {
         commit("clearError");
         commit("setLoading", true);
 
-        const response = await axios.post(`/otp_secrets`, payload)
-        // if (!response.ok) throw new Error(`Something wrong, (${response.status})`)
+        const response = await axios.get(`/static_collection`)
+        if (response.data) commit('SET_STATIC_COLLECTION', response.data)
         return response.data
 
       } catch (error) {
         console.error(error);
-        throw error
+        return error
       } finally {
         commit("setLoading", false)
       }
@@ -514,6 +560,9 @@ export default {
     },
     accessToken(state) {
       return state.accessToken
+    },
+    staticCollection(state) {
+      return state.staticCollection
     },
   },
 };

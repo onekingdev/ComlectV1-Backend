@@ -1,21 +1,17 @@
 <template lang="pug">
-  div
-    .container
+  .page
+    .page-header
+      h2.page-header__title {{ pageTitle }}
+    .card-body.white-card-body.card-body_full-height
       .row
-        .col-12.p-t-3.d-flex.justify-content-between.p-b-1
-          div
-            h2 {{ pageTitle }}
-    .container-fluid.p-x-0
-      .row
-        .col-12.px-0
-          .card-body.white-card-body.height-80
-            .container
-              .row.p-x-1
-                .col-md-7.col-sm-12.pl-0
-                  .card
-                    RegulatoryExamsTable(:exams="exams")
-                .col-md-5.col-sm-12.pl-0
-                  Tasks(:shortTable="true")
+        .col-lg-7.col-sm-12.pl-0.mb-3.mb-lg-0
+          .card
+            RegulatoryExamsTable(:exams="exams")
+        .col-lg-5.col-sm-12.pl-0
+          .card
+            .card-header.d-flex.justify-content-between
+              h3.m-y-0 Tasks
+            Tasks(:shortTable="true")
 </template>
 
 <script>
@@ -59,10 +55,4 @@
 
 <style>
   @import "./styles.css";
-</style>
-
-<style scoped>
-  .separator {
-    color: #ffc107;
-  }
 </style>

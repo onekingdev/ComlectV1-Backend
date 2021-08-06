@@ -14,7 +14,7 @@
             b-modal#DeletePostModal.fade(title="Delete Post")
               | Do you want to delete project post?
               template(#modal-footer="{hide}")
-                button.btn.btn-default(@click="hide") Cancel
+                button.btn.btn-link(@click="hide") Cancel
                 Delete(:url="url" @deleted="deleted")
                   button.btn.btn-dark Delete
     .white-card-body.p-y-1
@@ -23,7 +23,7 @@
           .col-sm-6
             .card
               .card-header
-                a.btn.btn-outline-dark.float-right(:href="`/business/project_posts/${project.id}/edit`") Edit
+                router-link.btn.btn-outline-dark.float-right(:to='`/business/project_posts/${project.id}/edit`') Edit
                 h3 Post Details
               .card-body
                 dl.row

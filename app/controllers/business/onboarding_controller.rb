@@ -12,20 +12,24 @@ class Business::OnboardingController < ApplicationController
   include SubscriptionHelper
   include SubscriptionCommon
 
+  # def index
+  #   render html: content_tag('business-onboarding-page', '',
+  #                            ':industry-ids': Industry.all.map(&proc { |ind|
+  #                                                                 { id: ind.id,
+  #                                                                   name: ind.name }
+  #                                                               }).to_json,
+  #                            ':jurisdiction-ids': Jurisdiction.all.map(&proc { |ind|
+  #                                                                         { id: ind.id,
+  #                                                                           name: ind.name }
+  #                                                                       }).to_json,
+  #                            ':sub-industry-ids': sub_industries(false).to_json,
+  #                            ':states': State.fetch_all_usa.to_json,
+  #                            ':timezones': timezones_array.to_json).html_safe,
+  #          layout: 'vue_onboarding'
+  # end
+
   def index
-    render html: content_tag('business-onboarding-page', '',
-                             ':industry-ids': Industry.all.map(&proc { |ind|
-                                                                  { id: ind.id,
-                                                                    name: ind.name }
-                                                                }).to_json,
-                             ':jurisdiction-ids': Jurisdiction.all.map(&proc { |ind|
-                                                                          { id: ind.id,
-                                                                            name: ind.name }
-                                                                        }).to_json,
-                             ':sub-industry-ids': sub_industries(false).to_json,
-                             ':states': State.fetch_all_usa.to_json,
-                             ':timezones': timezones_json).html_safe,
-           layout: 'vue_onboarding'
+    render html: content_tag('auth-layoyt', '').html_safe, layout: 'vue_onboarding'
   end
 
   def subscribe
@@ -40,7 +44,11 @@ class Business::OnboardingController < ApplicationController
     end
 
     if need_subscription?
-      plan = params[:checkout][:schedule].to_s.downcase.strip rescue nil
+      plan = begin
+               params[:checkout][:schedule].to_s.downcase.strip
+             rescue
+               nil
+             end
       return redirect_to '/business/onboarding', flash: { error: 'Wrong plan' } unless Subscription.plans.key?(plan)
 
       db_subscription = current_business.subscriptions.base.presence || Subscription.create(

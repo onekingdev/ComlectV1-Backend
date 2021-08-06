@@ -1,28 +1,42 @@
 <template lang="pug">
   tr
     td
-      ion-icon.m-r-1.pointer(@click="toggleDone(item)" v-bind:class="{ done_task: item.done_at }" name='checkmark-circle-outline')
-      TaskFormModal(:task-id="item.taskId" :occurence-id="item.oid" @saved="$emit('saved')") {{ item.body }} {{ item.name }}
+      .name
+        b-icon.pointer.m-r-1(font-scale="1" :icon="item.done_at ? 'check-circle-fill' : 'check-circle'" @click="toggleDone(item)" v-bind:class="{ done_task: item.done_at }")
+        //ion-icon.m-r-1.pointer(@click="toggleDone(item)" v-bind:class="{ done_task: item.done_at }" name='checkmark-circle-outline')
+        TaskModalEdit.link(:taskProp="item" @saved="$emit('saved')")
+          span(v-if="!item.done_at" ) {{ item.body }}
+          s(v-else) {{ item.body }}
+    td(v-if="!shortTable")
+      .d-flex.align-items-center
+        ion-icon.mr-1(v-if="linkedTo(item)" :name="linkedTo(item)" :class="linkedToClass(item)")
+        .link {{ item.linkable_type ? item.linkable_type : '---' }}
     td(v-if="!shortTable") {{ item.assignee }}
-    td.text-right(v-if="!shortTable" :class="{ overdue: isOverdue(item) }") {{ dateToHuman(item.remind_at) }}
-    td.text-right(:class="{ overdue: isOverdue(item) }") {{ dateToHuman(item.end_date) }}
-    td(v-if="!shortTable").text-right 0
-    td(v-if="!shortTable").text-right 0
+    td.text-right(v-if="!shortTable")
+      | {{ item.remind_at | dateToHuman}}
+    td.text-right(:class="{ overdue: isOverdue(item) }")
+      b-icon.mr-2(v-if="isOverdue(item)" icon="exclamation-triangle-fill" variant="warning")
+      | {{ item.end_date | dateToHuman }}
+    td.d-none(v-if="!shortTable").text-right 0
+    td.d-none(v-if="!shortTable").text-right 0
     td(v-if="!shortTable").text-right
-      b-dropdown.actions(size="xs" variant="light" class="m-0 p-0" right)
+      b-dropdown(size="xs" variant="none" class="m-0 p-0" right)
         template(#button-content)
           b-icon(icon="three-dots")
-        b-dropdown-item(:href="`/business/reminders/${item.id}`") Edit
-        b-dropdown-item {{ item.done_at ? 'Incomplite' : 'Complite' }}
-        b-dropdown-item(@click="duplicateTask(item.id)") Dublicate
+        //b-dropdown-item(:href="`/business/reminders/${item.id}`") Edit
+        TaskModalEdit(@editConfirmed="editConfirmed", :taskProp="item", :inline="false")
+          b-dropdown-item Edit
+        //b-dropdown-item {{ item.done_at ? 'Incomplite' : 'Complite' }}
+        //b-dropdown-item(@click="duplicateTask(item.id)") Duplicate
         TaskModalDelete(@deleteConfirmed="deleteTask(item.id)", :inline="false")
-          b-dropdown-item.delete Delete
+          b-dropdown-item Delete
 </template>
 
 <script>
 import { DateTime } from 'luxon'
-import { toEvent, isOverdue, splitReminderOccurenceId } from '@/common/TaskHelper'
+import { toEvent, isOverdue, splitReminderOccurenceId, linkedTo, linkedToClass } from '@/common/TaskHelper'
 import TaskFormModal from '@/common/TaskFormModal'
+import TaskModalEdit from '../modals/TaskModalEdit'
 import TaskModalDelete from '../modals/TaskModalDelete'
 
 export default {
@@ -30,7 +44,8 @@ export default {
   props: ['item', 'shortTable'],
   components: {
     TaskFormModal,
-    TaskModalDelete
+    TaskModalEdit,
+    TaskModalDelete,
   },
   computed: {
     progressWidth() {
@@ -51,15 +66,33 @@ export default {
   },
   methods: {
     isOverdue,
+    linkedTo,
+    linkedToClass,
     toggleDone(task) {
       const { taskId, oid } = splitReminderOccurenceId(task.id)
       const oidParam = oid !== null ? `&oid=${oid}` : ''
-      var target_state = (!(!!task.done_at)).toString()
-      fetch(`/api/business/reminders/${taskId}?done=${target_state}${oidParam}`, {
-        method: 'POST',
-        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
-      }).then(response => this.$emit('saved'))
+      let target_state = (!(!!task.done_at)).toString()
+
+       this.$store.dispatch('reminders/updateTaskStatus', { id: taskId, done: target_state })
+        .then(response => this.toast('Success', `Updated!`))
+        .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
     },
+    duplicateTask(id){
+      console.log('Hey duplicate it!', id)
+      // this.$store.dispatch('reminders/duplicateTask', { id: id })
+      //   .then(response => this.toast('Success', `The annual review has been duplicated! ${response.id}`))
+      //   .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
+    },
+    deleteTask(id){
+      this.$store.dispatch('reminders/deleteTask', { id })
+        .then(response => this.toast('Success', `The Task has been deleted!`))
+        .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
+    },
+    editConfirmed() {
+      console.log('editConfirmed')
+    }
+  },
+  filters: {
     dateToHuman(value) {
       const date = DateTime.fromJSDate(new Date(value))
       if (!date.invalid) {
@@ -69,30 +102,12 @@ export default {
         return value
       }
     },
-    duplicateTask(id){
-      console.log('Hey duplicate it!', id)
-      // this.$store.dispatch('reminders/duplicateTask', { id: id })
-      //   .then(response => this.toast('Success', `The annual review has been duplicated! ${response.id}`))
-      //   .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
-    },
-    // deleteTask(reviewId){
-    //   this.$store.dispatch('reminders/deleteTask', { id: reviewId })
-    //     .then(response => this.toast('Success', `The annual review has been deleted! ${response.id}`))
-    //     .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
-    // },
-    deleteTask(id) {
-      fetch(`${endpointUrl}${id}`, {method: 'DELETE', headers: {'Accept': 'application/json'}})
-        .then(response => response.json())
-        .then(response => {
-          console.log('result', response)
-          this.makeToast('Success', `Task successfully deleted!`)
-        })
-        .catch(error => this.makeToast('Error', `${error.message}`))
-    },
-  },
+  }
 }
 </script>
 
 <style scoped>
-
+  .link ion-icon {
+    color: var(--blue)
+  }
 </style>

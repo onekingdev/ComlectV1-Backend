@@ -73,7 +73,7 @@ class EmployeesController < ApplicationController
                   .first
     return unless @invitation
     session.delete(:employee_business_id)
-    session[:employee_business_id] = @invitation&.department&.business_id
+    session[:employee_business_id] = @invitation&.team&.business_id
   end
 
   def init_tasks_calendar_grid
@@ -83,10 +83,10 @@ class EmployeesController < ApplicationController
 
   def mirror
     businesses = if current_specialist.seat?
-                   current_specialist.businesses_to_manage
-                 else
-                   current_specialist.manageable_ria_businesses
-                 end
+      current_specialist.businesses_to_manage
+    else
+      current_specialist.manageable_ria_businesses
+    end
     business = businesses.find_by(id: params[:business_id])
     return redirect_to specialists_projects_path unless business
 

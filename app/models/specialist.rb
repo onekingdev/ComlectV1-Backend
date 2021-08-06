@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 class Specialist < ApplicationRecord
   belongs_to :user, autosave: true
-  belongs_to :team, foreign_key: :specialist_team_id, optional: true
+  belongs_to :team, foreign_key: :team_id, optional: true
 
   belongs_to :rewards_tier, optional: true
 
@@ -39,16 +38,14 @@ class Specialist < ApplicationRecord
   has_one :referral, as: :referrable
   has_many :referral_tokens, as: :referrer
   has_many :specialist_invitations, class_name: 'Specialist::Invitation'
-  # rubocop:disable Metrics/LineLength
   has_many :manageable_ria_businesses, -> { joins(:industries).where("industries.name = 'Investment Adviser'").where(ria_dashboard: true) }, through: :active_projects, class_name: 'Business', source: :business
-  # rubocop:enable Metrics/LineLength
+
   has_many :ported_subscriptions
   has_many :ported_businesses
   has_many :payment_sources, class_name: 'Specialist::PaymentSource'
   has_many :reminders, as: :remindable
   has_and_belongs_to_many :local_projects
-  has_many :business_specialists_roles, foreign_key: :specialist_id
-  has_many :specialist_roles, source: :specialist, through: :business_specialists_roles
+  has_many :specialists_business_roles
   has_many :subscriptions, foreign_key: :specialist_id
   validate if: -> { time_zone.present? } do
     errors.add :time_zone unless ActiveSupport::TimeZone.all.collect(&:name).include?(time_zone)
@@ -273,10 +270,10 @@ class Specialist < ApplicationRecord
     while Specialist.find_by_sql(['SELECT * from specialists WHERE username = ?', generated]).count.positive?
       ext_num = generated.scan(/\d/).join('')
       generated = if !ext_num.empty?
-                    "#{src}#{ext_num.to_i + 1}"
-                  else
-                    "#{src}1"
-                  end
+        "#{src}#{ext_num.to_i + 1}"
+      else
+        "#{src}1"
+      end
     end
     generated.delete(' ')
   end
@@ -386,7 +383,6 @@ class Specialist < ApplicationRecord
     GenerateReferralTokensJob.perform_later(self)
   end
 
-  # rubocop:disable Style/GuardClause
   def calc_forum_upvotes
     if user.upvotes > forum_upvotes_for_review
       update(forum_upvotes_for_review: user.upvotes)
@@ -396,7 +392,6 @@ class Specialist < ApplicationRecord
       end
     end
   end
-  # rubocop:enable Style/GuardClause
 
   def stripe_customer
     payment_sources.where.not(stripe_customer_id: nil).first&.stripe_customer_id
@@ -406,4 +401,3 @@ class Specialist < ApplicationRecord
     payment_sources.find_by(primary: true)
   end
 end
-# rubocop:enable Metrics/ClassLength

@@ -1,9 +1,18 @@
+const userTypeLocalStorage = localStorage.getItem('app.userType') ? localStorage.getItem('app.userType') : ''
+
 export default {
   state: {
     loading: false,
     error: null,
     settings: {
       authProvider: 'jwt',
+    },
+    leftSidebar: 'default',
+    userType: userTypeLocalStorage ? JSON.parse(userTypeLocalStorage) : '',
+    overlay: {
+      active: false,
+      message: '',
+      status: ''
     }
   },
   mutations: {
@@ -15,6 +24,15 @@ export default {
     },
     clearError (state) {
       state.error = null
+    },
+    changeSidebar (state, payload) {
+      state.leftSidebar = payload
+    },
+    changeUserType (state, payload) {
+      state.userType = payload
+    },
+    changeOverlay (state, payload) {
+      state.overlay = payload
     }
   },
   actions: {
@@ -26,7 +44,10 @@ export default {
     },
     clearError ({commit}) {
       commit('clearError')
-    }
+    },
+    setOverlay ({commit}, payload) {
+      commit('changeOverlay', payload)
+    },
   },
   getters: {
     loading (state) {
@@ -37,6 +58,15 @@ export default {
     },
     settings (state) {
       return state.settings
+    },
+    leftSidebar (state) {
+      return state.leftSidebar
+    },
+    userType (state) {
+      return state.userType
+    },
+    overlay (state) {
+      return state.overlay
     },
   }
 }

@@ -1,10 +1,10 @@
 <template lang="pug">
   div
-    .row.my-3
-      .col-4
-        .position-relative
+    .row
+      .col-lg-4.col-12
+        .position-relative.p-b-20
           b-icon.icon-searh(icon='search')
-          input.form-control(type="text" placeholder="Search" v-model="searchInput", @keyup="searching")
+          input.form-control.form-control_search(type="text" placeholder="Search" v-model="searchInput", @keyup="searching")
           button.btn-clear(v-if="isActive" @click="clearInput")
             b-icon.icon-clear(icon='x-circle')
       .col-4(v-if="policiesComputed.length !== 0 && searchInput")
@@ -24,9 +24,9 @@
             .table__cell.table__cell_title.table__cell_clickable.text-right
               | Date Created
               b-icon.ml-2(icon='chevron-expand')
-            .table__cell.table__cell_title.table__cell_clickable.text-right
-              | Risk Level
-              b-icon.ml-2(icon='chevron-expand')
+            //.table__cell.table__cell_title.table__cell_clickable.text-right
+            //  | Risk Level
+            //  b-icon.ml-2(icon='chevron-expand')
             .table__cell(style="width: 40px")
         nested-draggable(v-model='policiesComputed', :policiesList="policies")
         .table(v-if="!loading && policiesComputed.length === 0")

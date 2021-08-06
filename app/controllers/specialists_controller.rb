@@ -25,19 +25,23 @@ class SpecialistsController < ApplicationController
     @specialist = Specialist.preload_association.find_by(username: params[:id])
   end
 
+  # def new
+  #   render html: content_tag('specialist-onboarding-page', '',
+  #                            ':industry-ids': Industry.all.map(&proc { |ind|
+  #                                                                 { id: ind.id,
+  #                                                                   name: ind.name }
+  #                                                               }).to_json,
+  #                            ':jurisdiction-ids': Jurisdiction.all.map(&proc { |ind|
+  #                                                                         { id: ind.id,
+  #                                                                           name: ind.name }
+  #                                                                       }).to_json,
+  #                            ':sub-industry-ids': sub_industries(true).to_json,
+  #                            ':states': State.fetch_all_usa.to_json,
+  #                            ':timezones': timezones_array.to_json).html_safe, layout: 'vue_onboarding'
+  # end
+
   def new
-    render html: content_tag('specialist-onboarding-page', '',
-                             ':industry-ids': Industry.all.map(&proc { |ind|
-                                                                  { id: ind.id,
-                                                                    name: ind.name }
-                                                                }).to_json,
-                             ':jurisdiction-ids': Jurisdiction.all.map(&proc { |ind|
-                                                                          { id: ind.id,
-                                                                            name: ind.name }
-                                                                        }).to_json,
-                             ':sub-industry-ids': sub_industries(true).to_json,
-                             ':states': State.fetch_all_usa.to_json,
-                             ':timezones': timezones_json).html_safe, layout: 'vue_onboarding'
+    render html: content_tag('auth-layoyt', '').html_safe, layout: 'vue_onboarding'
   end
 
   def create
@@ -47,6 +51,9 @@ class SpecialistsController < ApplicationController
     )
     @specialist.apply_quiz(cookies)
     @specialist.username = @specialist.generate_username
+
+    @specialist.skip_confirmation!
+
     if @specialist.save(context: :signup)
       @invitation&.accepted!(@specialist)
       sign_in @specialist.user
@@ -54,11 +61,10 @@ class SpecialistsController < ApplicationController
       @specialist.user.update_cookie_agreement(request.remote_ip)
       mixpanel_track_later 'Sign Up'
       SpecialistMailer.welcome(@specialist).deliver_later
-      # rubocop:disable Metrics/LineLength
       %i[complect_s_address_1 complect_s_address_2 complect_s_city complect_s_state complect_s_zipcode complect_s_user_attributes_email complect_s_step21 complect_s_step4 complect_s_step5 complect_s_jur_other complect_s_states_canada complect_s_states_usa].each do |c|
         cookies.delete c
       end
-      # rubocop:enable Metrics/LineLength
+
       return redirect_to specialists_dashboard_path
     end
 

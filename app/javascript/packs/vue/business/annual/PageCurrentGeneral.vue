@@ -18,7 +18,7 @@
     .reviews__tabs
       b-tabs(content-class="mt-0")
         b-tab(title="Detail" active)
-          .container-fluid(v-if="review")
+          .p-x-40(v-if="review")
             .row
               .col-md-3
                 ReviewsList(
@@ -108,7 +108,7 @@
                                     b-dropdown-item(@click="duplicateEntry(annualReviewEmployeeIndex-1)") Duplicate Entry
                                     b-dropdown-item.delete(@click="deleteEntry(annualReviewEmployeeIndex)") Delete Entry
                           b-input-group
-                            b-button(variant='primary' class="btn-default" @click="addEntry")
+                            b-button(variant='primary' class="btn-none" @click="addEntry")
                               b-icon.mr-2(icon='plus-circle-fill')
                               | Add Entry
                   .d-flex.justify-content-end.p-y-1
@@ -164,7 +164,7 @@ export default {
   },
   async mounted () {
     try {
-      await this.getCurrentReviewReview(this.annualId)
+      await this.getCurrentReviewReview(+this.annualId)
     } catch (error) {
       this.makeToast('Error', error.message)
     }
@@ -212,7 +212,7 @@ export default {
           })
           .catch((error) => console.error(error))
 
-        await this.getCurrentReviewReview(this.annualId)
+        await this.getCurrentReviewReview(+this.annualId)
 
       } catch (error) {
         this.makeToast('Error', error.message)
@@ -242,7 +242,7 @@ export default {
           })
           .catch((error) => console.error(error))
         this.makeToast('Success', "Annual review marked as complete!")
-        await this.getCurrentReviewReview(this.annualId)
+        await this.getCurrentReviewReview(+this.annualId)
       } catch (error) {
         this.makeToast('Error', error.message)
       }
@@ -266,7 +266,7 @@ export default {
           this.toast('Success', `The annual review has been deleted! ${response.id}`)
           window.location.href = `${window.location.origin}/business/annual_reviews`
         })
-        .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
+        .catch(error => this.toast('Error', `Something wrong! ${error.message}`, true))
     },
     makeToast(title, str) {
       this.$bvToast.toast(str, { title, autoHideDelay: 5000 })

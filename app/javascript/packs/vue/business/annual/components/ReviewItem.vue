@@ -1,8 +1,7 @@
 <template lang="pug">
   tr
     td
-      a.link(:href="`/business/annual_reviews/${item.id}`")
-        | {{ item.name }}
+      router-link.link(:to='`/business/annual_reviews/${item.id}`') {{ item.name }}
     td
       <!--.reviews-table__progress.d-flex-->
         <!--.reviews-table__progress-numbers-->
@@ -21,7 +20,7 @@
         | Download
     td.text-right
       .actions
-        b-dropdown(size="sm" variant="light" class="m-0 p-0" right)
+        b-dropdown(size="sm" variant="none" class="m-0 p-0" right)
           template(#button-content)
             b-icon(icon="three-dots")
           b-dropdown-item(:href="`/business/annual_reviews/${item.id}`") Edit
@@ -59,12 +58,12 @@ export default {
     duplicateReview(reviewId){
       this.$store.dispatch('annual/duplicateReview', { id: reviewId })
         .then(response => this.toast('Success', `The annual review has been duplicated! ${response.id}`))
-        .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
+        .catch(error => this.toast('Error', `Something wrong! ${error.message}`, true))
     },
     deleteReview(reviewId){
       this.$store.dispatch('annual/deleteReview', { id: reviewId })
         .then(response => this.toast('Success', `The annual review has been deleted! ${response.id}`))
-        .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
+        .catch(error => this.toast('Error', `Something wrong! ${error.message}`, true))
     }
   }
 }

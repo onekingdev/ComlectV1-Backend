@@ -6,8 +6,11 @@ import marketplace from "./businesModules/marketplace";
 import annual from "./businesModules/annual"
 import filefolders from "./businesModules/filefolders"
 import exams from "./businesModules/exams"
+import settings from "./businesModules/settings"
 import tasks from "./businesModules/tasks"
+import projects from "./businesModules/projects"
 import risks from "./businesModules/risks";
+// import auth from "./commonModules/auth";
 import shared from "./commonModules/shared";
 
 Vue.use(Vuex);
@@ -17,7 +20,7 @@ const URL_PROJECT_POST = `/business/project_posts/:id`;
 const URL_API_PROJECT = `/api${URL_PROJECT_SHOW}`;
 const URL_API_PROJECT_APPLICATIONS = `/api${URL_PROJECT_SHOW}/applications`;
 const URL_API_PROJECT_HIRES = `/api${URL_PROJECT_SHOW}/hires`;
-const URL_POST_LOCAL_PROJECT = "/business/projects/new?local_project_id=:id";
+const URL_POST_LOCAL_PROJECT = "/business/projects/new/:id";
 const URL_PROJECT_TIMESHEETS = `${URL_PROJECT_SHOW}/timesheets`;
 const URL_API_PROJECT_TIMESHEETS = `/api${URL_PROJECT_TIMESHEETS}`;
 
@@ -53,6 +56,7 @@ const store = new Vuex.Store({
     //   //
     //   // }
     // },
+    // auth,
     shared,
     annual: {
       namespaced: true,
@@ -70,9 +74,17 @@ const store = new Vuex.Store({
       namespaced: true,
       ...exams,
     },
+    settings: {
+      namespaced: true,
+      ...settings,
+    },
     reminders: {
       namespaced: true,
       ...tasks,
+    },
+    projects: {
+      namespaced: true,
+      ...projects,
     },
   },
 });

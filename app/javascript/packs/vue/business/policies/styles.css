@@ -1,34 +1,7 @@
 /* ---------- Policy page ---------- */
-.icon-searh {
-  position: absolute;
-  top: 50%;
-  left: 0.5rem;
-  transform: translateY(-50%);
-}
 
-.btn-clear {
-  position: absolute;
-  top: 50%;
-  right: .2rem;
-  /*padding: .8rem;*/
-  border: none;
-  background-color: transparent;
-  border-radius: 50%;
-  transition: all 200ms ease;
-  transform: translateY(-50%);
-}
+/* ---------- Policy List Tabs ---------- */
 
-.btn-clear:hover,
-
-.btn-clear:active {
-  background-color: #ced4da;
-  box-shadow: 0 3px rgba(255, 193, 7, 1)
-}
-
-.form-control {
-  padding-left: 2rem;
-  padding-right: 2rem;
-}
 
 /* ---------- Policy table ---------- */
 .table {
@@ -42,7 +15,9 @@
 .table__cell {
   display: table-cell;
   /*padding: .8rem 1.5rem;*/
-  padding: .5rem 0;
+  padding: 0.6875rem 0.625rem;
+  font-size: 0.875rem;
+  vertical-align: middle;
   border-bottom: solid 1px #ced4da;
 }
 
@@ -50,16 +25,54 @@
   padding: .5rem 1.7rem;
 }
 
+.table__cell_first,
 .table__cell:first-child {
   width: 40%;
+  word-break: break-all;
+}
+
+.table__cell:nth-child(2) {
+  width: auto;
+  text-align: left;
+}
+.table__cell:nth-child(3) {
+  width: auto;
+  text-align: right;
+}
+.table__cell:nth-child(4) {
+  width: auto;
+  text-align: right;
+}
+
+.table__cell:nth-child(5) {
+  width: auto;
+  text-align: right;
+}
+
+.table__cell:last-child {
+  width: 40px;
+}
+
+@media (max-width: 1200px) {
+  .table__cell_first,
+  .table__cell:first-child {
+    width: 30%;
+  }
+}
+
+@media (max-width: 1000px) {
+  .table__cell_first,
+  .table__cell:first-child {
+    width: 20%;
+  }
 }
 
 .table__cell_title {
-  color: var(--gray);
+  color: #797B7E;
 }
 
 .table__cell_name {
-  color: var(--blue);
+  color: #2180C2;
 }
 
 .table__cell_name:hover {
@@ -75,24 +88,10 @@
   transform: scale(1.2);
 }
 
-.dropdown-toggle {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
+.dropdown-toggle.link .b-icon.bi {
+  font-size: 0.875rem;
 }
 
-.dropdown-toggle::after {
-  display: none;
-}
-
-.dropdown-toggle svg {
-  fill: #000;
-  transition: all 200ms ease-in;
-}
-
-.dropdown-toggle.active svg {
-  transform: rotate(90deg);
-}
 
 .dropdown-items {
   display: none;
@@ -157,7 +156,7 @@
 
 /* ---------- Policy Tabs ---------- */
 .policy .nav-tabs {
-  margin-bottom: 2rem;
+  /*margin-bottom: 2rem;*/
   background-color: white;
   border-top: 1px solid #dee2e6;
 }
@@ -178,7 +177,7 @@
 }
 
 .policy .tab-pane {
-  margin: 0 3rem 2rem 2rem;
+  /*margin: 0 3rem 2rem 2rem;*/
   border: solid 1px #dee2e6;
   border-radius: 3px;
 }
@@ -295,82 +294,6 @@
   border: solid 1px #e9ebee;
 }
 
-.actions {
-  position: relative;
-  display: block;
-  text-align: right;
-}
-
-.actions__btn {
-  padding: 0 1rem;
-  width: 2rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-  background-color: transparent;
-  border: none;
-  border-radius: 3px;
-}
-
-.actions__btn.active {
-  background-color: rgba(0, 0, 0, .1);
-}
-
-.actions-dropdown {
-  display: none;
-  position: absolute;
-  z-index: 2;
-  top: 100%;
-  right: 0;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  text-align: left;
-  min-width: 10rem;
-  background-color: white;
-  border: solid 1px #e9ebee;
-  border-radius: 3px;
-  box-shadow: 3px 3px 5px rgba(0, 0, 0, .3)
-}
-
-.actions-dropdown.active {
-  display: block;
-}
-
-.actions .dropdown-item,
-.actions-dropdown__item {
-  display: flex;
-  padding: .7rem 1.5rem;
-  font-size: 1rem;
-  text-wrap: none;
-  cursor: pointer;
-  transition: all 200ms ease-in;
-}
-
-.actions .dropdown-item:hover,
-.actions .dropdown-item:active
-.actions-dropdown__item:hover,
-.actions-dropdown__item:active {
-  /*color: var(--white);*/
-  background-color: rgba(0, 123, 255, .2);
-}
-
-.actions .delete .dropdown-item:hover,
-.actions .delete .dropdown-item:active,
-.policy-actions .delete .dropdown-item:hover,
-.policy-actions .delete .dropdown-item:active,
-.actions-dropdown__item.delete:hover,
-.actions-dropdown__item.delete:active {
-  background-color: rgba(255, 0, 0, .2);
-}
-
-.actions-dropdown__item .link {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  color: inherit;
-  text-decoration: none;
-}
-
 /* ---------- Policy History ---------- */
 .policy-history {
   padding-bottom: 2rem;
@@ -485,52 +408,4 @@
 
 .tree4 .draggable-placeholder-inner {
   background-color: orangered;
-}
-
-
-/* ---------- Modal ---------- */
-.modal-dialog {
-  top: 15%;
-}
-
-/* ---------- Buttons ---------- */
-
-/*a.btn,*/
-/*button.btn {*/
-  /*padding: .5rem 1.2rem;*/
-  /*font-weight: 600;*/
-  /*transition: all 200ms ease-in;*/
-/*}*/
-/*a.btn {*/
-  /*padding: .6rem 1.2rem;*/
-/*}*/
-/*a.btn:hover,*/
-/*a.btn:active,*/
-/*button.btn:hover,*/
-/*button.btn:active {*/
-  /*opacity: .6;*/
-  /*transform: translateY(3px);*/
-  /*box-shadow: 0 3px rgba(255, 193, 7, 1)*/
-/*}*/
-
-button.btn__menu,
-button.btn__close {
-  padding: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.policy-actions .dropdown-item,
-.delete button,
-.delete button{
-  transition: all 200ms ease-in;
-}
-
-.delete button:hover,
-.delete button:active{
-  background-color: rgba(255, 0, 0, .2);
-}
-
-.link {
-  color: var(--blue);
 }

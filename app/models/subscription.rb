@@ -9,6 +9,14 @@ class Subscription < ActiveRecord::Base
 
   SPECIALIST_PLANS = %w[specialist_pro free].freeze
 
+  BUSINESS_PLANS = {
+    1 => 'free',
+    2 => 'team_tier_monthly',
+    3 => 'team_tier_annual',
+    4 => 'business_tier_monthly',
+    5 => 'business_tier_annual'
+  }.freeze
+
   enum plan: %w[
     seats_monthly
     seats_annual
@@ -60,9 +68,7 @@ class Subscription < ActiveRecord::Base
 
   def self.get_plan_id(plan)
     case plan.to_s.downcase
-    when 'monthly' then ENV['STRIPE_SUB_CCC_MONTHLY']
     when 'seats_monthly' then ENV['STRIPE_SUB_SEATS_MONTHLY']
-    when 'annual' then ENV['STRIPE_SUB_CCC_ANNUAL']
     when 'seats_annual' then ENV['STRIPE_SUB_SEATS_ANNUAL']
     when 'team_tier_monthly' then ENV['STRIPE_SUB_CCC_TEAM_TIER_MONTHLY']
     when 'team_tier_annual' then ENV['STRIPE_SUB_CCC_TEAM_TIER_ANNUAL']

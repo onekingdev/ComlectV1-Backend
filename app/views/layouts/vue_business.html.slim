@@ -1,5 +1,6 @@
 doctype html
 html lang=I18n.locale
+  / this layout is deprecated, use vue_business_layout.html.slim with vue-router
   head
     script(src='https://unpkg.com/ionicons@5.2.3/dist/ionicons.js')
 
@@ -100,7 +101,7 @@ body class="#{controller_name} #{action_name}"
                     ion-icon(name='search-outline')
                     | Exam Management
                 li.nav-item
-                  a.btn(aria-current='page' href='#')
+                  a.btn(aria-current='page' href='/business/settings' class="#{'active' if params[:controller] == 'business/settings'}")
                     ion-icon(name='settings-outline')
                     | Settings
             h3.d-flex.justify-content-between(role="button" v-b-toggle.reports="")
@@ -138,8 +139,9 @@ body class="#{controller_name} #{action_name}"
                 a.nav-item.nav-link(href='#') Community
               .navbar-nav
                 a.btn.btn-primary(href='/business/specialists' style="margin-top: 18px;")  Find an Expert
-                .dropdown#notifications_dropdown
-                  ion-icon(name='notifications-outline')
+                .dropdown#notifications_dropdown.active
+                  a.link.text-dark(href='/business/settings/notifications' class="#{'active' if params[:controller] == 'business/notification_settings'}")
+                    ion-icon(name='notifications-outline')
                 .dropdown#profile_dropdown.p-x-2
                   #profile_dropdown_btn(@click="isProfileMenuOpen = !isProfileMenuOpen" :aria-expanded="isProfileMenuOpen")
                     - if current_business
@@ -148,7 +150,7 @@ body class="#{controller_name} #{action_name}"
                     ion-icon.m-l-1(name='chevron-down-outline')
                   ul.dropdown-menu(aria-labelledby="profile_dropdown_btn" :class="{ show: isProfileMenuOpen }")
                     li
-                      a.dropdown-item(href="#") Edit Profile
+                      a.dropdown-item(aria-current='page' href='/business/profile' class="#{'active' if params[:controller] == 'business/profile'}") Edit Profile
                     li
                       form(method="POST" action=destroy_user_session_path)
                         input(type="hidden" name="authenticity_token" value=form_authenticity_token)

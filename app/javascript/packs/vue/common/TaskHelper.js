@@ -24,7 +24,7 @@ const cssClass = task => isComplete(task) ? 'task-is-complete'
                        : isProject(task) ? 'task-is-project'
                        : isTask(task) ? 'task-is-task' : ''
 const iconArray = (task) => [
-  isComplete(task) ? 'checkbox-outline' : isOverdue(task) ? 'warning-outline' : null,
+  isComplete(task) ? 'checkbox-outline' : isOverdue(task) ? 'warning' : null,
   isProject(task) ? 'list-outline' : isTask(task) ? 'checkbox-outline' : null
 ].filter(i => i).filter((v, i, a) => a.indexOf(v) === i)
 const splitReminderOccurenceId = val => {
@@ -34,9 +34,18 @@ const splitReminderOccurenceId = val => {
     : { taskId: val, oid: null }
 }
 const badgeClass = project => project.status == "pending" ? 'badge-secondary'
-                            : project.status == "inprogress" ? "badge-light"
+                            : project.status == "inprogress" ? "badge-progress"
                             : project.status == "complete" ? "badge-success"
                             : project.status == "draft" ? 'badge-secondary'
+                            : project.status == "published" ? 'badge-success'
                             : isOverdue(project) ? "badge-warning" : ''
 
-export { isProject, isTask, isOverdue, isComplete, toEvent, cssClass, splitReminderOccurenceId, iconArray, badgeClass }
+const linkedTo = linkableType => linkableType.linkable_type === 'CompliancePolicy' ? 'document-text'
+                               : linkableType.linkable_type === "AnnualReport" ? "reader"
+                               : linkableType.linkable_type === "LocalProject" ? "list-circle" : ''
+
+const linkedToClass = linkableType => linkableType.linkable_type === 'CompliancePolicy' ? 'black'
+                                    : linkableType.linkable_type === "AnnualReport" ? "yellow"
+                                    : linkableType.linkable_type === "LocalProject" ? "blue" : ''
+
+export { isProject, isTask, isOverdue, isComplete, toEvent, cssClass, splitReminderOccurenceId, iconArray, badgeClass, linkedTo, linkedToClass }

@@ -1,54 +1,32 @@
 <template lang="pug">
-  div
-    .container-fluid
-      TopNavbar
-      main.row#main-content
-        .col-xl-4.col-lg-6.col-md-8.m-x-auto
-          .card-body.white-card-body.registration
-            Loading
-            #step1.form(v-if='!loading' :class="step1 ? 'd-block' : 'd-none'")
-              h1.text-center Reset password via email
-              p.text-center Enter the email address used to log in to your Complect
-                br
-                | account and we'll send you a link to reset your password. If you
-                br
-                | are a business, we'll send the email to your key contact.
-              div
-                b-alert(:show='dismissCountDown' dismissible fade variant='danger' @dismiss-count-down='countDownChanged')
-                  | {{ error }}
-                  br
-                  | This alert will dismiss after {{ dismissCountDown }} seconds...
-                b-form(@submit='onSubmit1' v-if='show')
-                  b-form-group#input-group-1(label='Email Address:' label-for='input-1')
-                    b-form-input#input-1(v-model='form.email' type='email' placeholder='Email' required)
-                    .invalid-feedback.d-block(v-if="errors['user.email']") 'Email Address' {{ ...errors['user.email'] }}
-                  b-button.w-100(type='submit' variant='dark') Reset
-                  hr
-                  b-form-group.text-center.forgot-password.m-t-1
-                    .m-t-1
-                      .forgot-password.m-t-1.m-b-2
-                        a.link(data-remote='true' href='/users/sign_in') Cancel
-                b-card.mt-3(header='Form Data Result')
-                  pre.m-0 {{ form }}
-            #step2.form(v-if='!loading' :class="step2 ? 'd-block' : 'd-none'")
-              h1.text-center You successfuly reseted password!
-              p.text-center You will be redirect to the sign in page!
-              .text-center
-                b-icon( icon="circle-fill" animation="throb" font-scale="4")
-                  <!--ion-icon(name="checkmark-circle-outline" size="large")-->
+  .card.registration
+    .card-body.white-card-body
+      //Loading
+      // #step1.form(v-if='!loading' :class="step1 ? 'd-block' : 'd-none'")
+      .form
+        .registration-welcome
+          h1.registration__title Reset Password
+          p.registration__subtitle.registration__subtitle_forgot Please enter the email address used to log into your account to receive a link to reset your password. If you no longer have access to that email account, please contact us at help@complect.com for assistance.
+        div
+          .invalid-feedback.d-block.text-center.m-b-20(v-if="error") {{ error }}
+          b-form(@submit='onSubmit1' v-if='show')
+            b-form-group#input-group-1.m-b-20(label='Email Address:' label-for='input-1')
+              b-form-input#input-1(v-model='form.email' type='email' placeholder='Email' required)
+              .invalid-feedback.d-block(v-if="errors['user.email']") {{ errors['user.email'] }}
+            b-button.registration__btn.w-100(type='submit' variant='dark') Reset
+    .card-footer
+      b-form-group.text-center.mb-0
+        router-link.btn.link(to='/users/sign_in') Cancel
 </template>
 
 <script>
-  import Loading from '@/common/Loading/Loading'
+  // import Loading from '@/common/Loading/Loading'
   import TopNavbar from "../components/TopNavbar";
   import ResetPasswordModal from './Modals/ResetPasswordModal'
 
-  const random = Math.floor(Math.random() * 1000);
-
   export default {
-    props: ['industryIds', 'jurisdictionIds', 'subIndustryIds', 'states'],
     components: {
-      Loading,
+      // Loading,
       TopNavbar,
       ResetPasswordModal,
     },
@@ -63,51 +41,41 @@
         show: true,
         error: '',
         errors: {},
-        step1: true,
-        step2: false,
-        dismissSecs: 8,
-        dismissCountDown: 0,
-        showDismissibleAlert: false,
       }
     },
     methods: {
-      makeToast(title, str) {
-        this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
-      },
       selectType(type){
         this.userType = type
       },
       onSubmit1(event) {
         event.preventDefault()
         // clear errors
+        this.error = ''
         this.errors = []
 
-        let dataToSend;
-
-        dataToSend = {
+        const data = {
           "email": this.form.email,
         }
 
-        this.$store.dispatch('resetEmail', dataToSend)
+        this.$store.dispatch('resetEmail', data)
           .then((response) => {
-
             if (response.errors) {
               const properties = Object.keys(response.errors);
               for (const type of Object.keys(response.errors)) {
                 this.errors = response.errors[type]
-                this.makeToast('Error', `Form has errors! Please recheck fields! ${error}`)
-                // Object.keys(response.errors[type]).map(prop => response.errors[prop].map(err => this.makeToast(`Error`, `${prop}: ${err}`)))
+                // this.toast('Error', `Form has errors! Please recheck fields! ${error}`)
+                // Object.keys(response.errors[type]).map(prop => response.errors[prop].map(err => this.toast(`Error`, `${prop}: ${err}`)))
               }
-              return
             }
-
             if (!response.errors) {
-              this.userId = response.userid
-              this.makeToast('Success', `${response.message}`)
+              // this.userId = response.userid
+              // this.toast('Success', `${response.message}`)
 
               // open step 2
-              this.step1 = false
-              this.step2 = true
+              // this.step1 = false
+              // this.step2 = true
+
+              window.location.href = `${window.location.origin}/users/sign_in`
             }
 
             // setTimeout(() => {
@@ -116,28 +84,18 @@
           })
           .catch((error) => {
             console.error(error)
-            for (const type of Object.keys(error.errors)) {
-              this.makeToast('Error', `${error.errors[type]}`)
-              this.error = `Error! ${error.errors[type]}`
-            }
-            this.showAlert()
+            this.error = `${error.status} ${error.statusText}`
           })
-      },
-      countDownChanged(dismissCountDown) {
-        this.dismissCountDown = dismissCountDown
-      },
-      showAlert() {
-        this.dismissCountDown = this.dismissSecs
       },
     },
     computed: {
-      loading() {
-        return this.$store.getters.loading;
-      },
+      // loading() {
+      //   return this.$store.getters.loading;
+      // },
     },
   }
 </script>
 
-<style scoped>
+<style module>
   @import "../styles.css";
 </style>

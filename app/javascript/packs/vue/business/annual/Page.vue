@@ -1,47 +1,37 @@
 <template lang="pug">
-  div
-    .container
-      .row
-        .col-12
-          .row.p-x-1
-            .col-md-12.p-t-3.d-flex.justify-content-between.p-b-1.p-x-0
-              div
-                h2 Internal Reviews
-              div
-                AnnualModalCreate(:reviews="reviews")
-                  button.btn.btn-dark.float-end New Review
-    .card-body.white-card-body
-      .container
-        .row
-          .col-12
-            b-alert.mb-2(show variant="primary" dismissible)
-              .d-flex.justify-content-between.align-items-center
-                .d-block
-                  h4 Key Regulatory Developments 2021
-                  p.mb-0 New regulatory changes can have an impact on your policies and procedures.
-                b-button.ml-auto(type="button" variant="light") View
-            p Rule 206(4)-7 under the Adviser Act and Rule 38a-1 under the Company Act require that you conduct an annual review of your compliance program no less than annually. Your last completed Annual Review was submitted on&nbps;
-              a.link(href="#") 7/24/2020
-        .row
-          .col-12
-            Loading
-            ReviewTable(v-if="!loading" :reviews="reviews")
-            table.table.reviews-table(v-if="!reviews.length && !loading")
-              tbody
-                tr
-                  td.text-center
-                    h3 Annual Reviews not exist
+  .page
+    .page-header
+      h2.page-header__title Internal Reviews
+      .page-header__actions
+        AnnualModalCreate(:reviews="reviews")
+          button.btn.btn-dark.float-end New Review
+    .card-body.white-card-body.card-body_full-height
+      b-alert.mb-2(show variant="primary" dismissible)
+        .d-flex.justify-content-between.align-items-center
+          .d-block
+            h4 Key Regulatory Developments 2021
+            p.mb-0 New regulatory changes can have an impact on your policies and procedures.
+          b-button.ml-auto(type="button" variant="light") View
+      p Rule 206(4)-7 under the Adviser Act and Rule 38a-1 under the Company Act require that you conduct an annual review of your compliance program no less than annually. Your last completed Annual Review was submitted on&nbsp;
+        a.link(href="#") 7/24/2020
+      Loading
+      ReviewTable(v-if="!loading && reviews.length" :reviews="reviews")
+      .row.h-100(v-if="!reviews.length && !loading")
+        .col.h-100.text-center
+          EmptyState
 </template>
 
 <script>
 import { mapGetters } from "vuex"
 import Loading from '@/common/Loading/Loading'
+import EmptyState from '@/common/EmptyState'
 import AnnualModalCreate from "./modals/AnnualModalCreate"
 import ReviewTable from "./components/ReviewTable"
 
 export default {
   components: {
     Loading,
+    EmptyState,
     ReviewTable,
     AnnualModalCreate
   },
@@ -57,13 +47,10 @@ export default {
     try {
       await this.$store.dispatch('annual/getReviews')
     } catch (error) {
-      this.makeToast('Error', error.message)
+      this.toast('Error', error.message, true)
     }
   },
   methods: {
-    makeToast(title, str) {
-      this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
-    }
   }
 }
 </script>
@@ -82,9 +69,5 @@ export default {
     border-radius: 0;
     border-width: 0;
     box-shadow: inset 5px 0 0 #0479ff;
-  }
-  .alert-dismissible .close {
-    top: 10px;
-    font-size: 1.8rem;
   }
 </style>

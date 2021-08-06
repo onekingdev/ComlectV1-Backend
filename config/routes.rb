@@ -14,7 +14,6 @@ Rails.application.routes.draw do
     end
   end
   mount Sidekiq::Web => '/sidekiq'
-  mount PdfjsViewer::Rails::Engine => '/pdfjs', as: 'pdfjs'
 
   devise_for :admin_users, ActiveAdmin::Devise.config
   begin
@@ -22,8 +21,8 @@ Rails.application.routes.draw do
   rescue ActiveRecord::StatementInvalid, PG::UndefinedTable => e
     Rails.logger.info "ActiveAdmin could not load: #{e.message}"
   end
-
   devise_for :users, controllers: {
+    confirmations: 'users/confirmations',
     sessions: 'users/sessions',
     registrations: 'users/registrations',
     passwords: 'users/passwords'
@@ -31,7 +30,6 @@ Rails.application.routes.draw do
   end
 
   devise_scope :user do
-    get 'users/sign_out/force' => 'users/sessions#destroy'
     get '/squarespace' => 'users/sessions#squarespace'
     get '/squarespace_destroy' => 'users/sessions#squarespace_destroy'
   end
@@ -109,12 +107,16 @@ Rails.application.routes.draw do
     resources :teams, only: %i[new create show edit index update destroy]
     resources :team_members, only: %i[new create edit update destroy]
     resources :reminders, only: %i[new update create destroy show edit index]
+    resources :tasks, only: %i[new update create destroy show edit index]
     resources :audit_requests, only: %i[index update create new edit show destroy]
     put '/audit_requests' => 'audit_requests#update'
     resource :help, only: :show do
       resource :questions
     end
     resource :projects, only: %i[index]
+
+    get '/projects/new/:local_project_id' => 'projects#new'
+
     get 'settings' => 'settings#show'
     get 'settings/:id' => 'settings#show'
 
@@ -172,11 +174,13 @@ Rails.application.routes.draw do
     get '/' => 'dashboard#show', as: :dashboard
     get '/locked' => 'dashboard#locked'
     resources :reminders, only: %i[new update create destroy edit show index]
+    resources :tasks, only: %i[new update create destroy edit show index]
     resources :addons, only: %i[index]
     resource :help, only: :show do
       resource :questions
     end
     get 'profile' => 'profile#show'
+    get 'settings/:page', to: 'settings#show', page: /general|users|roles|security|subscriptions|billings|notifications/
     resource :settings, only: :show do
       resource :password
       resource :contact_information, only: %i[show update]
@@ -247,6 +251,7 @@ Rails.application.routes.draw do
   end
 
   namespace :api do
+    get 'static_collection' => 'static_collection#index'
     post 'exams/:uuid' => 'exams#email'
     patch 'exams/:uuid' => 'exams#show'
 
@@ -254,6 +259,7 @@ Rails.application.routes.draw do
     resources :users, only: [] do
       collection do
         post :sign_in, to: 'authentication#create'
+        delete :sign_out, to: 'authentication#destroy'
         post :password, to: 'passwords#create'
         put :password, to: 'passwords#update'
       end
@@ -278,11 +284,15 @@ Rails.application.routes.draw do
       get 'notifications' => 'notifications#index'
       patch 'notifications' => 'notifications#update'
       delete 'profile' => 'profile#destroy'
+
+      post 'email' => 'email#create'
+      patch 'email' => 'email#update'
     end
 
     get 'local_projects/:project_id/messages' => 'project_messages#index'
     post 'local_projects/:project_id/messages' => 'project_messages#create'
-    resources :direct_messages, path: 'messages/:recipient_username', only: %i[index create]
+    resources :direct_messages, path: 'messages/:recipient_id', only: %i[index create]
+    get 'messages' => 'direct_messages#show'
     resources :project_ratings, only: %i[index]
     namespace :business do
       resources :exams, only: %i[index show create update destroy] do
@@ -307,6 +317,15 @@ Rails.application.routes.draw do
       get '/reminders/:date_from/:date_to' => 'reminders#by_date'
       get '/overdue_reminders' => 'reminders#overdue'
       post '/reminders' => 'reminders#create'
+      get '/tasks' => 'reminders#create'
+      get '/tasks/:id' => 'reminders#show'
+      delete '/tasks/:id' => 'reminders#destroy'
+      post '/tasks/:id' => 'reminders#update'
+      get '/tasks/:id/messages' => '/api/reminder_messages#index'
+      post '/tasks/:id/messages' => '/api/reminder_messages#create'
+      get '/tasks/:date_from/:date_to' => 'reminders#by_date'
+      get '/tasks' => 'reminders#overdue'
+      post '/tasks' => 'reminders#create'
       resources :local_projects, only: %i[index create show update destroy]
       put 'local_projects/:id/complete' => 'local_projects#complete'
       resources :projects, only: %i[index show create update destroy] do
@@ -326,7 +345,8 @@ Rails.application.routes.draw do
       end
       resources :specialist_roles, only: :update
       resources :specialists, only: :index
-      post '/seats/:seat_id/assign', to: 'seats#assign'
+      get '/seats', to: 'seats#index'
+      post '/seats', to: 'seats#assign'
       resources :annual_reports, only: %i[index show create update destroy]
       get '/annual_reports/:id/clone' => 'annual_reports#clone'
       scope 'annual_reports/:report_id' do
@@ -344,6 +364,7 @@ Rails.application.routes.draw do
       resources :projects, only: %i[index show] do
         resources :project_messages, path: 'messages', only: %i[index create]
         resources :timesheets, except: %i[new edit], controller: 'timesheets'
+        get '/applications/my' => 'job_applications#my'
         resources :job_applications, path: 'applications', only: %i[show update create destroy]
         get :local
         get :calendar_hide
@@ -362,11 +383,12 @@ Rails.application.routes.draw do
       post '/share_project' => 'share_project#create'
     end
     resources :businesses, only: [:create]
+    get '/businesses/current' => 'businesses#current'
     resource :business, only: %i[update] do
       patch '/' => 'businesses#update', as: :update
     end
-    put 'users/:user_id/confirm_email', to: 'email_confirmation#update'
-    get 'users/:user_id/resend_email', to: 'email_confirmation#resend'
+    put 'users/confirm_email', to: 'email_confirmation#update'
+    get 'users/resend_email', to: 'email_confirmation#resend'
     resources :specialists, only: :create
     resource :specialist, only: %i[update] do
       patch '/' => 'specialists#update', as: :update

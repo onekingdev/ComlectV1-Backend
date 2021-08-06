@@ -1,22 +1,54 @@
 <template lang="pug">
-  .card
-    .card-header.d-flex.justify-content-between
-      h3.m-y-0 Tasks
-      .d-inline-block
+  .page
+    .page-header(v-if="!shortTable")
+      h2.page-header__title Tasks
+      .page-header__actions
         a.btn.btn-default.m-r-1(v-if="!shortTable") Download
         TaskModalCreate(@saved="refetch()")
-          a.btn.btn-dark Create task
-    .card-body.white-card-body
-      .row(v-if="!shortTable")
+          a.btn.btn-dark New Task
+    .card-body.white-card-body.card-body_full-height.p-x-40
+      .row.mb-3(v-if="!shortTable")
         .col
-          .d-flex.align-items-center
-            ion-icon.m-r-1(name="chevron-down-outline" size="small")
-            b-badge.m-r-1(variant="light") 0
-            h3 Compilance Program
-      .row
-        .col
-          Loading
-          TaskTable(v-if="!loading && tasks" :shortTable="shortTable", :tasks="tasks")
+          div
+            b-dropdown.actions.m-r-1(variant="default")
+              template(#button-content)
+                | Show: All Tasks
+                ion-icon.ml-2(name="chevron-down-outline" size="small")
+              b-dropdown-item(@click="sortBy('all')") All Tasks
+              b-dropdown-item(@click="sortBy('overdue')") Overdue
+              b-dropdown-item(@click="sortBy('completed')") Completed
+            b-dropdown.actions.m-r-1(variant="default")
+              template(#button-content)
+                | All Links
+                ion-icon.ml-2(name="chevron-down-outline" size="small")
+              b-dropdown-item(@click="sortBy('all')") All Links
+              b-dropdown-item(@click="sortBy('LocalProject')") Projects
+              b-dropdown-item(@click="sortBy('CompliancePolicy')") Policies
+              b-dropdown-item(@click="sortBy('AnnualReport')") Internal Reviews
+            b-dropdown.actions.d-none(variant="default")
+              template(#button-content)
+                | {{ perPage }} results
+                ion-icon.ml-2(name="chevron-down-outline" size="small")
+              b-dropdown-item(@click="perPage = 5") 5
+              b-dropdown-item(@click="perPage = 10") 10
+              b-dropdown-item(@click="perPage = 15") 15
+              b-dropdown-item(@click="perPage = 20") 20
+      .row.h-100(v-if="!sortedTasks.length && !loading")
+        .col.h-100.text-center
+          EmptyState(name="Tasks")
+      div(v-if="sortedTasks.length")
+        //.row(v-if="!shortTable")
+        //  .col
+        //    .d-flex.align-items-center
+        //      ion-icon.m-r-1(name="chevron-down-outline" size="small")
+        //      b-badge.m-r-1(variant="light") 0
+        //      h3 Compilance Program
+        .row
+          .col
+            Loading(:absolute="true")
+            TaskTable.m-b-40(v-if="tasks" :shortTable="shortTable", :tasks="sortedTasks" :perPage="perPage" :currentPage="currentPage")
+            b-pagination(v-if="!shortTable && shortTable.length >= perPage" v-model='currentPage' :total-rows='rows' :per-page='perPage' :shortTable="!shortTable",  aria-controls='tasks-table')
+
 </template>
 
 <script>
@@ -26,10 +58,10 @@
   // import { toEvent, isOverdue, splitReminderOccurenceId } from '@/common/TaskHelper'
 
   import Loading from '@/common/Loading/Loading'
-  import TaskFormModal from '@/common/TaskFormModal'
-  import TaskModalCreate from './modals/TaskModalCreate'
-
+  import EmptyState from '@/common/EmptyState'
   import TaskTable from './components/TaskTable'
+  import TaskModalCreate from './modals/TaskModalCreate'
+  // import TaskModalEdit from './modals/TaskModalEdit'
 
   // const endpointUrl = '/api/business/reminders/'
   // const overdueEndpointUrl = '/api/business/overdue_reminders'
@@ -42,6 +74,8 @@
   // console.log(DateTime.local().plus({years: 10}).toSQLDate())
   // console.log(fromTo)
 
+  // const today = () => DateTime.local().toISODate()
+
   export default {
     props: {
       // etag: Number,
@@ -52,20 +86,26 @@
     },
     components: {
       Loading,
+      EmptyState,
       TaskTable,
-      TaskFormModal,
-      TaskModalCreate
+      TaskModalCreate,
+      // TaskModalEdit
     },
     data() {
       return {
-        // tasks: []
+        // tasks: [],
+        perPage: 10,
+        currentPage: 1,
+        toggleModal: false,
+        sortedBy: ''
       }
     },
     // created() {
       // this.refetch()
     // },
     methods: {
-      // refetch() {
+      refetch() {
+        console.log('refetch')
       //   const fromTo = DateTime.local().minus({years: 10}).toSQLDate() + '/' + DateTime.local().plus({years: 10}).toSQLDate()
       //
       //   fetch(overdueEndpointUrl, { headers: {'Accept': 'application/json'} })
@@ -82,7 +122,7 @@
       //     })
       //   )
       //   // .catch(errorCallback)
-      // },
+      },
       //
       // isOverdue,
       // toggleDone(task) {
@@ -110,6 +150,9 @@
       // makeToast(title, str) {
       //   this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
       // },
+      sortBy (value) {
+        this.sortedBy = value
+      }
     },
     computed: {
       ...mapGetters({
@@ -127,6 +170,24 @@
       loading() {
         return this.$store.getters.loading;
       },
+      rows() {
+        return this.tasks.length
+      },
+      sortedTasks () {
+        const sortBy = this.sortedBy
+
+        let result
+        if (sortBy === 'completed')
+          result = this.tasks.filter(task => task.done_at)
+        if (sortBy === 'overdue')
+          result = this.tasks.filter(task => task.end_date >= DateTime.local())
+        if (sortBy === 'all')
+          result = this.tasks
+        if (sortBy === 'LocalProject' || sortBy === 'CompliancePolicy'|| sortBy === 'AnnualReport')
+          result = this.tasks.filter(task => task.linkable_type === sortBy)
+
+        return result ? result : this.tasks
+      }
     },
     async mounted () {
       try {

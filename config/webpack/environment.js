@@ -1,8 +1,11 @@
 const { environment } = require('@rails/webpacker')
-
+const { EnvironmentPlugin } = require('webpack');
 const { VueLoaderPlugin } = require('vue-loader')
 // const CleanWebpackPlugin = require("clean-webpack-plugin")
 const path = require('path')
+
+const dotenv = require('dotenv')
+const result = dotenv.config()
 
 environment.plugins.prepend(
     'VueLoaderPlugin',
@@ -53,6 +56,14 @@ environment.config.merge({
         }
     }
 })
+
+environment.plugins.prepend(
+  'Environment',
+  new EnvironmentPlugin([
+    'PLAID_PUBLIC_KEY',
+    'STRIPE_PUBLISHABLE_KEY'
+  ])
+);
 
 // module.exports = environment.toWebpackConfig()
 module.exports = environment

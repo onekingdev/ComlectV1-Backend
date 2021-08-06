@@ -5,7 +5,7 @@
         .col-md-12
           h3 Create Proposal
       .card-header
-        Get(:project='`/api/specialist/projects/${projectId}`'): template(v-slot="{project}"): div.row.pl-3
+        Get(:project='`/api/specialist/projects/${projectId}`' :callback="projectLoaded"): template(v-slot="{project}"): div.row.pl-3
           .col-md-6
             h3 Terms
             .row
@@ -26,14 +26,15 @@
             h3.m-t-1 Attachments
             .card.m-b-1
               .card-body
-                p Attach a cover letter, resume, or other documents here <br> or
+                p Attach a cover letter, resume, or other document here. Limited to only one file.
                 label
-                  a.btn.btn-light Upload Files
+                  a.btn.btn-light Upload File
                   input.d-none(type="file" accept="application/pdf" @change="pickFile")
             .text-right
               a.m-r-1.btn(@click="back") Cancel
               a.m-r-1.btn.btn-default Save Draft
-              PostMultipart(:action="`/api/specialist/projects/${projectId}/applications`" :model="form" @errors="errors = $event" @saved="saved")
+              // PostMultipart(:action="`/api/specialist/projects/${projectId}/applications`" :model="form" @errors="errors = $event" @saved="saved")
+              Post(:action="`/api/specialist/projects/${projectId}/applications`" :model="form" @errors="errors = $event" @saved="saved")
                 button.btn.btn-dark Submit Proposal
           .col-md-6
             .card
@@ -55,7 +56,7 @@ const FIXED_BUDGET = Object.keys(PRICING_TYPES_OPTIONS)[0]
 const HOURLY_RATE = Object.keys(PRICING_TYPES_OPTIONS)[1]
 
 const initialForm = (project) => ({
-  hourly_rate: null,
+  // hourly_rate: null,
   starts_on: (project && project.starts_on) || null,
   ends_on: (project && project.ends_on ) || null,
   pricing_type: (project && calcPricingType(project)) || null,
@@ -82,23 +83,24 @@ export default {
     projectId: {
       type: Number,
       required: true
-    },
-    project: {
-      type: Object
     }
   },
   data() {
     return {
-      form: initialForm(this.project),
+      form: initialForm(),
       errors: {}
     }
   },
   methods: {
     saved() {
-      redirectWithToast(this.$store.getters.url('URL_MY_PROJECT_SHOW', ''), 'Proposal sent')
+      redirectWithToast('/specialist/my-projects/', 'Proposal sent')
     },
     pickFile(event) {
       this.form.document = event.target.files[0]
+    },
+    projectLoaded(payload) {
+      Object.assign(this.form, initialForm(payload))
+      return payload
     },
     calcPricingType
   },

@@ -16,7 +16,7 @@
       Errors(:errors="errors.title")
 
       template(slot="modal-footer")
-        button.btn(@click="$bvModal.hide(modalId)") Cancel
+        button.btn.btn-link(@click="$bvModal.hide(modalId)") Cancel
         button.btn.btn-dark(@click="submit") Confirm
 </template>
 
@@ -44,9 +44,6 @@
       }
     },
     methods: {
-      makeToast(title, str) {
-        this.$bvToast.toast(str, { title, autoHideDelay: 5000 })
-      },
       submit(e) {
         e.preventDefault();
         this.errors = [];

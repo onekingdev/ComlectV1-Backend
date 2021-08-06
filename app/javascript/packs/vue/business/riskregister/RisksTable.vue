@@ -1,33 +1,41 @@
 <template lang="pug">
-  div
-    .row.my-3
-      .col-4
+  div.h-100
+    .row.m-b-20
+      .col-lg-4.col-12
         .position-relative
           b-icon.icon-searh(icon='search')
-          input.form-control(type="text" placeholder="Search" v-model="searchInput", @keyup="searching")
+          input.form-control.form-control_search(type="text" placeholder="Search" v-model="searchInput", @keyup="searching")
           button.btn-clear(v-if="isActive" @click="clearInput")
             b-icon.icon-clear(icon='x-circle')
       .col-4(v-if="filteredRisksComputed.length !== 0 && searchInput")
         p Found {{ filteredRisksComputed.length }} {{ filteredRisksComputed.length === 1 ? 'result' : 'results' }}
+    .row.h-100(v-if="!filteredRisksComputed.length && !loading")
+      .col.h-100.text-center
+        EmptyState
     .row
       .col-12
         Loading
-        table.table(v-if="!loading")
-          thead(v-if="filteredRisksComputed && filteredRisksComputed.length")
+        table.table(v-if="!loading && filteredRisksComputed && filteredRisksComputed.length")
+          thead
             tr
-              th(width="55%") Name
+              th Name
+                b-icon.ml-2(icon='chevron-expand')
               th Impact
+                b-icon.ml-2(icon='chevron-expand')
               th Likelihood
+                b-icon.ml-2(icon='chevron-expand')
               th Risk level
+                b-icon.ml-2(icon='chevron-expand')
               th.text-right Date created
-              th(width="10%")
+                b-icon.ml-2(icon='chevron-expand')
+              th.text-right(width="35px")
           tbody
             tr(v-for="risk in filteredRisksComputed" :key="risk.id")
               td
-                .d-flex.align-items-center
-                  .dropdown-toggle.link(v-if="risk.compliance_policies.length !== 0" :id="`#sectionIcon-${risk.id}`", @click="toogleSections(risk.id)")
-                    b-icon.mr-2(icon="chevron-compact-right")
-                  a.link(:href="`/business/risks/${risk.id}`") {{ risk.name }}
+                .d-flex.align-items-center.link
+                  .dropdown-toggle(v-if="risk.compliance_policies.length !== 0" :id="`#sectionIcon-${risk.id}`", @click="toogleSections(risk.id)")
+                    b-icon.m-r-1(icon="chevron-right")
+                  a(:href="`/business/risks/${risk.id}`") {{ risk.name }}
                 .dropdown-items.mb-2(v-if="risk.compliance_policies" :id="`#section-${risk.id}`")
                   ul.list-unstyled.ml-3
                     li.mb-2(v-for="policy in risk.compliance_policies" :key="policy.id")
@@ -37,21 +45,19 @@
               td {{ showLevel(risk.impact) }}
               td {{ showLevel(risk.likelihood) }}
               td
-                b-badge(:variant="badgeVariant(risk.risk_level)")
+                b-badge.badge-risk(:variant="badgeVariant(risk.risk_level)")
                   b-icon-exclamation-triangle-fill.mr-2
                   | {{ showLevel(risk.risk_level)  }}
               td.text-right {{ dateToHuman(risk.created_at) }}
-              td
+              td.text-right
                 .actions
-                  b-dropdown(size="sm" variant="light" class="m-0 p-0" right)
+                  b-dropdown(size="sm" variant="none" class="m-0 p-0" right)
                     template(#button-content)
                       b-icon(icon="three-dots")
                     RisksAddEditModal(:risks="risksComputed" :riskId="risk.id" :inline="false")
                       b-dropdown-item-button Edit
                     b-dropdown-item-button.delete(@click="deleteRisk(risk.id)") Delete
-            tr(v-if="!filteredRisksComputed.length")
-              td.text-center
-                h4.py-2 No risks
+
 </template>
 
 <script>

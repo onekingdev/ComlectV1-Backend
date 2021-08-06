@@ -29,8 +29,8 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def timezones_json
-    ActiveSupport::TimeZone.all.map(&proc { |tz| [tz.tzinfo.to_s, tz.name] }).to_json
+  def timezones_array
+    ActiveSupport::TimeZone.all.map(&proc { |tz| [tz.tzinfo.to_s, tz.name] })
   end
 
   def sub_industries(specialist)
@@ -54,6 +54,7 @@ class ApplicationController < ActionController::Base
     return if params['controller'] == 'users/sessions'
     return if params['controller'] == 'api/specialist/upgrade'
     return if params['controller'] == 'api/skills'
+    return if params['controller'] == 'api/static_collection'
     return if params['controller'] == 'specialists'
 
     redirect_to new_specialist_path
@@ -88,10 +89,10 @@ class ApplicationController < ActionController::Base
     return unless user_signed_in?
 
     business = if session[:employee_business_id].present?
-                 ::Business.find_by(id: session[:employee_business_id])
-               else
-                 current_user.business
-               end
+      ::Business.find_by(id: session[:employee_business_id])
+    else
+      current_user.business
+    end
     return unless business
 
     define_current_business(business)
