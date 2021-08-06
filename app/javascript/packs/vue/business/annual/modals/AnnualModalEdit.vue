@@ -82,10 +82,8 @@
         try {
           await this.$store.dispatch('annual/updateReview', data)
             .then((response) => {
-              // console.log('response', response)
               if (response.errors) {
                 for (const [key, value] of Object.entries(response.errors)) {
-                  console.log(`${key}: ${value}`);
                   this.toast('Error', `${key}: ${value}`, true)
                   this.errors = Object.assign(this.errors, { [key]: value })
                 }

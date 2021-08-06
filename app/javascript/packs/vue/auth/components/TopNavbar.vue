@@ -48,10 +48,10 @@
           })
             .then(response => response.json())
             .then(data => {
-              console.log(data)
               localStorage.removeItem('app.currentUser');
               localStorage.removeItem('app.currentUser.token');
               localStorage.removeItem('app.currentUser.userType');
+              localStorage.removeItem('app.currentUser.paymentMethod');
               window.location.href = `${window.location.origin}`
             })
             .catch(error => console.error(error))

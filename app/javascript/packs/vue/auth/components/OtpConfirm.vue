@@ -67,19 +67,12 @@
             otp_secret: this.form2.code
           }
 
-          console.log('dataToSend1 !this.emailVerified', dataToSend1)
-
           this.$store.dispatch('confirmEmail', dataToSend1)
             .then((response) => {
-              console.log('response', response)
               this.error = response.message
-
               if(response.message === 'Invalid 6 digits code')
-                this.toast('Error', 'Verification code failed. Try again.', true)
-
-              if (response.errors) {
-
-              }
+              this.toast('Error', 'Verification code failed. Try again.', true)
+              if (response.errors) { }
               if (!response.errors && response.token) {
                 // open step 3
                 // this.step2 = false
@@ -94,6 +87,8 @@
               console.error(error)
               this.toast('Error', `${error.message}`, true)
             })
+
+          return
         }
 
         // IF VERIFIED EMAIL
@@ -106,21 +101,14 @@
             otp_secret: this.form2.code
           }
 
-          console.log('dataToSend this.emailVerifie', dataToSend)
-
           this.$store.dispatch('signIn', dataToSend)
             .then((response) => {
-              console.log('response', response)
               if (response.errors) {
                 this.error = response.message
                 this.toast('Error', 'Verification code failed. Try again.', true)
               }
-
               if (!response.errors && response.token) {
-                // open step 3
-                // this.step2 = false
-                // this.step3 = true
-
+                // open dashboard
                 const dashboard = response.business ? '/business' : '/specialist'
                 window.location.href = `${dashboard}`;
                 // this.$router.push(`${dashboard}/onboarding`)
@@ -136,6 +124,8 @@
                 this.error = error.data.errors.invalid
               }
             })
+
+          return
         }
       },
       onCodeChange(e){
