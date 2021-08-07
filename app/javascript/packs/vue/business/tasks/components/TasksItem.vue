@@ -4,7 +4,7 @@
       .name
         b-icon.pointer.m-r-1(font-scale="1" :icon="item.done_at ? 'check-circle-fill' : 'check-circle'" @click="toggleDone(item)" v-bind:class="{ done_task: item.done_at }")
         //ion-icon.m-r-1.pointer(@click="toggleDone(item)" v-bind:class="{ done_task: item.done_at }" name='checkmark-circle-outline')
-        TaskModalEdit.link(:taskProp="item" @saved="$emit('saved')")
+        TaskModalCreateEdit.link(:taskProp="item" @saved="$emit('saved')")
           span(v-if="!item.done_at" ) {{ item.body }}
           s(v-else) {{ item.body }}
     td(v-if="!shortTable")
@@ -26,7 +26,7 @@
         template(#button-content)
           b-icon(icon="three-dots")
         //b-dropdown-item(:href="`/business/reminders/${item.id}`") Edit
-        TaskModalEdit(@editConfirmed="editConfirmed", :taskProp="item", :inline="false")
+        TaskModalCreateEdit(@editConfirmed="editConfirmed", :taskProp="item", :inline="false")
           b-dropdown-item Edit
         //b-dropdown-item {{ item.done_at ? 'Incomplite' : 'Complite' }}
         TaskModalDelete(@deleteConfirmed="deleteTask(item.id)", :inline="false")
@@ -36,16 +36,14 @@
 <script>
 import { DateTime } from 'luxon'
 import { toEvent, isOverdue, splitReminderOccurenceId, linkedTo, linkedToClass, isRepeat } from '@/common/TaskHelper'
-import TaskFormModal from '@/common/TaskFormModal'
-import TaskModalEdit from '../modals/TaskModalEdit'
+import TaskModalCreateEdit from '../modals/TaskModalCreateEdit'
 import TaskModalDelete from '../modals/TaskModalDelete'
 
 export default {
   name: "TaskItem",
   props: ['item', 'shortTable'],
   components: {
-    TaskFormModal,
-    TaskModalEdit,
+    TaskModalCreateEdit,
     TaskModalDelete,
   },
   computed: { },

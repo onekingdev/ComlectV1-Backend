@@ -4,7 +4,7 @@
       h2.page-header__title Tasks
       .page-header__actions
         a.btn.btn-default.m-r-1(v-if="!shortTable") Download
-        TaskModalCreate(@saved="refetch()")
+        TaskModalCreateEdit(@saved="refetch()")
           a.btn.btn-dark New Task
     .card-body.white-card-body.card-body_full-height.p-x-40
       .row.mb-3(v-if="!shortTable")
@@ -60,7 +60,7 @@
   import Loading from '@/common/Loading/Loading'
   import EmptyState from '@/common/EmptyState'
   import TaskTable from './components/TaskTable'
-  import TaskModalCreate from './modals/TaskModalCreate'
+  import TaskModalCreateEdit from './modals/TaskModalCreateEdit'
   // import TaskModalEdit from './modals/TaskModalEdit'
 
   // const endpointUrl = '/api/business/reminders/'
@@ -88,7 +88,7 @@
       Loading,
       EmptyState,
       TaskTable,
-      TaskModalCreate,
+      TaskModalCreateEdit,
       // TaskModalEdit
     },
     data() {

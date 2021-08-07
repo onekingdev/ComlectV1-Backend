@@ -41,7 +41,7 @@ export async function getOverdueTasks() {
 }
 
 export async function createTask(payload) {
-  return await axios.post(`${END_POINT}`, payload)
+  return await axios.post(`${END_POINT}${payload.occurenceParams}`, payload)
     .then(response => {
       if (response) {
         return response
