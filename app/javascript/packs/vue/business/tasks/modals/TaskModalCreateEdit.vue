@@ -130,7 +130,7 @@
       template(v-if="task.done_at && taskProp" slot="modal-footer")
         span.mr-2
           b-icon.m-r-1.pointer(icon="check-circle-fill" class="done_task")
-          b Completed on {{ task.done_at | dateToHuman }}
+          b Completed on {{ task.done_at | asDate }}
         button.btn.btn-default(@click="toggleDone(task)") Reopen
       template(v-if="!task.done_at && taskProp" slot="modal-footer")
         button.btn.btn-outline-danger.mr-auto(@click="deleteTask(task)") Delete Task
@@ -237,6 +237,25 @@
         getReviews: 'annual/getReviews',
         getProjects: 'projects/getProjects'
       }),
+      toggleDone(task) {
+        const { taskId, oid } = splitReminderOccurenceId(task.id)
+        const oidParam = oid !== null ? `&oid=${oid}` : ''
+        const src_id_params = oid !== null ? `&src_id=${task.id}` : ''
+        let target_state = (!(!!task.done_at)).toString()
+
+        try {
+          this.$store.dispatch('reminders/updateTaskStatus', { id: taskId, done: target_state, oidParam, src_id_params })
+            .then(response => {
+              this.toast('Success', 'The task has been saved')
+              this.$emit('saved')
+              this.$bvModal.hide(this.modalId)
+            })
+            .catch(error => this.toast('Error', `Something wrong! ${error.message}`))
+        } catch (error) {
+          this.toast('Error', error.message)
+          console.error(error)
+        }
+      },
       deleteTask(task, deleteOccurence) {
         const occurenceParams = deleteOccurence ? `?oid=${this.occurenceId}` : ''
         fetch('/api/business/reminders/' + this.taskId + occurenceParams, {
@@ -469,6 +488,11 @@
                 {...toOption(3, 'Policies'), children: this.policies.map(record => ({ id: record.id, label: record.name }))},
               ]
       },
+      // linkToOptions() {
+      //   return [{...toOption('Projects'), children: this.projects.map(record => record.title).map(toOption)},
+      //     {...toOption('Internal Reviews'), children: this.reviews.map(record => record.name).map(toOption)},
+      //     {...toOption('Policies'), children: this.policies.map(record => record.name).map(toOption) }]
+      // },
       assigneeOptions() {
         return ['John', 'Doe', 'Another specialist'].map(toOption)
       },
