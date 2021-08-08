@@ -27,13 +27,46 @@ $font-size-22: 1.375rem;
 $font-size-24: 1.5rem;
 
 /* ---------- MIXINS ---------- */
+@mixin font-regular {
+  font-weight: $font-weight-regular;
+}
+
+@mixin font-semi-bold {
+  font-weight: $font-weight-semi-bold;
+}
+
 @mixin font-bold {
-  font-weight: 700;
+  font-weight: $font-weight-bold;
+}
+
+@mixin font-regular-12 {
+  font-size: $font-size-14;
+  font-weight: $font-weight-regular;
+}
+
+@mixin font-regular-14 {
+  font-size: $font-size-14;
+  font-weight: $font-weight-regular;
 }
 
 @mixin font-regular-20 {
   font-size: $font-size-20;
   font-weight: $font-weight-regular;
+}
+
+@mixin font-semi-bold-14 {
+  font-size: $font-size-14;
+  font-weight: $font-weight-semi-bold;
+}
+
+@mixin font-semi-bold-16 {
+  font-size: $font-size-16;
+  font-weight: $font-weight-semi-bold;
+}
+
+@mixin font-bold-14 {
+  font-size: $font-size-14;
+  font-weight: $font-weight-semi-bold;
 }
 
 /* ---------- MAIN STYLES ---------- */
@@ -917,6 +950,16 @@ input, button, select, optgroup, textarea {
   border-bottom: 1px solid #DCDEE4;
 }
 
+.special-navs-messages .nav-tabs,
+.nav-tabs.special-navs-messages {
+
+  .nav-item {
+    &:first-child {
+      margin-left: 1.25rem;
+    }
+  }
+}
+
 .nav-tabs .nav-item .nav-link {
   //margin-left: 0;
   //margin-right: 2.5rem; // 40px
@@ -969,7 +1012,7 @@ a.btn,
   line-height: 1.2;
   font-weight: $font-weight-bold;
   border-radius: 4px;
-  outline: none;
+  outline: 0 !important;
   transition: all 200ms ease-in;
 
   &:hover,
@@ -1149,6 +1192,16 @@ a.btn,
   background-color: $white;
   border-color: $gray-1;
   font-weight: 400;
+  outline: 0 !important;
+  box-shadow: none !important;
+
+  &:hover,
+  &:active,
+  &.active,
+  &:focus {
+    outline: 0 !important;
+    box-shadow: none !important;
+  }
 }
 .open > .btn.dropdown-toggle.btn-default {
   color: $primary-dark;
@@ -1156,7 +1209,7 @@ a.btn,
   border-color: $gray-1;
 }
 
-//.actions {
+.actions {
 //  position: relative;
 //  display: block;
 //  text-align: right;
@@ -1174,9 +1227,21 @@ a.btn,
 //      background-color: rgba(0, 0, 0, .1);
 //    }
 //  }
-//}
-//
-//
+
+
+  &__dropdown {
+
+    &_tasks {
+      //width: 10.3rem;
+    }
+    &_links {
+      //width: 7rem;
+    }
+  }
+}
+
+
+
 //.actions-dropdown {
 //  display: none;
 //  position: absolute;
@@ -1416,6 +1481,14 @@ table.table thead tr th {
     }
   }
 
+  &:not(&.short-table) {
+    th, td {
+      &:first-child {
+        width: 25%;
+      }
+    }
+  }
+
   th {
     border: none;
   }
@@ -1423,6 +1496,10 @@ table.table thead tr th {
   .name {
     display: flex;
     align-items: center;
+
+    .b-icon.bi {
+      font-size: 1rem;
+    }
   }
 
   tbody ion-icon {
@@ -1467,6 +1544,11 @@ table.table thead tr th {
   ion-icon.blue {
     color: $blue;
   }
+}
+
+.b-icon.bi.done_task{
+  color: #1AB27F;
+  font-size: 125%;
 }
 
 .short-table thead {
@@ -2891,6 +2973,8 @@ select.custom-select {
 
 .file-card__icon {
   margin-right: 0.625rem; //10px
+  width: 1.5625rem; //25px
+  height: 1.5625rem; //25px
   color: #797b7e;
   font-size: 150%;
 }
@@ -2898,7 +2982,8 @@ select.custom-select {
 .file-card__name {
   margin-bottom: 0;
   //margin-bottom: 0.3125rem;
-  font-size: 0.875rem;
+  //font-size: 0.875rem;
+  @include font-regular-14;
   color: $black;
   word-break: break-all;
 }
@@ -3632,6 +3717,54 @@ select.custom-select {
     font-size: $font-size-24;
     font-weight: $font-weight-semi-bold;
     color: $black;
+  }
+}
+
+
+/* ---------- MESSAGES COMPONENT ---------- */
+.messages {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-height: 325px;
+  height: 100%;
+  max-height: 350px;
+  overflow: auto;
+}
+
+.messages-border {
+  border-radius: 4px;
+  border: 1px solid #C6C8CE;
+}
+
+.message {
+  padding: 1.25rem 0;
+  border-bottom: solid 1px #E2E8F0;
+  color: $black;
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &__user-name {
+    //margin-bottom: 0.625rem;
+    margin-bottom: 0.225rem;
+    @include font-semi-bold-14;
+  }
+  &__comment {
+    margin-bottom: 0;
+    @include font-regular-14
+  }
+  &__date {
+    margin-right: 3px;
+    font-size: $font-size-12;
+    color: $gray-2
+  }
+
+  .avatar-placeholder {
+    margin-right: 0.625rem;
+    @include font-semi-bold-16;
   }
 }
 

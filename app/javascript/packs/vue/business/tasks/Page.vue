@@ -3,29 +3,29 @@
     .page-header(v-if="!shortTable")
       h2.page-header__title Tasks
       .page-header__actions
-        a.btn.btn-default.m-r-1(v-if="!shortTable") Download
-        TaskModalCreate(@saved="refetch()")
+        a.btn.btn-default.m-r-1(v-if="!shortTable" :href="pdfUrl" target="_blank") Download
+        TaskModalCreateEdit(@saved="refetch()")
           a.btn.btn-dark New Task
     .card-body.white-card-body.card-body_full-height.p-x-40
       .row.mb-3(v-if="!shortTable")
         .col
           div
-            b-dropdown.actions.m-r-1(variant="default")
+            b-dropdown.actions__dropdown.actions__dropdown_tasks.m-r-1(variant="default")
               template(#button-content)
-                | Show: All Tasks
+                | Show: {{ sortedByNameGeneral | capitalize }}
                 ion-icon.ml-2(name="chevron-down-outline" size="small")
               b-dropdown-item(@click="sortBy('all')") All Tasks
               b-dropdown-item(@click="sortBy('overdue')") Overdue
               b-dropdown-item(@click="sortBy('completed')") Completed
-            b-dropdown.actions.m-r-1(variant="default")
+            b-dropdown.actions__dropdown.actions__dropdown_links.m-r-1(variant="default")
               template(#button-content)
-                | All Links
+                | {{ sortedByNameAdditional | capitalize | linkableTypeCorrector }}
                 ion-icon.ml-2(name="chevron-down-outline" size="small")
-              b-dropdown-item(@click="sortBy('all')") All Links
-              b-dropdown-item(@click="sortBy('LocalProject')") Projects
-              b-dropdown-item(@click="sortBy('CompliancePolicy')") Policies
-              b-dropdown-item(@click="sortBy('AnnualReport')") Internal Reviews
-            b-dropdown.actions.d-none(variant="default")
+              b-dropdown-item(@click="sortByType('all')") All Links
+              b-dropdown-item(@click="sortByType('LocalProject')") Projects
+              b-dropdown-item(@click="sortByType('CompliancePolicy')") Policies
+              b-dropdown-item(@click="sortByType('AnnualReport')") Internal Reviews
+            b-dropdown.actions__dropdown.d-none(variant="default")
               template(#button-content)
                 | {{ perPage }} results
                 ion-icon.ml-2(name="chevron-down-outline" size="small")
@@ -47,7 +47,7 @@
           .col
             Loading(:absolute="true")
             TaskTable.m-b-40(v-if="tasks" :shortTable="shortTable", :tasks="sortedTasks" :perPage="perPage" :currentPage="currentPage")
-            b-pagination(v-if="!shortTable && shortTable.length >= perPage" v-model='currentPage' :total-rows='rows' :per-page='perPage' :shortTable="!shortTable",  aria-controls='tasks-table')
+            b-pagination(v-if="!shortTable && sortedTasks.length >= perPage" v-model='currentPage' :total-rows='rows' :per-page='perPage' :shortTable="!shortTable",  aria-controls='tasks-table')
 
 </template>
 
@@ -55,12 +55,12 @@
   import { mapGetters } from "vuex"
 
   import { DateTime } from 'luxon'
-  // import { toEvent, isOverdue, splitReminderOccurenceId } from '@/common/TaskHelper'
+  import { toEvent, isOverdue, splitReminderOccurenceId } from '@/common/TaskHelper'
 
   import Loading from '@/common/Loading/Loading'
   import EmptyState from '@/common/EmptyState'
   import TaskTable from './components/TaskTable'
-  import TaskModalCreate from './modals/TaskModalCreate'
+  import TaskModalCreateEdit from './modals/TaskModalCreateEdit'
   // import TaskModalEdit from './modals/TaskModalEdit'
 
   // const endpointUrl = '/api/business/reminders/'
@@ -76,6 +76,8 @@
 
   // const today = () => DateTime.local().toISODate()
 
+  const pdfUrl = '/business/reminders.pdf'
+
   export default {
     props: {
       // etag: Number,
@@ -88,7 +90,7 @@
       Loading,
       EmptyState,
       TaskTable,
-      TaskModalCreate,
+      TaskModalCreateEdit,
       // TaskModalEdit
     },
     data() {
@@ -97,7 +99,11 @@
         perPage: 10,
         currentPage: 1,
         toggleModal: false,
-        sortedBy: ''
+        sortedBy: 'all',
+        sortedByLinkedTo: 'all',
+        sortedByNameGeneral: 'All Tasks',
+        sortedByNameAdditional: 'All Links',
+        projects: []
       }
     },
     // created() {
@@ -152,12 +158,18 @@
       // },
       sortBy (value) {
         this.sortedBy = value
+        this.sortedByNameGeneral = value
+      },
+      sortByType (value) {
+        this.sortedByLinkedTo = value
+        this.sortedByNameAdditional = value
       }
     },
     computed: {
       ...mapGetters({
-        tasks: 'reminders/tasks'
+        tasks: 'reminders/tasks',
       }),
+      pdfUrl: () => pdfUrl,
       // taskEvents() {
       //   return this.tasks.map(toEvent)
       //     .map(e => ({
@@ -174,20 +186,29 @@
         return this.tasks.length
       },
       sortedTasks () {
-        const sortBy = this.sortedBy
+        const sortedBy = this.sortedBy
+        const sortedByType = this.sortedByLinkedTo
 
         let result
-        if (sortBy === 'completed')
-          result = this.tasks.filter(task => task.done_at)
-        if (sortBy === 'overdue')
-          result = this.tasks.filter(task => task.end_date >= DateTime.local())
-        if (sortBy === 'all')
-          result = this.tasks
-        if (sortBy === 'LocalProject' || sortBy === 'CompliancePolicy'|| sortBy === 'AnnualReport')
-          result = this.tasks.filter(task => task.linkable_type === sortBy)
+
+        if (sortedBy) {
+          if (sortedBy === 'completed')
+            result = this.tasks.filter(task => task.done_at)
+          if (sortedBy === 'overdue')
+            result = this.tasks.filter(task => isOverdue(task))
+          if (sortedBy === 'all')
+            result = this.tasks
+        }
+
+        if (sortedByType) {
+          if (sortedByType === 'LocalProject' || sortedByType === 'CompliancePolicy'|| sortedByType === 'AnnualReport')
+            result = result.filter(task => task.linkable_type === sortedByType)
+          if (sortedByType === 'all')
+            result = result ? result : this.tasks
+        }
 
         return result ? result : this.tasks
-      }
+      },
     },
     async mounted () {
       try {
@@ -195,11 +216,14 @@
 
         const fromTo = DateTime.local().minus({years: 10}).toSQLDate() + '/' + DateTime.local().plus({years: 10}).toSQLDate()
         await this.$store.dispatch('reminders/getTasksByDate', fromTo)
-          .then(response => console.log('response', response))
+          .then(response => {
+            console.log('response', response)
+            if (response.projects) this.projects = response.projects
+          })
           .catch(error => console.error('error', error))
-        // await this.$store.dispatch('reminders/getOverdueTasks')
-        //   .then(response => console.log('response Overdue', response))
-        //   .catch(error => console.error('error', error))
+        //await this.$store.dispatch('reminders/getOverdueTasks')
+        //  .then(response => console.log('response Overdue', response))
+        //  .catch(error => console.error('error', error))
       } catch (error) {
         this.makeToast('Error', error.message)
       }
@@ -211,5 +235,16 @@
       //   }
       // }
     // }
+    filters: {
+      capitalize: function (value) {
+        if (!value) return ''
+        value = value.toString()
+        return value.charAt(0).toUpperCase() + value.slice(1)
+      },
+      linkableTypeCorrector: function (value) {
+        if (value === 'AnnualReport') value = 'Internal Review'
+        return value.replace(/[A-Z]/g, ' $&')
+      }
+    },
   }
 </script>
