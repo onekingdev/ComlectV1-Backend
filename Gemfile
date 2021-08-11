@@ -21,12 +21,7 @@ gem 'unicorn'
 
 # doc to pdf
 gem 'combine_pdf'
-gem 'libreconv'
-gem 'pdfjs_viewer-rails', git: 'https://github.com/kourindouhime/pdfjs_viewer-rails.git'
 gem 'wicked_pdf'
-
-# calendar
-gem 'simple_calendar' # , '~> 2.0'
 
 # captcha
 gem 'bcrypt'
@@ -39,6 +34,7 @@ gem 'webpacker'
 
 # ActiveRecord
 gem 'auto_strip_attributes'
+gem 'deep_cloneable'
 gem 'deep_pluck'
 gem 'faker'
 gem 'pg', '0.20.0'
@@ -65,7 +61,7 @@ gem 'best_in_place', git: 'https://github.com/bernat/best_in_place.git'
 gem 'coffee-rails'
 # gem 'non-stupid-digest-assets'
 gem 'rack-cors', require: 'rack/cors'
-# gem 'sassc-rails'
+gem 'sassc-rails'
 gem 'sprockets', '~>3.0'
 gem 'uglifier'
 
@@ -125,6 +121,18 @@ gem 'jquery-ui-rails' # , '~> 5.0', '>= 5.0.5'
 # Logging
 gem 'lograge'
 
+gem 'jwt'
+gem 'otp-jwt'
+
+# Serialization
+gem 'active_model_serializers'
+
+# Pagination
+gem 'pagy'
+
+gem 'activerecord-import'
+gem 'charlock_holmes'
+gem 'typhoeus'
 # Sitemap
 gem 'fog-aws'
 gem 'sitemap_generator'

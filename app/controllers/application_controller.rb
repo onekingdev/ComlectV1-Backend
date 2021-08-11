@@ -23,18 +23,41 @@ class ApplicationController < ActionController::Base
     ::Notification.clear_by_path! current_user, request.path
   }, if: :user_signed_in?
 
-  before_action :check_unrated_project, if: -> {
-    user_signed_in? && request.get? && !request.xhr? && request.format.symbol == :html
-  }
+  # before_action :check_unrated_project, if: -> {
+  #  user_signed_in? && request.get? && !request.xhr? && request.format.symbol == :html
+  # }
 
   private
+
+  def timezones_array
+    ActiveSupport::TimeZone.all.map(&proc { |tz| [tz.tzinfo.to_s, tz.name] })
+  end
+
+  def sub_industries(specialist)
+    industries = {}
+    Industry.sorted.each do |industry|
+      sub_ind_txt = specialist ? industry.sub_industries_specialist : industry.sub_industries
+      sub_ind_txt.split("\r\n").each_with_index do |sub_ind, i|
+        industries["#{industry.id}_#{i}"] = sub_ind
+      end
+    end
+    industries
+  end
 
   def lock_specialist
     return if current_specialist.dashboard_unlocked
 
     return if (params['controller'] == 'specialists/dashboard') && (params['action'] == 'locked')
+    return if params['controller'] == 'specialists/onboarding'
+    return if params['controller'] == 'api/specialists'
+    return if params['controller'] == 'api/specialist/payment_settings'
+    return if params['controller'] == 'users/sessions'
+    return if params['controller'] == 'api/specialist/upgrade'
+    return if params['controller'] == 'api/skills'
+    return if params['controller'] == 'api/static_collection'
+    return if params['controller'] == 'specialists'
 
-    return redirect_to specialists_locked_path if params['controller'] != 'users/sessions'
+    redirect_to new_specialist_path
   end
 
   def storable_location?
@@ -66,10 +89,10 @@ class ApplicationController < ActionController::Base
     return unless user_signed_in?
 
     business = if session[:employee_business_id].present?
-                 ::Business.find_by(id: session[:employee_business_id])
-               else
-                 current_user.business
-               end
+      ::Business.find_by(id: session[:employee_business_id])
+    else
+      current_user.business
+    end
     return unless business
 
     define_current_business(business)
@@ -108,6 +131,14 @@ class ApplicationController < ActionController::Base
   def js_redirect(path, status: :ok)
     @path = path
     render 'application/js_redirect', status: status
+  end
+
+  def require_someone!
+    if user_signed_in? && (current_business || current_specialist)
+      @current_someone = current_business || current_specialist
+    else
+      render 'forbidden', status: :forbidden, locals: { message: 'Only registered users can access this page' }
+    end
   end
 
   def require_business!

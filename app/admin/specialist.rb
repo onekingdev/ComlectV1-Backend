@@ -28,7 +28,7 @@ ActiveAdmin.register Specialist do
   controller do
     defaults finder: :find_by_username
     def destroy_resource(resource)
-      User::Delete.(resource.user)
+      User::Delete.call(resource.user)
     end
 
     def scoped_collection
@@ -41,8 +41,8 @@ ActiveAdmin.register Specialist do
     column 'Email', :user, sortable: 'users.email' do |specialist|
       link_to specialist.user.email, admin_specialist_path(specialist)
     end
-    column :years_of_experience, label: 'Yrs. of XP' do |specialist|
-      link_to specialist.years_of_experience, admin_user_path(specialist.user)
+    column :experience, label: 'experience' do |specialist|
+      link_to specialist.experience, admin_user_path(specialist.user)
     end
     column :username, label: 'Username' do |specialist|
       link_to specialist.username, admin_user_path(specialist.user)
@@ -54,7 +54,7 @@ ActiveAdmin.register Specialist do
     column :city
     column :state
     column :country
-    column :phone
+    column :contact_phone
     column :status do |specialist|
       label, css_class = specialist.suspended? ? %w[Suspended error] : %w[Active yes]
       status_tag label, class: css_class
@@ -80,14 +80,14 @@ ActiveAdmin.register Specialist do
       row :dashboard_unlocked
       row :call_booked
       row :min_hourly_rate
-      row :years_of_experience
+      row :experience
       row :user
       row :visibility do |specialist|
         status_tag specialist.is_public? ? 'Public' : 'Anonymous', specialist.is_public? ? 'yes' : nil
       end
       row :deleted
       row :address, &:full_address
-      row :phone
+      row :contact_phone
       row :time_zone
       row :linkedin_link do |specialist|
         link_to specialist.linkedin_link, specialist.linkedin_link, target: '_blank' if specialist.linkedin_link.present?
@@ -121,10 +121,10 @@ ActiveAdmin.register Specialist do
     column :state
     column :city
     column :zipcode
-    column :phone
+    column :contact_phone
     column(:photo) { |specialist| specialist.photo.present? }
     column :linkedin_link
-    column :years_of_experience
+    column :experience
     column :former_regulator
     column :certifications
     column :visibility
@@ -142,8 +142,8 @@ ActiveAdmin.register Specialist do
     column :updated_at
   end
 
-  permit_params :resume, :resume_data, :first_name, :last_name, :city, :zipcode, :state, :country, :phone, :linkedin_link,
-                :visibility, :years_of_experience,
+  permit_params :resume, :resume_data, :first_name, :last_name, :city, :zipcode, :state, :country, :contact_phone, :linkedin_link,
+                :visibility, :experience,
                 :former_regulator, :certifications, :dashboard_unlocked, :call_booked, :min_hourly_rate,
                 jurisdiction_ids: [], industry_ids: [], skill_ids: []
 
@@ -152,7 +152,7 @@ ActiveAdmin.register Specialist do
       f.input :first_name
       f.input :last_name
       f.input :resume, as: :file, label: 'Resume'
-      f.input :years_of_experience
+      f.input :experience
       f.input :dashboard_unlocked
       f.input :call_booked
       f.input :min_hourly_rate
@@ -160,7 +160,7 @@ ActiveAdmin.register Specialist do
       f.input :zipcode
       f.input :state
       f.input :country
-      f.input :phone
+      f.input :contact_phone
       f.input :linkedin_link
       f.input :visibility, collection: Specialist.visibilities.invert
     end

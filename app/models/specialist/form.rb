@@ -19,7 +19,7 @@ class Specialist::Form < Specialist
     tos_acceptance_ip = attributes.delete(:tos_acceptance_ip)
 
     new(attributes).tap do |specialist|
-      specialist.specialist_team_id = invitation.specialist_team_id if invitation
+      specialist.team_id = invitation.team_id if invitation
       specialist.build_user.build_tos_agreement.build_cookie_agreement unless specialist.user
       specialist.user.tos_acceptance_date = Time.zone.now
       specialist.user.tos_acceptance_ip = tos_acceptance_ip
@@ -42,6 +42,9 @@ class Specialist::Form < Specialist
     end
   end
 
+  # something strange here
+  # we have this method as `attr_accessor`
+  # rubocop:disable Lint/DuplicateMethods
   def public_profile
     @public_profile.nil? ? public? : @public_profile
   end
@@ -50,6 +53,7 @@ class Specialist::Form < Specialist
     @public_profile = ActiveRecord::Type::Boolean.new.type_cast_from_database(is_public)
     self.visibility = @public_profile ? Specialist.visibilities[:is_public] : Specialist.visibilities[:is_private]
   end
+  # rubocop:enable Lint/DuplicateMethods
 
   def delete_photo
     @delete_photo ||= '0'

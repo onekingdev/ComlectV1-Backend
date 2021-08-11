@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Business::OnboardingController < ApplicationController
+  include ActionView::Helpers::TagHelper
+
   before_action :authenticate_user!
   before_action :require_business!
   before_action :go_to_dashboard, only: :subscribe
@@ -10,16 +12,24 @@ class Business::OnboardingController < ApplicationController
   include SubscriptionHelper
   include SubscriptionCommon
 
-  def index
-    return redirect_to business_dashboard_path if current_business.onboarding_passed
+  # def index
+  #   render html: content_tag('business-onboarding-page', '',
+  #                            ':industry-ids': Industry.all.map(&proc { |ind|
+  #                                                                 { id: ind.id,
+  #                                                                   name: ind.name }
+  #                                                               }).to_json,
+  #                            ':jurisdiction-ids': Jurisdiction.all.map(&proc { |ind|
+  #                                                                         { id: ind.id,
+  #                                                                           name: ind.name }
+  #                                                                       }).to_json,
+  #                            ':sub-industry-ids': sub_industries(false).to_json,
+  #                            ':states': State.fetch_all_usa.to_json,
+  #                            ':timezones': timezones_array.to_json).html_safe,
+  #          layout: 'vue_onboarding'
+  # end
 
-    @pos_total = 0
-    @product = find_product
-    @sources = current_business.payment_sources.sorted
-    @pos_total += @product.fixed_budget.to_i if @product
-    @pos_total_annual = @pos_total
-    @pos_total_annual += 1500 if need_subscription?
-    @pos_total += 600 if need_subscription?
+  def index
+    render html: content_tag('auth-layoyt', '').html_safe, layout: 'vue_onboarding'
   end
 
   def subscribe
@@ -34,7 +44,11 @@ class Business::OnboardingController < ApplicationController
     end
 
     if need_subscription?
-      plan = params[:checkout][:schedule].to_s.downcase.strip rescue nil
+      plan = begin
+               params[:checkout][:schedule].to_s.downcase.strip
+             rescue
+               nil
+             end
       return redirect_to '/business/onboarding', flash: { error: 'Wrong plan' } unless Subscription.plans.key?(plan)
 
       db_subscription = current_business.subscriptions.base.presence || Subscription.create(
@@ -55,7 +69,7 @@ class Business::OnboardingController < ApplicationController
         )
         db_subscription.update(
           stripe_subscription_id: sub.id,
-          billing_period_ends: sub.created
+          billing_period_ends: sub.cancel_at
         )
       end
     end

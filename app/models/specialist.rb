@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 class Specialist < ApplicationRecord
   belongs_to :user, autosave: true
-  belongs_to :team, foreign_key: :specialist_team_id, optional: true
+  belongs_to :team, foreign_key: :team_id, optional: true
 
   belongs_to :rewards_tier, optional: true
 
@@ -39,25 +38,59 @@ class Specialist < ApplicationRecord
   has_one :referral, as: :referrable
   has_many :referral_tokens, as: :referrer
   has_many :specialist_invitations, class_name: 'Specialist::Invitation'
-  # rubocop:disable Metrics/LineLength
   has_many :manageable_ria_businesses, -> { joins(:industries).where("industries.name = 'Investment Adviser'").where(ria_dashboard: true) }, through: :active_projects, class_name: 'Business', source: :business
-  # rubocop:enable Metrics/LineLength
+
   has_many :ported_subscriptions
   has_many :ported_businesses
   has_many :payment_sources, class_name: 'Specialist::PaymentSource'
   has_many :reminders, as: :remindable
+  has_and_belongs_to_many :local_projects
+  has_many :specialists_business_roles
+  has_many :subscriptions, foreign_key: :specialist_id
+  validate if: -> { time_zone.present? } do
+    errors.add :time_zone unless ActiveSupport::TimeZone.all.collect(&:name).include?(time_zone)
+  end
 
   has_settings do |s|
-    s.key :notifications, defaults: {
-      marketing_emails: true,
-      got_rated: true,
-      not_hired: true,
+    s.key :in_app_notifications, defaults: {
+      task_created: true,
+      task_assigned: true,
+      task_file_uploaded: true,
+      task_new_comment: true,
+      task_completed: true,
+      task_overdue: true,
       project_ended: true,
+      got_rated: true,
       got_message: true,
+      not_hired: true,
       new_forum_question: true,
       new_forum_comments: true
     }
+    s.key :email_notifications, defaults: {
+      task_created: true,
+      task_assigned: true,
+      task_file_uploaded: true,
+      task_new_comment: true,
+      task_completed: true,
+      task_overdue: true,
+      project_ended: true,
+      got_rated: true,
+      got_message: true,
+      not_hired: true,
+      new_forum_question: true,
+      new_forum_comments: true
+    }
+    s.key :email_updates, defaults: {
+      monthly_newsletter: true,
+      promos_and_events: true
+    }
   end
+
+  enum seat_role: {
+    basic: 0,
+    admin: 1,
+    trusted: 2
+  }
 
   serialize :sub_industries
   serialize :sub_jurisdictions
@@ -170,9 +203,10 @@ class Specialist < ApplicationRecord
   has_one :cookie_agreement, through: :user
   accepts_nested_attributes_for :tos_agreement
   accepts_nested_attributes_for :cookie_agreement
-  validate :tos_invalid?
-  validate :cookie_agreement_invalid?
-  validates :username, uniqueness: true
+  accepts_nested_attributes_for :user
+  # validate :tos_invalid?
+  # validate :cookie_agreement_invalid?
+  validates :username, uniqueness: true, allow_blank: true
   validates :call_booked, presence: true, on: :signup
   validates :resume, presence: true, on: :signup if Rails.env != 'test'
 
@@ -189,14 +223,14 @@ class Specialist < ApplicationRecord
 
   scope :experience_between, ->(min, max) {
     if max
-      where('years_of_experience BETWEEN ? AND ?', min, max)
+      where('experience BETWEEN ? AND ?', min, max)
     else
-      where('years_of_experience >= ?', min)
+      where('experience >= ?', min)
     end
   }
 
   scope :by_experience, ->(dir = :desc) {
-    order("years_of_experience #{dir}")
+    order("experience #{dir}")
   }
 
   scope :by_distance, ->(lat, lng) do
@@ -236,10 +270,10 @@ class Specialist < ApplicationRecord
     while Specialist.find_by_sql(['SELECT * from specialists WHERE username = ?', generated]).count.positive?
       ext_num = generated.scan(/\d/).join('')
       generated = if !ext_num.empty?
-                    "#{src}#{ext_num.to_i + 1}"
-                  else
-                    "#{src}1"
-                  end
+        "#{src}#{ext_num.to_i + 1}"
+      else
+        "#{src}1"
+      end
     end
     generated.delete(' ')
   end
@@ -349,7 +383,6 @@ class Specialist < ApplicationRecord
     GenerateReferralTokensJob.perform_later(self)
   end
 
-  # rubocop:disable Style/GuardClause
   def calc_forum_upvotes
     if user.upvotes > forum_upvotes_for_review
       update(forum_upvotes_for_review: user.upvotes)
@@ -359,7 +392,6 @@ class Specialist < ApplicationRecord
       end
     end
   end
-  # rubocop:enable Style/GuardClause
 
   def stripe_customer
     payment_sources.where.not(stripe_customer_id: nil).first&.stripe_customer_id
@@ -369,4 +401,3 @@ class Specialist < ApplicationRecord
     payment_sources.find_by(primary: true)
   end
 end
-# rubocop:enable Metrics/ClassLength

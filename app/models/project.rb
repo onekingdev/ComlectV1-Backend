@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 class Project < ApplicationRecord
   self.inheritance_column = '_none'
-  # attr_accessor :color
+
   alias_attribute :remind_at, :starts_on
   alias_attribute :end_date, :ends_on
   alias_attribute :done_at, :completed_at
   alias_attribute :body, :title
+
   belongs_to :business
   belongs_to :specialist, optional: true
+  belongs_to :local_project, optional: true
   has_one :user, through: :business
   has_and_belongs_to_many :industries, optional: true
   has_and_belongs_to_many :jurisdictions, optional: true
@@ -27,13 +28,11 @@ class Project < ApplicationRecord
   has_many :transactions, dependent: :destroy
   has_many :extensions, dependent: :destroy, class_name: 'ProjectExtension'
   has_one :extension, -> { pending }, class_name: 'ProjectExtension'
-  has_many :documents, dependent: :destroy
   has_many :questions, dependent: :destroy
   has_many :answers, through: :questions, dependent: :destroy
   has_many :favorites, as: :favorited, dependent: :destroy, class_name: 'Favorite'
   has_many :favorited_by, through: :favorites, source_type: 'Specialist', source: :owner
   has_many :applicants, class_name: 'Specialist', through: :job_applications, source: :specialist
-  # add favorites or specialists who favorited this project
 
   accepts_nested_attributes_for :extensions
   accepts_nested_attributes_for :timesheets, allow_destroy: true
@@ -145,6 +144,7 @@ class Project < ApplicationRecord
   before_create :check_specialist, if: :internal?
   before_create :fix_internal_asap, if: :internal?
   before_create :remove_specialist, unless: :internal? if Rails.env != 'test'
+  # before_create :calculate_budget
 
   LOCATIONS = [%w[Remote remote], %w[Remote\ +\ Travel remote_and_travel], %w[Onsite onsite]].freeze
   # DB Views depend on these so don't modify:
@@ -162,14 +162,8 @@ class Project < ApplicationRecord
   ].freeze
   PAYMENT_SCHEDULES = (HOURLY_PAYMENT_SCHEDULES + FIXED_PAYMENT_SCHEDULES).uniq.freeze
   enum payment_schedule: Hash[PAYMENT_SCHEDULES].invert
-  RFP_TIMING = [
-    %w[As\ soon\ as\ possible asap],
-    %w[Within\ the\ next\ 2\ weeks two_weeks],
-    %w[Within\ a\ month month],
-    %w[Not\ sure not_sure]
-  ].freeze
-  MINIMUM_EXPERIENCE = ((3..14).map { |n| ["#{n} yrs", n] } + [['15+ yrs', 15]]).freeze
-  EXPERIENCE_RANGES = (1..15).each_with_object({}) do |n, years|
+  MINIMUM_EXPERIENCE = [['Junior', 0], ['Intermediate', 1], ['Expert', 2]].freeze
+  EXPERIENCE_RANGES = (0..2).each_with_object({}) do |n, years|
     years[n] = (n..Float::INFINITY)
   end.freeze
 
@@ -208,12 +202,10 @@ class Project < ApplicationRecord
   end
 
   def job_application
-    # rubocop:disable Style/GuardClause
     if active? && rfp?
       ja = job_applications.where(specialist_id: specialist_id)
       ja.present? ? ja.first : nil
     end
-    # rubocop:enable Style/GuardClause
   end
 
   def self.ending
@@ -291,9 +283,13 @@ class Project < ApplicationRecord
     [business, specialist]
   end
 
+  # something strange here
+  # we have this method as `alias_attribute`
+  # rubocop:disable Lint/DuplicateMethods
   def body
     title
   end
+  # rubocop:enable Lint/DuplicateMethods
 
   def to_s
     title
@@ -369,42 +365,58 @@ class Project < ApplicationRecord
     !full_time? && pricing_type == 'fixed'
   end
 
-  # rubocop:disable all
   def build_from_template(businessid, template, params)
     %i[location_type key_deliverables pricing_type hourly_rate only_regulators annual_salary
        fee_type minimum_experience duration_type estimated_days business_fee_free applicant_selection].each do |attr|
       public_send("#{attr}=", template.public_send(attr.to_s))
     end
+
     solution = template.turnkey_solution
     params_bd = params[:bd].reject(&:empty?) if params.include?(:bd)
+
     self.fixed_budget = template.flavor == 'bd' ? calculate_bd(params_bd)[0] : template.fixed_budget
     self.business_id = businessid
     self.type = template.project_type
     self.status = 'published'
-    self.title = solution.aum_enabled && check_aum(params[:aum]) && !template.title_aum.empty? ? template.title_aum : template.title
+
+    self.title = if solution.aum_enabled && check_aum(params[:aum]) && !template.title_aum.empty?
+      template.title_aum
+    else
+      template.title
+    end
+
     title.gsub!('{state}', params[:state]) if solution.principal_office
     self.location = params[:state] if solution.principal_office
+
     self.description = if solution.aum_enabled && check_aum(params[:aum]) && !template.description_aum.empty?
-                         template.description_aum
-                       else
-                         template.description
-                       end
+      template.description_aum
+    else
+      template.description
+    end
+
     self.description = format_description(description, params)
     self.payment_schedule = payment_schedule_to_name(template.payment_schedule)
-    self.estimated_hours = solution.hours_enabled ? params[:estimated_hours].to_i : template.flavor == 'bd' ? calculate_bd(params_bd)[1] : template.estimated_hours
+
+    self.estimated_hours = if solution.hours_enabled
+      params[:estimated_hours].to_i
+    else
+      template.flavor == 'bd' ? calculate_bd(params_bd)[1] : template.estimated_hours
+    end
+
     self.industries = if solution.industries_enabled
-                        Industry.where(id: params[:industries].reject(&:empty?).map(&:to_i))
-                      else
-                        template.industries
-                      end
+      Industry.where(id: params[:industries].reject(&:empty?).map(&:to_i))
+    else
+      template.industries
+    end
+
     self.jurisdictions = if solution.jurisdictions_enabled
-                           Jurisdiction.where(id: params[:jurisdictions].reject(&:empty?).map(&:to_i))
-                         else
-                           template.jurisdictions
-                         end
+      Jurisdiction.where(id: params[:jurisdictions].reject(&:empty?).map(&:to_i))
+    else
+      template.jurisdictions
+    end
+
     self
   end
-  # rubocop:enable all
 
   def self.all_bds
     [['EMC', 3], ['BIA', 1], ['MFU', 2], ['MSD', 1], ['TAS', 1], ['SSL', 1],\
@@ -461,13 +473,11 @@ class Project < ApplicationRecord
   def new_project_notification
     environment = ENV['STRIPE_PUBLISHABLE_KEY'].start_with?('pk_test') ? 'staging' : 'production'
     environment = 'staging' if Rails.env.development?
-    # rubocop:disable Style/GuardClause
     if !admin_notified && !draft? && environment == 'production'
       ProjectMailer.notify_admin_on_creation(self).deliver_later
       update(admin_notified: true)
       save!
     end
-    # rubocop:enable Style/GuardClause
   end
 
   def send_email
@@ -503,6 +513,10 @@ class Project < ApplicationRecord
 
   private
 
+  def calculate_budget
+    self.calculated_budget = hourly_pricing? ? (hourly_rate + upper_hourly_rate / 2) * estimated_hours : fixed_budget
+  end
+
   def format_description(description, params)
     description.gsub!('{state}', params[:state]) if params.include? :state
     description.gsub!('{aum}', params[:aum]) if params.include? :aum
@@ -524,4 +538,3 @@ class Project < ApplicationRecord
     self.expires_at = starts_on.in_time_zone(time_zone).end_of_day
   end
 end
-# rubocop:enable Metrics/ClassLength

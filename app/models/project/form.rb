@@ -7,11 +7,12 @@ class Project::Form < Project
   validates :location_type, inclusion: { in: Project::LOCATIONS.map(&:second) }, allow_blank: true
   validates :location, presence: true, if: :location_required?
   validates :jurisdiction_ids, :industry_ids, presence: true, unless: :internal?
+  validates :role_details, presence: true
 
   ONE_OFF_FIELDS = %i[key_deliverables location_type payment_schedule estimated_hours].freeze
   FULL_TIME_FIELDS = %i[full_time_starts_on annual_salary].freeze
   SHARED_FIELDS = %i[starts_on].freeze
-  RFP_FIELDS = %i[location_type est_budget rfp_timing].freeze
+  RFP_FIELDS = %i[location_type].freeze
 
   ASAP_DURATION_FIELDS = %i[estimated_days].freeze
   CUSTOM_DURATION_FIELDS = %i[starts_on ends_on].freeze
@@ -22,15 +23,19 @@ class Project::Form < Project
   validates(*ASAP_DURATION_FIELDS, presence: true, if: -> { one_off? && asap_duration? })
   validates(*CUSTOM_DURATION_FIELDS, presence: true, if: -> { one_off? && custom_duration? })
 
-  validates :hourly_rate, presence: true, if: -> { one_off? && hourly_pricing? }
-  validates :fixed_budget, presence: true, if: -> { one_off? && fixed_pricing? }
+  validates :hourly_rate, presence: true, if: -> { hourly_pricing? }
+  validates :upper_hourly_rate, presence: true, if: -> { hourly_pricing? }
+  validates :est_budget, presence: true, if: -> { fixed_pricing? }
   validates :hourly_payment_schedule, :hourly_rate,
-            presence: true, if: -> { one_off? && hourly_pricing? && payment_schedule.blank? }
+            presence: true, if: -> { hourly_pricing? && payment_schedule.blank? }
   validates :fixed_payment_schedule, :fixed_budget,
-            presence: true, if: -> { one_off? && fixed_pricing? && payment_schedule.blank? }
+            presence: true, if: -> { fixed_pricing? && payment_schedule.blank? }
   validate if: -> { asap_duration? } do
     errors.add :starts_on, :duration if starts_on.present?
     errors.add :ends_on, :duration if ends_on.present?
+  end
+  validate if: -> { local_project_id.present? } do
+    errors.add :local_project_id, :invalid if business.local_projects.where(id: local_project_id).count.zero?
   end
   validate if: -> { custom_duration? } do
     errors.add :estimated_days, :duration if estimated_days.present?
@@ -91,6 +96,9 @@ class Project::Form < Project
     process_invite true if invite&.not_sent?
   end
 
+  # something strange here
+  # we have these methods as `attr_accessor`
+  # rubocop:disable Lint/DuplicateMethods
   def full_time_starts_on
     @full_time_starts_on.present? ? Date.parse(@full_time_starts_on) : starts_on
   end
@@ -102,6 +110,7 @@ class Project::Form < Project
   def fixed_payment_schedule
     @fixed_payment_schedule || payment_schedule
   end
+  # rubocop:enable Lint/DuplicateMethods
 
   private
 
@@ -114,12 +123,12 @@ class Project::Form < Project
   # Clear unnecessary fields
   def assign_type_fields
     fields = if one_off?
-               FULL_TIME_FIELDS - SHARED_FIELDS
-             elsif rfp?
-               FULL_TIME_FIELDS - ONE_OFF_FIELDS - RFP_FIELDS
-             else
-               ONE_OFF_FIELDS - SHARED_FIELDS
-             end
+      FULL_TIME_FIELDS - SHARED_FIELDS
+    elsif rfp?
+      FULL_TIME_FIELDS - ONE_OFF_FIELDS - RFP_FIELDS
+    else
+      ONE_OFF_FIELDS - SHARED_FIELDS
+    end
 
     clear_fields(fields)
     true

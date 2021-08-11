@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Business::ProjectsController < ApplicationController
+  include ActionView::Helpers::TagHelper
+
   before_action :authenticate_user!
   before_action :require_business!, only: %i[index new create edit update]
   before_action :set_project, only: %i[edit update destroy post]
@@ -14,29 +16,23 @@ class Business::ProjectsController < ApplicationController
   }.freeze
 
   def index
-    @business = current_user.business
-    @ratings = @business.ratings_received.preload_association
-    @filter   = FILTERS[params[:filter]] || :none
-    @projects = Project.cards_for_user(current_user, filter: @filter)
-    @is_business_cards = request.original_fullpath.include?('business_cards')
-    @projects.each do |project|
-      project.populate_rfp(project.job_application) if project.rfp? && project.active?
-    end
+    render html: content_tag('main-layoyt', '').html_safe, layout: 'vue_business_layout'
+  end
 
-    respond_to do |format|
-      format.html do
-        render partial: @is_business_cards ? 'business_cards' : 'cards', projects: @projects if request.xhr?
-      end
-      format.js
-    end
+  def new
+    render html: content_tag('main-layoyt', '').html_safe, layout: 'vue_business_layout'
   end
 
   def show
-    @project = policy_scope(Project)
-               .includes(:industries, :jurisdictions, :skills, business: %i[industries jurisdictions])
-               .find(params[:id])
+    render html: content_tag('main-layoyt', '').html_safe, layout: 'vue_business_layout'
+  end
 
-    render template: 'projects/show'
+  def show_post
+    render html: content_tag('main-layoyt', '').html_safe, layout: 'vue_business_layout'
+  end
+
+  def update_post
+    render html: content_tag('main-layoyt', '').html_safe, layout: 'vue_business_layout'
   end
 
   def create

@@ -6,6 +6,7 @@
 #
 # Ignore local config.
 /.env.local
+/.env
 
 # Ignore bundler config.
 /.bundle
@@ -29,4 +30,4 @@ yarn-error.log*
 .idea
 yarn.lock
 .vscode
-
+.history

@@ -9,6 +9,14 @@ module RemindersFetcher
     attr_accessor :id, :body
   end
 
+  def tasks_calendar_grid2(remindable, first_day, last_day)
+    @grid_tasks = remindable.reminders.where('end_date >= ? AND remind_at < ?', first_day, last_day).where(repeats: nil)
+    @recurring_tasks = remindable.reminders.where('remind_at < ?', last_day).where.not(repeats: nil)
+    @active_projects = remindable.local_projects.where.not(id: remindable.user.hidden_local_projects)
+    calendar_grid = populate_recurring_tasks2(@recurring_tasks, first_day, last_day)
+    [(calendar_grid + @grid_tasks).sort_by(&:end_date), @active_projects]
+  end
+
   def tasks_calendar_grid(remindable, beginning)
     end_of_month = beginning + 40.days
     first_day = beginning - beginning.wday.days
@@ -73,6 +81,26 @@ module RemindersFetcher
     calendar_grid
   end
 
+  # rubocop:disable Metrics/BlockNesting
+  def populate_recurring_tasks2(tasks, first_day, last_day)
+    output_tasks = []
+    tasks.each do |task|
+      occurence_idx = 0
+      date_cursor = task.remind_at
+      while (task.end_by.blank? || (task.end_by.present? && (date_cursor < task.end_by))) && (date_cursor < last_day)
+        if %w[Daily Weekly Monthly Yearly].include?(task.repeats)
+          unless (task.skip_occurencies.presence || [])&.include?(occurence_idx)
+            output_tasks.push(RecurringReminder.new(task, "#{task.id}_#{occurence_idx}", date_cursor)) if date_cursor >= first_day
+          end
+          occurence_idx += 1
+        end
+        date_cursor = task.repeats == '' ? last_day : task.next_occurence(date_cursor)
+      end
+    end
+    output_tasks
+  end
+  # rubocop:enable Metrics/BlockNesting
+
   def populate_recurring_tasks(tasks, last_day, calendar_grid)
     tasks.each do |task|
       occurence_idx = 0
@@ -98,11 +126,11 @@ module RemindersFetcher
       end
     end
 
-    remindable
+    (remindable
       .reminders.where(repeats: nil)
       .where('end_date < ?',
              Time.zone.today.in_time_zone(remindable.time_zone)).where(done_at: nil)
-      .order(remind_at: :asc, id: :asc) + recurring_past_dues
+      .order(remind_at: :asc, id: :asc) + recurring_past_dues).sort_by(&:end_date)
   end
 
   def reminders_today(remindable, calendar_grid)

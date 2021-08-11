@@ -1,13 +1,16 @@
 # frozen_string_literal: true
 
 class Message < ApplicationRecord
-  belongs_to :thread, polymorphic: true
+  belongs_to :thread, polymorphic: true, optional: true
   belongs_to :sender, polymorphic: true
-  belongs_to :recipient, polymorphic: true
+  belongs_to :recipient, polymorphic: true, optional: true
 
   scope :preload_association, -> { preload(:thread, :sender, :recipient) }
   scope :recent, -> { order(created_at: :desc) }
-  scope :notifiable, -> { where(read_by_recipient: false).where('created_at < ?', Time.zone.now - 1.minute) }
+  scope :notifiable, -> {
+                       where(read_by_recipient: false).where('created_at < ?',
+                                                             Time.zone.now - 1.minute).where.not(recipient_id: nil)
+                     }
   scope :unread, -> { where(read_by_recipient: false) }
   scope :between, ->(type, id) {
     where(thread: nil)
@@ -18,6 +21,7 @@ class Message < ApplicationRecord
     where(recipient_id: s_id, sender_id: b_id, recipient_type: 'Specialist', sender_type: 'Business')
       .recent.or(where(recipient_id: b_id, sender_id: s_id, recipient_type: 'Business', sender_type: 'Specialist').recent)
   }
+  scope :direct, -> { where(thread_id: nil) }
 
   include FileUploader[:file]
 
@@ -28,10 +32,10 @@ class Message < ApplicationRecord
   def self.threads_for(subject)
     query = <<-SQL
     WITH summary AS (
-      SELECT *, ROW_NUMBER() OVER(PARTITION BY m.thread_id ORDER BY m.created_at DESC) AS n
+      SELECT *, ROW_NUMBER() OVER(PARTITION BY (m.recipient_id, m.sender_id) ORDER BY m.created_at DESC) AS n
       FROM messages AS m
     )
-    SELECT DISTINCT(summary.thread_type, summary.thread_id), * FROM summary WHERE summary.n = 1 AND
+    SELECT * FROM summary WHERE summary.n = 1 AND
       ((sender_type = :type AND sender_id = :id) OR
        (recipient_type = :type AND recipient_id = :id))
     ORDER BY summary.created_at DESC

@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
 require 'validators/url_validator'
-# rubocop:disable Metrics/ClassLength
 class Business < ApplicationRecord
   belongs_to :user
 
   has_and_belongs_to_many :jurisdictions, optional: true
   has_and_belongs_to_many :industries, optional: true
+  has_many :exams
+  has_many :risks
   has_many :forum_questions
-  has_many :projects, dependent: :destroy
+  has_many :local_projects
+  has_many :projects
+  has_many :local_projects
   has_many :job_applications, through: :projects
   has_many :charges, through: :projects
   has_many :transactions, through: :projects
@@ -25,7 +28,8 @@ class Business < ApplicationRecord
   }, through: :projects, source: :ratings
   has_many :email_threads, dependent: :destroy
   has_many :compliance_policies
-  has_many :annual_reviews
+  has_many :compliance_policy_risks
+  has_many :compliance_policy_sections
   has_many :annual_reports
   has_many :teams
   has_many :viewable_teams, -> { where(display: true) }, class_name: 'Team'
@@ -49,15 +53,46 @@ class Business < ApplicationRecord
   has_many :referral_tokens, as: :referrer
   has_many :reminders, as: :remindable
   has_many :audit_comments
+  has_one :compliance_policy_configuration, dependent: :destroy
 
   has_settings do |s|
-    s.key :notifications, defaults: {
-      marketing_emails: true,
-      got_rated: true,
+    s.key :in_app_notifications, defaults: {
+      task_created: true,
+      task_assigned: true,
+      task_file_uploaded: true,
+      task_new_comment: true,
+      task_completed: true,
+      task_overdue: true,
+      project_new_bid: true,
+      project_message: true,
+      project_overdue: true,
       project_ended: true,
+      project_completed: true,
+      got_rated: true,
       got_message: true,
       new_forum_answers: true,
       new_forum_comments: true
+    }
+    s.key :email_notifications, defaults: {
+      task_created: true,
+      task_assigned: true,
+      task_file_uploaded: true,
+      task_new_comment: true,
+      task_completed: true,
+      task_overdue: true,
+      project_new_bid: true,
+      project_message: true,
+      project_overdue: true,
+      project_ended: true,
+      project_completed: true,
+      got_rated: true,
+      got_message: true,
+      new_forum_question: true,
+      new_forum_comments: true
+    }
+    s.key :email_updates, defaults: {
+      monthly_newsletter: true,
+      promos_and_events: true
     }
   end
 
@@ -71,14 +106,12 @@ class Business < ApplicationRecord
   after_create :add_as_employee
 
   def spawn_compliance_policies
-    # rubocop:disable Style/GuardClause
     unless compliance_policies_spawned
       update(compliance_policies_spawned: true)
       I18n.t(:compliance_manual_sections).map(&:to_a).map(&:last).each do |section|
         compliance_policies.create(title: section)
       end
     end
-    # rubocop:enable Style/GuardClause
   end
 
   def add_as_employee
@@ -223,24 +256,29 @@ class Business < ApplicationRecord
   RISK_TOLERANCE_OPTIONS = [nil, '', 'Bare minimum', 'Best efforts', 'Best business practices', 'Gold standard'].freeze
 
   validates :contact_first_name, :contact_last_name, presence: true
-  validates :business_name, :industries, :employees, presence: true
-  validates :country, :city, :state, :time_zone, presence: true
+  validates :business_name, :industries, presence: true, if: -> { account_created }
+  validates :city, :state, presence: true, if: -> { account_created }
   validates :description, length: { maximum: 750 }
-  validates :employees, inclusion: { in: EMPLOYEE_OPTIONS }
-  validates :risk_tolerance, inclusion: { in: RISK_TOLERANCE_OPTIONS }
+  # validates :employees, inclusion: { in: EMPLOYEE_OPTIONS }
+  validates :risk_tolerance, inclusion: { in: RISK_TOLERANCE_OPTIONS }, if: -> { account_created }
   validates :linkedin_link, allow_blank: true, url: true
   validates :website, allow_blank: true, url: true
   # validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :username, uniqueness: true
+  validates :username, uniqueness: true, allow_blank: true
   # validates :client_account_cnt, presence: true
   # validates :total_assets, presence: true
+  validate if: -> { time_zone.present? } do
+    errors.add :time_zone unless ActiveSupport::TimeZone.all.collect(&:name).include?(time_zone)
+  end
 
   accepts_nested_attributes_for :user
   accepts_nested_attributes_for :tos_agreement
   accepts_nested_attributes_for :cookie_agreement
 
-  validate :tos_invalid?
-  validate :cookie_agreement_invalid?
+  attr_accessor :sub_industry_ids
+
+  # validate :tos_invalid?
+  # validate :cookie_agreement_invalid?
 
   delegate :suspended?, to: :user
 
@@ -306,13 +344,11 @@ class Business < ApplicationRecord
     assigned_team_members.each do |employee|
       user = User.find_by(email: employee.email)
       specialist = user.specialist if user.present?
-      employee_array << [specialist.full_name, specialist.id] if specialist.present?
+      employee_array << specialist if specialist.present?
     end
     employee_array
   end
 
-  # rubocop:disable Metrics/CyclomaticComplexity
-  # rubocop:disable Metrics/PerceivedComplexity
   def gap_analysis_est
     basic = 450
     deluxe = 1000
@@ -370,8 +406,6 @@ class Business < ApplicationRecord
     end
     [basic, deluxe, premium]
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
-  # rubocop:enable Metrics/PerceivedComplexity
 
   def generate_username
     src = business_name.split(' ').map(&:capitalize).join('')
@@ -379,10 +413,10 @@ class Business < ApplicationRecord
     while Business.find_by_sql(['SELECT * from businesses WHERE username = ?', generated]).count.positive?
       ext_num = generated.scan(/\d/).join('')
       generated = if !ext_num.empty?
-                    "#{src}#{ext_num.to_i + 1}"
-                  else
-                    "#{src}1"
-                  end
+        "#{src}#{ext_num.to_i + 1}"
+      else
+        "#{src}1"
+      end
     end
     generated
   end
@@ -482,4 +516,3 @@ class Business < ApplicationRecord
     end
   end
 end
-# rubocop:enable Metrics/ClassLength

@@ -2,6 +2,8 @@
 
 class Reminder < ActiveRecord::Base
   belongs_to :remindable, polymorphic: true
+  belongs_to :linkable, polymorphic: true, optional: true
+  has_many :messages, as: :thread
 
   TOTAL_MONTH = 1..12
   REPEATS = %w[Daily Weekly Monthly Yearly].freeze
@@ -11,6 +13,14 @@ class Reminder < ActiveRecord::Base
   serialize :done_occurencies
 
   before_validation :fix_recurring_schedule
+
+  validates :body, presence: true
+  validates :remind_at, presence: true
+  validates :end_date, presence: true
+
+  validate if: -> { linkable.present? } do
+    errors.add :linkable_id, :invalid if linkable.business != remindable
+  end
 
   def start_time
     remind_at
@@ -53,7 +63,13 @@ class Reminder < ActiveRecord::Base
       self.repeat_on = nil
     when 'Weekly'
       self.on_type = nil
+    when 'Monthly'
+      self.on_type = 'Day' if on_type.blank?
+    when 'Yearly'
+      self.on_type = 'Day' if on_type.blank?
     end
+    self.end_date = remind_at if remind_at.present? && remind_at > end_date
+    self.repeat_every = 1 if repeats.present? && (repeat_every.nil? || repeat_every.zero?)
   end
 
   def next_occurence(date_cursor)
@@ -71,19 +87,19 @@ class Reminder < ActiveRecord::Base
       date_cursor += repeat_every.months
       date_cursor = date_cursor.beginning_of_month
       date_cursor = if on_type == 'Day'
-                      date_cursor.change(day: repeat_on)
-                    else
-                      Reminder.find_month_day(date_cursor, on_type, repeat_on)
-                    end
+        date_cursor.change(day: repeat_on)
+      else
+        Reminder.find_month_day(date_cursor, on_type, repeat_on)
+      end
     when 'Yearly'
       date_cursor += 1.year
       date_cursor = date_cursor.change(month: repeat_every)
       date_cursor = date_cursor.beginning_of_month
       date_cursor = if on_type == 'Day'
-                      date_cursor.change(day: repeat_on)
-                    else
-                      Reminder.find_month_day(date_cursor, on_type, repeat_on)
-                    end
+        date_cursor.change(day: repeat_on)
+      else
+        Reminder.find_month_day(date_cursor, on_type, repeat_on)
+      end
     end
     date_cursor
   end

@@ -13,11 +13,10 @@ class ProjectMailer < ApplicationMailer
          }
   end
 
-  def share(project, name, email, message_text, message_html)
+  def share(project, email, message_html)
     @project_url = project_url(project)
-    @message_text = add_project_link(project, message_text, @project_url, :text)
     @message_html = add_project_link(project, message_html, @project_url, :html)
-    mail to: "#{name} <#{email}>",
+    mail to: "<#{email}>",
          template_id: ENV.fetch('POSTMARK_TEMPLATE_ID'),
          template_model: {
            subject: (project.full_time? ? 'Full-time role' : 'Project') + ' you might be interested in',
@@ -63,16 +62,17 @@ class ProjectMailer < ApplicationMailer
 
   def add_project_link(project, text, url, format = :html)
     found = text =~ /%\{project_job_link\}/
-    replacement = case [format, !found.nil?]
-                  when [:html, true]
-                    "<a href='#{url}'>#{project.title}</a>".html_safe
-                  when [:html, false]
-                    "<p>Project Link: <a href='#{url}'>#{project.title}</a></p>".html_safe
-                  when [:text, true]
-                    url
-                  else # [:text, false]
-                    "\n\nProject Link: #{url}"
-                  end
+    replacement =
+      case [format, !found.nil?]
+      when [:html, true]
+        "<a href='#{url}'>#{project.title}</a>".html_safe
+      when [:html, false]
+        "<p>Project Link: <a href='#{url}'>#{project.title}</a></p>".html_safe
+      when [:text, true]
+        url
+      else # [:text, false]
+        "\n\nProject Link: #{url}"
+      end
     found ? text.gsub('%{project_job_link}', replacement) : text + replacement
   end
 
