@@ -43,7 +43,7 @@ class Api::Business::ProjectsController < ApiController
     if @project.specialist_id.nil? && @project.destroy
       respond_with @project, serializer: ProjectSerializer
     else
-      render json: (@project.errors.keys.count.positive? ? @project.errors : { error: 'project_has_specialist' }.to_json),
+      render json: (@project.errors.keys.count.positive? ? @project.errors : { error: I18n.t('api.business.projects.project_has_specialist') }.to_json),
              status: :unprocessable_entity
     end
   end

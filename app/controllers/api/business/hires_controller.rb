@@ -12,7 +12,7 @@ class Api::Business::HiresController < ApiController
         @project.job_applications.find(params.require(:job_application_id))
       )
       specialist = job_application.object.specialist
-      specialist.business_specialists_roles.create(
+      specialist.specialists_business_roles.create(
         business_id: job_application.object.project.business.id,
         role: params.require(:role)
       )
