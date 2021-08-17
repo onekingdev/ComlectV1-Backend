@@ -64,7 +64,6 @@ export default {
           projects = result.projects
 
           // this.tasks = tasks.slice(0, LIMIT_OF_ARRAY_TASKS).filter(task => !task.done_at)
-          console.log(this.tasks)
           this.tasks = tasks.filter(task => !task.done_at)
           this.projects = projects.slice(0, LIMIT_OF_ARRAY_PROJECTS)
         })
