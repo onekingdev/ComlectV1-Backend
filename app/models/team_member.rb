@@ -2,14 +2,18 @@
 
 class TeamMember < ActiveRecord::Base
   belongs_to :team
+
   has_one :seat
+  has_one :specialist_invitation, class_name: 'Specialist::Invitation', dependent: :destroy
 
-  validates :first_name, presence: true
-  # validates :last_name, presence: true
-  validates :email, presence: true
-  validates :title, presence: true
+  before_validation :set_name
 
-  before_destroy :clear_seat
+  validates :email, uniqueness: { scope: :team_id }
+  validates :first_name, :last_name, :email, presence: true
+
+  after_destroy :clear_seat
+
+  enum role: { basic: 'basic', admin: 'admin', trusted: 'trusted' }
 
   def clear_seat
     seat&.unassign
@@ -34,5 +38,11 @@ class TeamMember < ActiveRecord::Base
         ]
       end
     end
+  end
+
+  private
+
+  def set_name
+    self.name = "#{first_name} #{last_name}"
   end
 end

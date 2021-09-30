@@ -6,7 +6,7 @@ class Charge::Processing
   def self.process_scheduled!
     result = []
 
-    Charge.includes(:project).scheduled.for_processing.group_by(&:project).each do |project, charges|
+    Charge.joins(:project).scheduled.for_processing.group_by(&:project).each do |project, charges|
       next if !project.full_time? && project.ending? && project.disputed_timesheets?
       result << new(charges, project).process!
     end
@@ -74,10 +74,10 @@ class Charge::Processing
     credit = Business::Credit.for(business)
 
     @business_credit_in_cents = if business_fee_in_cents >= credit.amount_in_cents
-                                  credit.amount_in_cents
-                                else
-                                  business_fee_in_cents
-                                end
+      credit.amount_in_cents
+    else
+      business_fee_in_cents
+    end
   end
 
   def specialist_credit_in_cents
@@ -85,10 +85,10 @@ class Charge::Processing
     credit = Specialist::Credit.for(specialist)
 
     @specialist_credit_in_cents = if specialist_fee_in_cents >= credit.amount_in_cents
-                                    credit.amount_in_cents
-                                  else
-                                    specialist_fee_in_cents
-                                  end
+      credit.amount_in_cents
+    else
+      specialist_fee_in_cents
+    end
   end
 
   def amount_in_cents

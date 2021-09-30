@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Favorite < ApplicationRecord
-  belongs_to :owner, polymorphic: true
-  belongs_to :favorited, polymorphic: true
+  belongs_to :owner, polymorphic: true, optional: true
+  belongs_to :favorited, polymorphic: true, optional: true
 
   validates :favorited_id, uniqueness: { scope: %i[owner_id owner_type favorited_type] }
 
@@ -11,6 +11,11 @@ class Favorite < ApplicationRecord
   end
 
   def self.toggle!(owner, params)
-    owner.favorites.find_by(params)&.destroy || owner.favorites.create!(params)
+    if owner.favorites.find_by(params)&.destroy
+      false
+    else
+      owner.favorites.create!(params)
+      true
+    end
   end
 end

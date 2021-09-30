@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 class StripeAccount < ApplicationRecord
-  belongs_to :specialist
+  belongs_to :specialist, optional: true
+
   has_many :bank_accounts, dependent: :destroy
   has_many :transactions, dependent: :nullify, foreign_key: 'payment_target_id'
 
@@ -14,9 +14,16 @@ class StripeAccount < ApplicationRecord
   attr_accessor :verification_document_data, :verification_document_cache
 
   before_validation :encode_verification_document
+  before_validation :prepare_fields, if: -> { account_type_changed? && persisted? }
   before_validation :set_ssn_last_4_from_personal_id, if: -> { country == 'US' }
+
+  validates :account_type, :country, presence: true
+  validates :business_name, presence: true, if: :company?
+  validates :first_name, :last_name, presence: true, if: :individual?
+
   after_create :create_managed_account, if: -> { stripe_id.blank? }
-  after_create :verify_account
+  after_update :verify_account, if: -> { stripe_id.present? }
+
   after_destroy :delete_stripe_account, if: -> { stripe_id.present? }
 
   REQUIRED_FIELDS = {
@@ -64,8 +71,7 @@ class StripeAccount < ApplicationRecord
   def update_status_from_stripe(account)
     update_columns(
       status: status_from_account(account),
-      status_detail: fields_needed_message(account).presence,
-      personal_id_number: nil
+      status_detail: fields_needed_message(account).presence
     )
 
     Notification::Deliver.verification_missing!(specialist.user) if verification_missing?
@@ -73,7 +79,7 @@ class StripeAccount < ApplicationRecord
 
   def update_verification_status
     account = Stripe::Account.retrieve(stripe_id)
-    update_status_from_stripe account
+    update_status_from_stripe(account)
   end
 
   private
@@ -93,39 +99,39 @@ class StripeAccount < ApplicationRecord
   end
 
   def create_managed_account
-    account = Stripe::Account.create(stripe_attributes)
-    update_columns(stripe_id: account.id)
+    date = Time.zone.now
+    user = specialist.user
+    ip = user.current_sign_in_ip.to_s
+    attrs = stripe_attributes(date, ip)
+
+    account = Stripe::Account.create(attrs)
+
+    update_columns(
+      stripe_id: account.id,
+      tos_acceptance_ip: ip,
+      tos_acceptance_date: date
+    )
   rescue Stripe::InvalidRequestError => e
-    errors.add :base, e.message
-    destroy # So #persisted? does not return true
+    errors.add(:base, e.message)
+    destroy
     raise ActiveRecord::Rollback
   end
 
-  def stripe_attributes
+  def stripe_attributes(date, ip)
     attributes = {
-      business_type: account_type,
-      business_profile: {
-        url: "https://app.complect.com/specialists/#{specialist.username}"
-      },
-      country: country,
       type: :custom,
-      tos_acceptance: { date: tos_acceptance_date.to_i, ip: tos_acceptance_ip },
-      settings: {
-        payouts: {
-          debit_negative_balances: true
-        }
-      },
-      requested_capabilities: %w[transfers]
+      country: country,
+      business_type: account_type,
+      requested_capabilities: %w[transfers],
+      tos_acceptance: { date: date.to_i, ip: ip },
+      settings: { payouts: { debit_negative_balances: true } },
+      business_profile: { url: "https://app.complect.com/specialists/#{specialist.username}" }
     }
 
     if individual?
-      attributes[:individual] = {
-        first_name: first_name
-      }
+      attributes[:individual] = { first_name: first_name, last_name: last_name }
     elsif company?
-      attributes[:company] = {
-        name: business_name
-      }
+      attributes[:company] = { name: business_name }
     end
 
     attributes
@@ -140,9 +146,17 @@ class StripeAccount < ApplicationRecord
 
     update_verification_status
   rescue Stripe::InvalidRequestError => e
-    errors.add :base, translate_stripe_error(e.message)
+    field_name, msg = detect_reason(e.response.data[:error])
+    errors.add(field_name, msg)
     raise ActiveRecord::Rollback if stripe_id.blank?
-    update_attribute :status_detail, translate_stripe_error(e.message)
+    update_column(:status_detail, msg)
+  end
+
+  def detect_reason(error)
+    key = 'base'
+    key = 'personal_id_number' if error[:param] == 'individual[id_number]'
+
+    [key, error[:message]]
   end
 
   def upload_verification_document
@@ -154,7 +168,7 @@ class StripeAccount < ApplicationRecord
     file = File.new(tmp.path)
     Stripe::FileUpload.create(
       { purpose: 'identity_document', file: file },
-      stripe_account: stripe_id
+      { stripe_account: stripe_id }
     )
   end
 
@@ -164,26 +178,26 @@ class StripeAccount < ApplicationRecord
   end
 
   INDIVIDUAL_FIELD_MAPPINGS = {
-    'individual.address.line1' => :address1,
     'individual.address.city' => :city,
     'individual.address.state' => :state,
-    'individual.address.postal_code' => :zipcode,
-    'individual.id_number' => :personal_id_number,
-    'individual.dob.day' => -> { dob.day },
-    'individual.dob.month' => -> { dob.month },
-    'individual.dob.year' => -> { dob.year },
-    'individual.first_name' => :first_name,
     'individual.last_name' => :last_name,
-    'individual.ssn_last_4' => :ssn_last_4
+    'individual.ssn_last_4' => :ssn_last_4,
+    'individual.first_name' => :first_name,
+    'individual.dob.day' => -> { dob.day },
+    'individual.address.line1' => :address1,
+    'individual.dob.year' => -> { dob.year },
+    'individual.dob.month' => -> { dob.month },
+    'individual.address.postal_code' => :zipcode,
+    'individual.id_number' => :personal_id_number
   }.freeze
 
   COMPANY_FIELD_MAPPINGS = {
-    'company.address.line1' => :address1,
     'company.address.city' => :city,
-    'company.address.state' => :state,
-    'company.address.postal_code' => :zipcode,
     'company.name' => :business_name,
-    'company.tax_id' => :business_tax_id
+    'company.address.state' => :state,
+    'company.address.line1' => :address1,
+    'company.tax_id' => :business_tax_id,
+    'company.address.postal_code' => :zipcode
   }.freeze
 
   def assign_individual_fields(account)
@@ -230,5 +244,29 @@ class StripeAccount < ApplicationRecord
   def translate_stripe_error(error)
     (STRIPE_ERRORS.detect { |regex, _m| regex.match(error) } || [nil, error])[1]
   end
+
+  def prepare_fields
+    attrs = { business_type: account_type }
+
+    if company?
+      self.last_name = nil
+      self.first_name = nil
+
+      attrs[:individual] = {}
+      attrs[:company] = { name: business_name }
+    else
+      self.business_name = nil
+
+      attrs[:individual] = { first_name: first_name, last_name: last_name }
+      attrs[:company] = { name: '' }
+    end
+
+    Stripe::Account.update(stripe_id, attrs)
+  end
+
+  def validate_age
+    if dob.present? && dob > 18.years.ago.to_date
+      errors.add(:dob, :over_18)
+    end
+  end
 end
-# rubocop:enable Metrics/ClassLength

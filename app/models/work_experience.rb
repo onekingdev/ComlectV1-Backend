@@ -6,20 +6,20 @@ class WorkExperience < ApplicationRecord
   scope :compliance, -> { where(compliance: true) }
 
   validates :company, :job_title, presence: true
-  validate :validate_from_to
+  validate :dates
 
   def years
-    from ? (((to || Time.zone.today) - from) / 365).to_f : 0
+    start_date ? (((end_date || Time.zone.today) - start_date) / 365).to_f : 0
   end
 
   private
 
-  def validate_from_to
-    return if from.nil? && to.nil?
-    return if from.present? && current
+  def dates
+    return if start_date.nil? && end_date.nil?
+    return if start_date.present? && current
 
-    return errors.add :to, :invalid if from && !to && !current
-    return errors.add :from, :invalid if from.nil? && to.present?
-    return errors.add :from, :invalid if from > to
+    return errors.add :end_date, :invalid if start_date && !end_date && !current
+    return errors.add :start_date, :invalid if start_date.nil? && end_date.present?
+    return errors.add :start_date, :invalid if start_date > end_date
   end
 end

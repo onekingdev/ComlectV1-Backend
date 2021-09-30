@@ -1,10 +1,3 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 9.6.19
--- Dumped by pg_dump version 11.5
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -15,125 +8,6 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: tiger; Type: SCHEMA; Schema: -; Owner: -
---
-
-CREATE SCHEMA tiger;
-
-
---
--- Name: tiger_data; Type: SCHEMA; Schema: -; Owner: -
---
-
-CREATE SCHEMA tiger_data;
-
-
---
--- Name: topology; Type: SCHEMA; Schema: -; Owner: -
---
-
-CREATE SCHEMA topology;
-
-
---
--- Name: address_standardizer; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS address_standardizer WITH SCHEMA public;
-
-
---
--- Name: EXTENSION address_standardizer; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION address_standardizer IS 'Used to parse an address into constituent elements. Generally used to support geocoding address normalization step.';
-
-
---
--- Name: address_standardizer_data_us; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS address_standardizer_data_us WITH SCHEMA public;
-
-
---
--- Name: EXTENSION address_standardizer_data_us; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION address_standardizer_data_us IS 'Address Standardizer US dataset example';
-
-
---
--- Name: fuzzystrmatch; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS fuzzystrmatch WITH SCHEMA public;
-
-
---
--- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance between strings';
-
-
---
--- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
-
-
---
--- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
-
-
---
--- Name: postgis_sfcgal; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS postgis_sfcgal WITH SCHEMA public;
-
-
---
--- Name: EXTENSION postgis_sfcgal; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION postgis_sfcgal IS 'PostGIS SFCGAL functions';
-
-
---
--- Name: postgis_tiger_geocoder; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder WITH SCHEMA tiger;
-
-
---
--- Name: EXTENSION postgis_tiger_geocoder; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION postgis_tiger_geocoder IS 'PostGIS tiger geocoder and reverse geocoder';
-
-
---
--- Name: postgis_topology; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS postgis_topology WITH SCHEMA topology;
-
-
---
--- Name: EXTENSION postgis_topology; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION postgis_topology IS 'PostGIS topology spatial types and functions';
-
 
 --
 -- Name: projects_calculate_budget(); Type: FUNCTION; Schema: public; Owner: -
@@ -157,30 +31,14 @@ CREATE FUNCTION public.projects_calculate_budget() RETURNS trigger
       $$;
 
 
---
--- Name: set_point_from_lat_lng(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.set_point_from_lat_lng() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-      BEGIN
-        NEW.point := ST_SetSRID(ST_Point(NEW.lng, NEW.lat), 4326);
-        RETURN NEW;
-      END;
-      $$;
-
-
 SET default_tablespace = '';
-
-SET default_with_oids = false;
 
 --
 -- Name: admin_users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.admin_users (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     email character varying DEFAULT ''::character varying NOT NULL,
     encrypted_password character varying DEFAULT ''::character varying NOT NULL,
     reset_password_token character varying,
@@ -191,8 +49,8 @@ CREATE TABLE public.admin_users (
     last_sign_in_at timestamp without time zone,
     current_sign_in_ip inet,
     last_sign_in_ip inet,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     super_admin boolean DEFAULT false,
     suspended boolean DEFAULT false
 );
@@ -222,19 +80,20 @@ ALTER SEQUENCE public.admin_users_id_seq OWNED BY public.admin_users.id;
 --
 
 CREATE TABLE public.annual_reports (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     exam_start date,
     exam_end date,
     review_start date,
     review_end date,
-    tailored_lvl integer,
-    comments text,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     business_id integer,
-    cof_bits character varying,
     pdf_data jsonb,
-    year integer
+    year integer,
+    material_business_changes text DEFAULT ''::text,
+    name character varying DEFAULT ''::character varying,
+    complete boolean DEFAULT false,
+    completed_at timestamp without time zone
 );
 
 
@@ -262,13 +121,13 @@ ALTER SEQUENCE public.annual_reports_id_seq OWNED BY public.annual_reports.id;
 --
 
 CREATE TABLE public.annual_review_employees (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     name character varying,
     title character varying,
     department character varying,
     annual_report_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -292,50 +151,15 @@ ALTER SEQUENCE public.annual_review_employees_id_seq OWNED BY public.annual_revi
 
 
 --
--- Name: annual_reviews; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.annual_reviews (
-    id integer NOT NULL,
-    business_id integer,
-    file_data jsonb,
-    year integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    pdf_data jsonb,
-    processed boolean DEFAULT false
-);
-
-
---
--- Name: annual_reviews_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.annual_reviews_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: annual_reviews_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.annual_reviews_id_seq OWNED BY public.annual_reviews.id;
-
-
---
 -- Name: answers; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.answers (
-    id integer NOT NULL,
-    question_id integer NOT NULL,
+    id bigint NOT NULL,
+    question_id bigint NOT NULL,
     text text,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -365,8 +189,8 @@ ALTER SEQUENCE public.answers_id_seq OWNED BY public.answers.id;
 CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -375,14 +199,14 @@ CREATE TABLE public.ar_internal_metadata (
 --
 
 CREATE TABLE public.articles (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     src_title character varying,
     published_at date,
     title character varying,
     image_data jsonb,
     src_href character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     pdf_data jsonb,
     open_pdf boolean DEFAULT false
 );
@@ -412,12 +236,12 @@ ALTER SEQUENCE public.articles_id_seq OWNED BY public.articles.id;
 --
 
 CREATE TABLE public.audit_comments (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     audit_request_id integer,
     business_id integer,
     body text,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -445,10 +269,10 @@ ALTER SEQUENCE public.audit_comments_id_seq OWNED BY public.audit_comments.id;
 --
 
 CREATE TABLE public.audit_requests (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     body character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -476,16 +300,16 @@ ALTER SEQUENCE public.audit_requests_id_seq OWNED BY public.audit_requests.id;
 --
 
 CREATE TABLE public.bank_accounts (
-    id integer NOT NULL,
-    stripe_account_id integer,
+    id bigint NOT NULL,
+    stripe_account_id bigint,
     stripe_id character varying,
     "primary" boolean DEFAULT false NOT NULL,
     country character varying,
     currency character varying,
     routing_number character varying,
     account_number character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -509,44 +333,12 @@ ALTER SEQUENCE public.bank_accounts_id_seq OWNED BY public.bank_accounts.id;
 
 
 --
--- Name: business_changes; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.business_changes (
-    id integer NOT NULL,
-    change text,
-    annual_report_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: business_changes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.business_changes_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: business_changes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.business_changes_id_seq OWNED BY public.business_changes.id;
-
-
---
 -- Name: businesses; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.businesses (
-    id integer NOT NULL,
-    user_id integer,
+    id bigint NOT NULL,
+    user_id bigint,
     contact_first_name character varying,
     contact_last_name character varying,
     contact_email character varying,
@@ -564,8 +356,8 @@ CREATE TABLE public.businesses (
     state character varying,
     zipcode character varying,
     anonymous boolean DEFAULT false NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     logo_data jsonb,
     time_zone character varying,
     ratings_count integer DEFAULT 0 NOT NULL,
@@ -608,7 +400,11 @@ CREATE TABLE public.businesses (
     compliance_policies_spawned boolean DEFAULT false,
     annual_budget numeric,
     risk_tolerance character varying,
-    reminders_mailed_at timestamp without time zone
+    reminders_mailed_at timestamp without time zone,
+    crd_number character varying,
+    account_created boolean DEFAULT false,
+    apartment character varying,
+    photo_data jsonb
 );
 
 
@@ -636,8 +432,8 @@ ALTER SEQUENCE public.businesses_id_seq OWNED BY public.businesses.id;
 --
 
 CREATE TABLE public.businesses_industries (
-    business_id integer NOT NULL,
-    industry_id integer NOT NULL
+    business_id bigint NOT NULL,
+    industry_id bigint NOT NULL
 );
 
 
@@ -646,8 +442,8 @@ CREATE TABLE public.businesses_industries (
 --
 
 CREATE TABLE public.businesses_jurisdictions (
-    business_id integer NOT NULL,
-    jurisdiction_id integer NOT NULL
+    business_id bigint NOT NULL,
+    jurisdiction_id bigint NOT NULL
 );
 
 
@@ -656,23 +452,23 @@ CREATE TABLE public.businesses_jurisdictions (
 --
 
 CREATE TABLE public.charges (
-    id integer NOT NULL,
-    project_id integer NOT NULL,
+    id bigint NOT NULL,
+    project_id bigint NOT NULL,
     amount_in_cents integer NOT NULL,
     process_after timestamp without time zone NOT NULL,
     status character varying DEFAULT 'scheduled'::character varying NOT NULL,
     status_detail character varying,
     description character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     date timestamp without time zone NOT NULL,
-    transaction_id integer,
+    transaction_id bigint,
     fee_in_cents integer,
     total_with_fee_in_cents integer,
     running_balance_in_cents integer,
     specialist_amount_in_cents integer DEFAULT 0 NOT NULL,
-    referenceable_id integer,
     referenceable_type character varying,
+    referenceable_id bigint,
     business_fee_in_cents integer,
     specialist_fee_in_cents integer
 );
@@ -698,15 +494,47 @@ ALTER SEQUENCE public.charges_id_seq OWNED BY public.charges.id;
 
 
 --
+-- Name: combined_policies; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.combined_policies (
+    id bigint NOT NULL,
+    business_id integer,
+    file_data jsonb,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: combined_policies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.combined_policies_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: combined_policies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.combined_policies_id_seq OWNED BY public.combined_policies.id;
+
+
+--
 -- Name: compliance_categories; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.compliance_categories (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     name character varying,
     checkboxes text,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     description text DEFAULT ''::text,
     however text DEFAULT ''::text,
     findings_everywhere text DEFAULT ''::text
@@ -737,17 +565,23 @@ ALTER SEQUENCE public.compliance_categories_id_seq OWNED BY public.compliance_ca
 --
 
 CREATE TABLE public.compliance_policies (
-    id integer NOT NULL,
-    title character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    id bigint NOT NULL,
+    name character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     business_id integer,
-    section character varying,
-    last_uploaded timestamp without time zone,
     pdf_data jsonb,
-    docs_count integer DEFAULT 0,
-    "position" integer,
-    ban boolean DEFAULT false
+    "position" double precision,
+    ban boolean DEFAULT false,
+    description text DEFAULT ''::text,
+    src_id integer,
+    status character varying DEFAULT 'draft'::character varying,
+    sections jsonb,
+    archived boolean DEFAULT false,
+    untouched boolean DEFAULT true,
+    published_by character varying,
+    page_count integer,
+    edited_at timestamp without time zone
 );
 
 
@@ -771,13 +605,80 @@ ALTER SEQUENCE public.compliance_policies_id_seq OWNED BY public.compliance_poli
 
 
 --
+-- Name: compliance_policies_risks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.compliance_policies_risks (
+    id bigint NOT NULL,
+    risk_id bigint NOT NULL,
+    compliance_policy_id bigint NOT NULL
+);
+
+
+--
+-- Name: compliance_policies_risks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.compliance_policies_risks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: compliance_policies_risks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.compliance_policies_risks_id_seq OWNED BY public.compliance_policies_risks.id;
+
+
+--
+-- Name: compliance_policy_configurations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.compliance_policy_configurations (
+    id bigint NOT NULL,
+    business_id integer,
+    logo_data jsonb,
+    address boolean,
+    phone boolean,
+    email boolean,
+    disclosure boolean,
+    body text,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: compliance_policy_configurations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.compliance_policy_configurations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: compliance_policy_configurations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.compliance_policy_configurations_id_seq OWNED BY public.compliance_policy_configurations.id;
+
+
+--
 -- Name: compliance_policy_docs; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.compliance_policy_docs (
-    id integer NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     compliance_policy_id integer,
     doc_data jsonb,
     pdf_data jsonb
@@ -808,14 +709,14 @@ ALTER SEQUENCE public.compliance_policy_docs_id_seq OWNED BY public.compliance_p
 --
 
 CREATE TABLE public.cookie_agreements (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     agreement_date timestamp without time zone,
     cookie_description character varying,
     status boolean,
     ip_address character varying,
-    user_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    user_id bigint,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -843,14 +744,15 @@ ALTER SEQUENCE public.cookie_agreements_id_seq OWNED BY public.cookie_agreements
 --
 
 CREATE TABLE public.documents (
-    id integer NOT NULL,
-    owner_id integer,
+    id bigint NOT NULL,
     owner_type character varying,
-    project_id integer NOT NULL,
+    owner_id bigint,
     file_data jsonb,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    specialist_id integer
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    specialist_id integer,
+    uploadable_type character varying,
+    uploadable_id integer
 );
 
 
@@ -878,13 +780,13 @@ ALTER SEQUENCE public.documents_id_seq OWNED BY public.documents.id;
 --
 
 CREATE TABLE public.education_histories (
-    id integer NOT NULL,
-    specialist_id integer,
+    id bigint NOT NULL,
+    specialist_id bigint,
     institution character varying,
     degree character varying,
     year integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -912,12 +814,12 @@ ALTER SEQUENCE public.education_histories_id_seq OWNED BY public.education_histo
 --
 
 CREATE TABLE public.email_threads (
-    id integer NOT NULL,
-    business_id integer,
-    specialist_id integer,
+    id bigint NOT NULL,
+    business_id bigint,
+    specialist_id bigint,
     thread_key character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -941,17 +843,157 @@ ALTER SEQUENCE public.email_threads_id_seq OWNED BY public.email_threads.id;
 
 
 --
+-- Name: exam_auditors; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.exam_auditors (
+    id bigint NOT NULL,
+    exam_id integer,
+    email character varying,
+    otp character varying,
+    otp_requested timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    retries integer DEFAULT 0
+);
+
+
+--
+-- Name: exam_auditors_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.exam_auditors_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: exam_auditors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.exam_auditors_id_seq OWNED BY public.exam_auditors.id;
+
+
+--
+-- Name: exam_request_files; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.exam_request_files (
+    id bigint NOT NULL,
+    exam_request_id integer,
+    file_data jsonb,
+    name character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: exam_request_files_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.exam_request_files_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: exam_request_files_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.exam_request_files_id_seq OWNED BY public.exam_request_files.id;
+
+
+--
+-- Name: exam_requests; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.exam_requests (
+    id bigint NOT NULL,
+    name character varying,
+    details text,
+    text_items jsonb,
+    complete boolean DEFAULT false,
+    shared boolean DEFAULT false,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    exam_id integer
+);
+
+
+--
+-- Name: exam_requests_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.exam_requests_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: exam_requests_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.exam_requests_id_seq OWNED BY public.exam_requests.id;
+
+
+--
+-- Name: exams; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.exams (
+    id bigint NOT NULL,
+    name character varying,
+    starts_on date,
+    ends_on date,
+    share_uuid character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    business_id integer,
+    complete boolean DEFAULT false
+);
+
+
+--
+-- Name: exams_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.exams_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: exams_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.exams_id_seq OWNED BY public.exams.id;
+
+
+--
 -- Name: favorites; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.favorites (
-    id integer NOT NULL,
-    owner_id integer,
+    id bigint NOT NULL,
     owner_type character varying,
-    favorited_id integer,
+    owner_id bigint,
     favorited_type character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    favorited_id bigint,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -979,7 +1021,7 @@ ALTER SEQUENCE public.favorites_id_seq OWNED BY public.favorites.id;
 --
 
 CREATE TABLE public.feedback_requests (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     name character varying,
     email character varying,
     phone character varying,
@@ -988,8 +1030,8 @@ CREATE TABLE public.feedback_requests (
     description text,
     ip inet,
     user_agent character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -1017,13 +1059,15 @@ ALTER SEQUENCE public.feedback_requests_id_seq OWNED BY public.feedback_requests
 --
 
 CREATE TABLE public.file_docs (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     business_id integer,
     file_folder_id integer,
     file_data jsonb,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    name character varying
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    name character varying,
+    owner character varying,
+    size integer
 );
 
 
@@ -1051,14 +1095,16 @@ ALTER SEQUENCE public.file_docs_id_seq OWNED BY public.file_docs.id;
 --
 
 CREATE TABLE public.file_folders (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     business_id integer,
     name character varying,
     parent_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     locked boolean DEFAULT false,
-    zip_data jsonb
+    zip_data jsonb,
+    owner character varying,
+    size integer
 );
 
 
@@ -1086,14 +1132,14 @@ ALTER SEQUENCE public.file_folders_id_seq OWNED BY public.file_folders.id;
 --
 
 CREATE TABLE public.projects (
-    id integer NOT NULL,
-    business_id integer NOT NULL,
+    id bigint NOT NULL,
+    business_id bigint NOT NULL,
     type character varying DEFAULT 'rfp'::character varying NOT NULL,
     status character varying DEFAULT 'draft'::character varying NOT NULL,
-    title character varying NOT NULL,
+    title character varying,
     location_type character varying,
     location character varying,
-    description character varying NOT NULL,
+    description character varying,
     key_deliverables character varying,
     starts_on date,
     ends_on date,
@@ -1105,14 +1151,13 @@ CREATE TABLE public.projects (
     only_regulators boolean,
     annual_salary integer,
     fee_type character varying DEFAULT 'upfront_fee'::character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     tsv tsvector,
     calculated_budget numeric,
     lat numeric(9,5),
     lng numeric(9,5),
-    point public.geography,
-    specialist_id integer,
+    specialist_id bigint,
     job_applications_count integer DEFAULT 0 NOT NULL,
     published_at timestamp without time zone,
     completed_at timestamp without time zone,
@@ -1131,7 +1176,10 @@ CREATE TABLE public.projects (
     applicant_selection character varying DEFAULT 'interview'::character varying,
     admin_notified boolean DEFAULT false,
     business_fee_free boolean DEFAULT false,
-    color character varying
+    color character varying,
+    local_project_id integer,
+    role_details text DEFAULT ''::text,
+    upper_hourly_rate numeric
 );
 
 
@@ -1566,54 +1614,18 @@ UNION
 
 
 --
--- Name: findings; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.findings (
-    id integer NOT NULL,
-    annual_report_id integer,
-    finding text,
-    action text,
-    risk_lvl integer DEFAULT 3,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    compliance_category integer,
-    checkbox_index integer
-);
-
-
---
--- Name: findings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.findings_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: findings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.findings_id_seq OWNED BY public.findings.id;
-
-
---
 -- Name: flags; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.flags (
-    id integer NOT NULL,
-    flagged_content_id integer,
+    id bigint NOT NULL,
     flagged_content_type character varying,
-    flagger_id integer,
+    flagged_content_id bigint,
     flagger_type character varying,
+    flagger_id bigint,
     reason text,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -1641,13 +1653,13 @@ ALTER SEQUENCE public.flags_id_seq OWNED BY public.flags.id;
 --
 
 CREATE TABLE public.forum_answers (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     user_id integer,
     body text,
     forum_question_id integer,
     reply_to integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     upvotes_cnt integer DEFAULT 0,
     file_data jsonb
 );
@@ -1677,13 +1689,13 @@ ALTER SEQUENCE public.forum_answers_id_seq OWNED BY public.forum_answers.id;
 --
 
 CREATE TABLE public.forum_questions (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     title character varying,
     body text,
     state character varying,
     business_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     last_activity timestamp without time zone,
     url character varying
 );
@@ -1713,8 +1725,8 @@ ALTER SEQUENCE public.forum_questions_id_seq OWNED BY public.forum_questions.id;
 --
 
 CREATE TABLE public.forum_questions_industries (
-    forum_question_id integer NOT NULL,
-    industry_id integer NOT NULL
+    forum_question_id bigint NOT NULL,
+    industry_id bigint NOT NULL
 );
 
 
@@ -1723,8 +1735,8 @@ CREATE TABLE public.forum_questions_industries (
 --
 
 CREATE TABLE public.forum_questions_jurisdictions (
-    forum_question_id integer NOT NULL,
-    jurisdiction_id integer NOT NULL
+    forum_question_id bigint NOT NULL,
+    jurisdiction_id bigint NOT NULL
 );
 
 
@@ -1733,13 +1745,13 @@ CREATE TABLE public.forum_questions_jurisdictions (
 --
 
 CREATE TABLE public.forum_subscriptions (
-    id integer NOT NULL,
-    business_id integer,
+    id bigint NOT NULL,
+    business_id bigint,
     billing_type integer DEFAULT 0,
     level integer DEFAULT 0,
     suspended boolean DEFAULT false,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     fee integer DEFAULT 0,
     stripe_customer_id character varying,
     stripe_subscription_id character varying,
@@ -1773,12 +1785,12 @@ ALTER SEQUENCE public.forum_subscriptions_id_seq OWNED BY public.forum_subscript
 --
 
 CREATE TABLE public.forum_votes (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     user_id integer,
     forum_answer_id integer,
     upvote boolean DEFAULT true,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -1806,10 +1818,10 @@ ALTER SEQUENCE public.forum_votes_id_seq OWNED BY public.forum_votes.id;
 --
 
 CREATE TABLE public.industries (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     name character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     short_name character varying,
     sub_industries text DEFAULT ''::text,
     sub_industries_specialist text DEFAULT ''::text
@@ -1840,8 +1852,8 @@ ALTER SEQUENCE public.industries_id_seq OWNED BY public.industries.id;
 --
 
 CREATE TABLE public.industries_project_templates (
-    project_template_id integer NOT NULL,
-    industry_id integer NOT NULL
+    project_template_id bigint NOT NULL,
+    industry_id bigint NOT NULL
 );
 
 
@@ -1850,8 +1862,8 @@ CREATE TABLE public.industries_project_templates (
 --
 
 CREATE TABLE public.industries_projects (
-    industry_id integer NOT NULL,
-    project_id integer NOT NULL
+    industry_id bigint NOT NULL,
+    project_id bigint NOT NULL
 );
 
 
@@ -1860,9 +1872,51 @@ CREATE TABLE public.industries_projects (
 --
 
 CREATE TABLE public.industries_specialists (
-    industry_id integer NOT NULL,
-    specialist_id integer NOT NULL
+    industry_id bigint NOT NULL,
+    specialist_id bigint NOT NULL
 );
+
+
+--
+-- Name: invoices; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.invoices (
+    id bigint NOT NULL,
+    date timestamp without time zone,
+    currency character varying,
+    price integer,
+    stripe_invoice_id character varying,
+    invoice_pdf character varying,
+    stripe_charge_id character varying,
+    stripe_customer_id character varying,
+    name character varying,
+    hosted_invoice_url character varying,
+    invoice_type character varying DEFAULT 'plan'::character varying,
+    business_id bigint,
+    specialist_id bigint,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: invoices_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.invoices_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: invoices_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.invoices_id_seq OWNED BY public.invoices.id;
 
 
 --
@@ -1870,12 +1924,12 @@ CREATE TABLE public.industries_specialists (
 --
 
 CREATE TABLE public.job_applications (
-    id integer NOT NULL,
-    specialist_id integer,
-    project_id integer,
+    id bigint NOT NULL,
+    specialist_id bigint,
+    project_id bigint,
     message character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     visibility character varying,
     key_deliverables character varying,
     pricing_type character varying DEFAULT 'hourly'::character varying,
@@ -1885,7 +1939,9 @@ CREATE TABLE public.job_applications (
     estimated_hours integer,
     starts_on date,
     ends_on date,
-    status character varying
+    status character varying,
+    role_details text DEFAULT ''::text,
+    document_data jsonb
 );
 
 
@@ -1913,10 +1969,10 @@ ALTER SEQUENCE public.job_applications_id_seq OWNED BY public.job_applications.i
 --
 
 CREATE TABLE public.jurisdictions (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     name character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     sub_jurisdictions_specialist text DEFAULT ''::text
 );
 
@@ -1945,8 +2001,8 @@ ALTER SEQUENCE public.jurisdictions_id_seq OWNED BY public.jurisdictions.id;
 --
 
 CREATE TABLE public.jurisdictions_project_templates (
-    project_template_id integer NOT NULL,
-    jurisdiction_id integer NOT NULL
+    project_template_id bigint NOT NULL,
+    jurisdiction_id bigint NOT NULL
 );
 
 
@@ -1955,8 +2011,8 @@ CREATE TABLE public.jurisdictions_project_templates (
 --
 
 CREATE TABLE public.jurisdictions_projects (
-    jurisdiction_id integer NOT NULL,
-    project_id integer NOT NULL
+    jurisdiction_id bigint NOT NULL,
+    project_id bigint NOT NULL
 );
 
 
@@ -1965,9 +2021,81 @@ CREATE TABLE public.jurisdictions_projects (
 --
 
 CREATE TABLE public.jurisdictions_specialists (
-    jurisdiction_id integer NOT NULL,
-    specialist_id integer NOT NULL
+    jurisdiction_id bigint NOT NULL,
+    specialist_id bigint NOT NULL
 );
+
+
+--
+-- Name: local_projects; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.local_projects (
+    id bigint NOT NULL,
+    business_id integer,
+    title character varying,
+    description text,
+    starts_on date,
+    ends_on date,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    status character varying DEFAULT 'inprogress'::character varying,
+    last_read_message_id integer DEFAULT 0,
+    has_unread_messages boolean DEFAULT false,
+    owner_type character varying,
+    owner_id integer,
+    business_is_collaborator boolean DEFAULT false
+);
+
+
+--
+-- Name: local_projects_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.local_projects_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: local_projects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.local_projects_id_seq OWNED BY public.local_projects.id;
+
+
+--
+-- Name: local_projects_specialists; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.local_projects_specialists (
+    id bigint NOT NULL,
+    local_project_id bigint NOT NULL,
+    specialist_id bigint NOT NULL,
+    last_read_message_id integer DEFAULT 0
+);
+
+
+--
+-- Name: local_projects_specialists_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.local_projects_specialists_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: local_projects_specialists_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.local_projects_specialists_id_seq OWNED BY public.local_projects_specialists.id;
 
 
 --
@@ -1975,17 +2103,17 @@ CREATE TABLE public.jurisdictions_specialists (
 --
 
 CREATE TABLE public.messages (
-    id integer NOT NULL,
-    thread_id integer,
+    id bigint NOT NULL,
     thread_type character varying,
-    sender_id integer,
+    thread_id bigint,
     sender_type character varying,
-    recipient_id integer,
+    sender_id bigint,
     recipient_type character varying,
+    recipient_id bigint,
     message character varying,
     file_data jsonb,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     read_by_recipient boolean DEFAULT false
 );
 
@@ -2014,26 +2142,25 @@ ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
 --
 
 CREATE TABLE public.specialists (
-    id integer NOT NULL,
-    user_id integer,
+    id bigint NOT NULL,
+    user_id bigint,
     first_name character varying,
     last_name character varying,
     country character varying,
     state character varying,
     city character varying,
     zipcode character varying,
-    phone character varying,
+    contact_phone character varying,
     linkedin_link character varying,
     former_regulator boolean DEFAULT false NOT NULL,
     photo_data jsonb,
     resume_data jsonb,
     certifications character varying,
     visibility character varying DEFAULT 'public'::character varying NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     lat numeric(9,5),
     lng numeric(9,5),
-    point public.geography,
     ratings_count integer DEFAULT 0 NOT NULL,
     ratings_total integer DEFAULT 0 NOT NULL,
     ratings_average double precision,
@@ -2043,7 +2170,7 @@ CREATE TABLE public.specialists (
     address_2 character varying,
     discourse_username character varying,
     discourse_user_id integer,
-    specialist_team_id integer,
+    team_id bigint,
     rewards_tier_id integer,
     rewards_tier_override_id integer,
     hubspot_contact_id character varying,
@@ -2054,7 +2181,7 @@ CREATE TABLE public.specialists (
     specialist_other character varying,
     sub_industries character varying,
     project_types character varying,
-    years_of_experience integer,
+    experience integer,
     jurisdiction_states_usa character varying DEFAULT ''::character varying,
     jurisdiction_states_canada character varying DEFAULT ''::character varying,
     sub_jurisdictions character varying,
@@ -2065,7 +2192,11 @@ CREATE TABLE public.specialists (
     annual_revenue_goal numeric,
     risk_tolerance character varying,
     automatching_available boolean DEFAULT false,
-    reminders_mailed_at timestamp without time zone
+    reminders_mailed_at timestamp without time zone,
+    zero_fee boolean DEFAULT false,
+    seat_role integer,
+    description text,
+    name_setting smallint
 );
 
 
@@ -2074,7 +2205,7 @@ CREATE TABLE public.specialists (
 --
 
 CREATE TABLE public.users (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     email character varying DEFAULT ''::character varying NOT NULL,
     encrypted_password character varying DEFAULT ''::character varying NOT NULL,
     reset_password_token character varying,
@@ -2089,8 +2220,8 @@ CREATE TABLE public.users (
     confirmed_at timestamp without time zone,
     confirmation_sent_at timestamp without time zone,
     unconfirmed_email character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     suspended boolean DEFAULT false NOT NULL,
     suspended_at timestamp without time zone,
     tos_acceptance_date timestamp without time zone,
@@ -2099,7 +2230,11 @@ CREATE TABLE public.users (
     deleted_at timestamp without time zone,
     inactive_for_period boolean DEFAULT false,
     muted_projects text DEFAULT '--- []
-'::text
+'::text,
+    otp_secret character varying,
+    otp_counter integer,
+    hidden_local_projects jsonb DEFAULT '[]'::jsonb,
+    jwt_hash character varying
 );
 
 
@@ -2205,15 +2340,15 @@ UNION
 --
 
 CREATE TABLE public.project_issues (
-    id integer NOT NULL,
-    project_id integer,
-    user_id integer,
+    id bigint NOT NULL,
+    project_id bigint,
+    user_id bigint,
     issue text,
     desired_resolution text,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     status character varying DEFAULT 'open'::character varying NOT NULL,
-    admin_user_id integer
+    admin_user_id bigint
 );
 
 
@@ -3462,16 +3597,16 @@ UNION
 --
 
 CREATE TABLE public.notifications (
-    id integer NOT NULL,
-    user_id integer,
+    id bigint NOT NULL,
+    user_id bigint,
     message character varying,
     action_path character varying,
     read_at timestamp without time zone,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     key character varying,
-    associated_id integer,
     associated_type character varying,
+    associated_id bigint,
     clear_manually boolean DEFAULT false NOT NULL,
     initiator character varying,
     img_path character varying
@@ -3502,15 +3637,15 @@ ALTER SEQUENCE public.notifications_id_seq OWNED BY public.notifications.id;
 --
 
 CREATE TABLE public.partnerships (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     company character varying,
     description text,
     discount character varying,
     discount_pub character varying,
     href character varying,
     logo_data jsonb,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     category character varying
 );
 
@@ -3539,11 +3674,11 @@ ALTER SEQUENCE public.partnerships_id_seq OWNED BY public.partnerships.id;
 --
 
 CREATE TABLE public.payment_profiles (
-    id integer NOT NULL,
-    business_id integer,
+    id bigint NOT NULL,
+    business_id bigint,
     stripe_customer_id character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     failed boolean DEFAULT false
 );
 
@@ -3572,16 +3707,16 @@ ALTER SEQUENCE public.payment_profiles_id_seq OWNED BY public.payment_profiles.i
 --
 
 CREATE TABLE public.payment_sources (
-    id integer NOT NULL,
-    payment_profile_id integer,
+    id bigint NOT NULL,
+    payment_profile_id bigint,
     stripe_id character varying NOT NULL,
     brand character varying NOT NULL,
     exp_month integer,
     exp_year integer,
     last4 character varying NOT NULL,
     "primary" boolean DEFAULT false NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     type character varying,
     country character varying,
     currency character varying,
@@ -3616,11 +3751,11 @@ ALTER SEQUENCE public.payment_sources_id_seq OWNED BY public.payment_sources.id;
 --
 
 CREATE TABLE public.ported_businesses (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     company character varying,
     email character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     specialist_id integer,
     status integer DEFAULT 0,
     token text,
@@ -3652,14 +3787,14 @@ ALTER SEQUENCE public.ported_businesses_id_seq OWNED BY public.ported_businesses
 --
 
 CREATE TABLE public.ported_subscriptions (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     specialist_id integer,
     period integer DEFAULT 0,
     subscribed_at timestamp without time zone,
     billing_period_ends_at timestamp without time zone,
     stripe_subscription_id text,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     status integer DEFAULT 0
 );
 
@@ -3684,16 +3819,58 @@ ALTER SEQUENCE public.ported_subscriptions_id_seq OWNED BY public.ported_subscri
 
 
 --
+-- Name: potential_businesses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.potential_businesses (
+    id bigint NOT NULL,
+    crd_number character varying,
+    contact_phone character varying,
+    business_name character varying,
+    website character varying,
+    address_1 character varying,
+    city character varying,
+    state character varying,
+    zipcode character varying,
+    apartment character varying,
+    client_account_cnt integer,
+    aum numeric,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: potential_businesses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.potential_businesses_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: potential_businesses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.potential_businesses_id_seq OWNED BY public.potential_businesses.id;
+
+
+--
 -- Name: project_ends; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.project_ends (
-    id integer NOT NULL,
-    project_id integer,
+    id bigint NOT NULL,
+    project_id bigint,
     status character varying,
     expires_at timestamp without time zone,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    requester character varying
 );
 
 
@@ -3721,13 +3898,20 @@ ALTER SEQUENCE public.project_ends_id_seq OWNED BY public.project_ends.id;
 --
 
 CREATE TABLE public.project_extensions (
-    id integer NOT NULL,
-    project_id integer,
-    new_end_date date,
+    id bigint NOT NULL,
+    project_id bigint,
+    ends_on date,
     expires_at timestamp without time zone,
     status character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    requester character varying,
+    starts_on date,
+    fixed_budget numeric,
+    hourly_rate numeric,
+    role_details text,
+    key_deliverables character varying,
+    ends_on_only boolean DEFAULT false
 );
 
 
@@ -3755,14 +3939,14 @@ ALTER SEQUENCE public.project_extensions_id_seq OWNED BY public.project_extensio
 --
 
 CREATE TABLE public.project_invites (
-    id integer NOT NULL,
-    business_id integer NOT NULL,
-    project_id integer,
-    specialist_id integer NOT NULL,
+    id bigint NOT NULL,
+    business_id bigint NOT NULL,
+    project_id bigint,
+    specialist_id bigint NOT NULL,
     message character varying,
     status character varying DEFAULT 'not_sent'::character varying NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -3809,7 +3993,7 @@ ALTER SEQUENCE public.project_issues_id_seq OWNED BY public.project_issues.id;
 --
 
 CREATE TABLE public.project_templates (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     title character varying,
     project_type character varying,
     location_type character varying,
@@ -3828,8 +4012,8 @@ CREATE TABLE public.project_templates (
     flavor character varying,
     key_deliverables character varying,
     pricing_type character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     title_aum character varying,
     description_aum character varying,
     public_description text,
@@ -3883,8 +4067,8 @@ ALTER SEQUENCE public.projects_id_seq OWNED BY public.projects.id;
 --
 
 CREATE TABLE public.projects_skills (
-    project_id integer NOT NULL,
-    skill_id integer NOT NULL
+    project_id bigint NOT NULL,
+    skill_id bigint NOT NULL
 );
 
 
@@ -3893,11 +4077,11 @@ CREATE TABLE public.projects_skills (
 --
 
 CREATE TABLE public.questions (
-    id integer NOT NULL,
-    project_id integer NOT NULL,
+    id bigint NOT NULL,
+    project_id bigint NOT NULL,
     text text,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     specialist_id integer
 );
 
@@ -3926,14 +4110,14 @@ ALTER SEQUENCE public.questions_id_seq OWNED BY public.questions.id;
 --
 
 CREATE TABLE public.ratings (
-    id integer NOT NULL,
-    project_id integer,
-    rater_id integer,
+    id bigint NOT NULL,
+    project_id bigint,
     rater_type character varying,
+    rater_id bigint,
     value integer,
     review character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     forum_rating boolean DEFAULT false,
     specialist_id integer
 );
@@ -3963,14 +4147,14 @@ ALTER SEQUENCE public.ratings_id_seq OWNED BY public.ratings.id;
 --
 
 CREATE TABLE public.referral_tokens (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     referrals_count integer DEFAULT 0 NOT NULL,
     amount_in_cents integer NOT NULL,
     token character varying NOT NULL,
     referrer_id integer NOT NULL,
     referrer_type character varying NOT NULL,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -3998,12 +4182,12 @@ ALTER SEQUENCE public.referral_tokens_id_seq OWNED BY public.referral_tokens.id;
 --
 
 CREATE TABLE public.referrals (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     referral_token_id integer NOT NULL,
     referrable_id integer NOT NULL,
     referrable_type character varying NOT NULL,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -4031,12 +4215,12 @@ ALTER SEQUENCE public.referrals_id_seq OWNED BY public.referrals.id;
 --
 
 CREATE TABLE public.regulatory_changes (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     annual_report_id integer,
     change text,
-    response text,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    response text
 );
 
 
@@ -4064,12 +4248,12 @@ ALTER SEQUENCE public.regulatory_changes_id_seq OWNED BY public.regulatory_chang
 --
 
 CREATE TABLE public.reminders (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     body character varying,
     remindable_id integer,
     remind_at date,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     done_at timestamp without time zone,
     end_date date,
     remindable_type character varying,
@@ -4080,7 +4264,12 @@ CREATE TABLE public.reminders (
     on_type character varying,
     skip_occurencies text DEFAULT ''::text,
     done_occurencies text,
-    note character varying DEFAULT ''::character varying
+    note character varying DEFAULT ''::character varying,
+    description text DEFAULT ''::text,
+    linkable_id integer,
+    linkable_type character varying,
+    assignee_type character varying,
+    assignee_id integer
 );
 
 
@@ -4104,16 +4293,50 @@ ALTER SEQUENCE public.reminders_id_seq OWNED BY public.reminders.id;
 
 
 --
+-- Name: review_categories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.review_categories (
+    id bigint NOT NULL,
+    annual_report_id integer,
+    complete boolean DEFAULT false,
+    name character varying DEFAULT ''::character varying,
+    review_topics jsonb,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: review_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.review_categories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: review_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.review_categories_id_seq OWNED BY public.review_categories.id;
+
+
+--
 -- Name: rewards_tiers; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.rewards_tiers (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     name character varying NOT NULL,
     fee_percentage numeric(2,2) NOT NULL,
     amount int4range NOT NULL,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -4137,6 +4360,40 @@ ALTER SEQUENCE public.rewards_tiers_id_seq OWNED BY public.rewards_tiers.id;
 
 
 --
+-- Name: risks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.risks (
+    id bigint NOT NULL,
+    name character varying,
+    impact integer,
+    business_id integer,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    likelihood integer
+);
+
+
+--
+-- Name: risks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.risks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: risks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.risks_id_seq OWNED BY public.risks.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4150,14 +4407,14 @@ CREATE TABLE public.schema_migrations (
 --
 
 CREATE TABLE public.seats (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     business_id bigint,
     subscription_id bigint,
     team_member_id bigint,
     subscribed_at timestamp without time zone,
     assigned_at timestamp without time zone,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -4188,8 +4445,8 @@ CREATE TABLE public.settings (
     id integer NOT NULL,
     var character varying NOT NULL,
     value text,
-    target_id integer NOT NULL,
     target_type character varying NOT NULL,
+    target_id integer NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
 );
@@ -4219,10 +4476,10 @@ ALTER SEQUENCE public.settings_id_seq OWNED BY public.settings.id;
 --
 
 CREATE TABLE public.skills (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     name character varying NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -4250,8 +4507,8 @@ ALTER SEQUENCE public.skills_id_seq OWNED BY public.skills.id;
 --
 
 CREATE TABLE public.skills_specialists (
-    skill_id integer NOT NULL,
-    specialist_id integer NOT NULL
+    skill_id bigint NOT NULL,
+    specialist_id bigint NOT NULL
 );
 
 
@@ -4260,15 +4517,13 @@ CREATE TABLE public.skills_specialists (
 --
 
 CREATE TABLE public.specialist_invitations (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     specialist_team_id integer,
-    specialist_id integer,
-    first_name character varying NOT NULL,
-    last_name character varying,
-    email character varying NOT NULL,
+    specialist_id bigint,
     token character varying NOT NULL,
     status integer DEFAULT 0 NOT NULL,
-    team_id integer
+    team_id integer,
+    team_member_id bigint
 );
 
 
@@ -4296,7 +4551,7 @@ ALTER SEQUENCE public.specialist_invitations_id_seq OWNED BY public.specialist_i
 --
 
 CREATE TABLE public.specialist_payment_sources (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     specialist_id integer,
     stripe_customer_id text,
     stripe_card_id text,
@@ -4305,8 +4560,8 @@ CREATE TABLE public.specialist_payment_sources (
     exp_year integer,
     last4 text,
     "primary" boolean DEFAULT false,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     validated boolean DEFAULT false,
     bank_account boolean DEFAULT false,
     country character varying,
@@ -4340,11 +4595,11 @@ ALTER SEQUENCE public.specialist_payment_sources_id_seq OWNED BY public.speciali
 --
 
 CREATE TABLE public.specialist_teams (
-    id integer NOT NULL,
-    manager_id integer NOT NULL,
+    id bigint NOT NULL,
+    manager_id bigint NOT NULL,
     name character varying NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -4365,6 +4620,37 @@ CREATE SEQUENCE public.specialist_teams_id_seq
 --
 
 ALTER SEQUENCE public.specialist_teams_id_seq OWNED BY public.specialist_teams.id;
+
+
+--
+-- Name: specialists_business_roles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.specialists_business_roles (
+    id bigint NOT NULL,
+    business_id bigint NOT NULL,
+    specialist_id bigint NOT NULL,
+    role integer DEFAULT 0
+);
+
+
+--
+-- Name: specialists_business_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.specialists_business_roles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: specialists_business_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.specialists_business_roles_id_seq OWNED BY public.specialists_business_roles.id;
 
 
 --
@@ -4391,8 +4677,8 @@ ALTER SEQUENCE public.specialists_id_seq OWNED BY public.specialists.id;
 --
 
 CREATE TABLE public.stripe_accounts (
-    id integer NOT NULL,
-    specialist_id integer,
+    id bigint NOT NULL,
+    specialist_id bigint,
     status character varying DEFAULT 'Pending'::character varying NOT NULL,
     city character varying,
     address1 character varying,
@@ -4406,8 +4692,8 @@ CREATE TABLE public.stripe_accounts (
     tos_acceptance_date timestamp without time zone,
     tos_acceptance_ip character varying,
     personal_id_number character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     account_type character varying DEFAULT 'individual'::character varying NOT NULL,
     stripe_id character varying,
     business_name character varying,
@@ -4447,18 +4733,15 @@ ALTER SEQUENCE public.stripe_accounts_id_seq OWNED BY public.stripe_accounts.id;
 --
 
 CREATE TABLE public.subscription_charges (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     stripe_charge_id character varying,
     status integer,
     plan character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     stripe_subscription_id character varying,
-    forum_subscription_id integer,
-    amount integer,
-    chargeable_id integer,
-    chargeable_type character varying,
-    title character varying
+    forum_subscription_id bigint,
+    amount integer
 );
 
 
@@ -4486,19 +4769,26 @@ ALTER SEQUENCE public.subscription_charges_id_seq OWNED BY public.subscription_c
 --
 
 CREATE TABLE public.subscriptions (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     business_id bigint,
     stripe_subscription_id character varying,
     stripe_invoice_item_id character varying,
     plan integer DEFAULT 0,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     kind_of integer DEFAULT 0,
     title character varying,
     billing_period_ends integer,
     payment_source_id integer,
     auto_renew boolean DEFAULT false,
-    status integer DEFAULT 0
+    status integer DEFAULT 0,
+    specialist_id bigint,
+    specialist_payment_source_id bigint,
+    quantity integer,
+    amount numeric,
+    "interval" character varying,
+    currency character varying,
+    next_payment_date timestamp without time zone
 );
 
 
@@ -4526,12 +4816,12 @@ ALTER SEQUENCE public.subscriptions_id_seq OWNED BY public.subscriptions.id;
 --
 
 CREATE TABLE public.team_members (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     team_id integer,
     name character varying,
     email character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     title character varying,
     start_date date,
     end_date date,
@@ -4539,7 +4829,12 @@ CREATE TABLE public.team_members (
     first_name character varying,
     last_name character varying,
     access_person boolean DEFAULT false,
-    business_member boolean DEFAULT false
+    business_member boolean DEFAULT false,
+    role character varying,
+    active boolean DEFAULT true,
+    reason character varying,
+    disabled_at timestamp without time zone,
+    description character varying
 );
 
 
@@ -4567,11 +4862,11 @@ ALTER SEQUENCE public.team_members_id_seq OWNED BY public.team_members.id;
 --
 
 CREATE TABLE public.teams (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     business_id integer,
     name character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     display boolean DEFAULT true
 );
 
@@ -4600,12 +4895,12 @@ ALTER SEQUENCE public.teams_id_seq OWNED BY public.teams.id;
 --
 
 CREATE TABLE public.time_logs (
-    id integer NOT NULL,
-    timesheet_id integer,
+    id bigint NOT NULL,
+    timesheet_id bigint,
     description character varying,
     hours numeric,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     hourly_rate numeric,
     total_amount numeric,
     date date
@@ -4636,11 +4931,11 @@ ALTER SEQUENCE public.time_logs_id_seq OWNED BY public.time_logs.id;
 --
 
 CREATE TABLE public.timesheets (
-    id integer NOT NULL,
-    project_id integer,
+    id bigint NOT NULL,
+    project_id bigint,
     status character varying DEFAULT 'pending'::character varying NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     status_changed_at timestamp without time zone,
     first_submitted_at timestamp without time zone,
     expires_at timestamp without time zone,
@@ -4672,14 +4967,14 @@ ALTER SEQUENCE public.timesheets_id_seq OWNED BY public.timesheets.id;
 --
 
 CREATE TABLE public.tos_agreements (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     agreement_date timestamp without time zone,
     tos_description character varying,
     status boolean,
     ip_address character varying,
-    user_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    user_id bigint,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -4707,18 +5002,18 @@ ALTER SEQUENCE public.tos_agreements_id_seq OWNED BY public.tos_agreements.id;
 --
 
 CREATE TABLE public.transactions (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     stripe_id character varying,
     type character varying,
     amount_in_cents integer,
     processed_at timestamp without time zone,
     status character varying DEFAULT 'pending'::character varying,
-    charge_source_id integer,
-    payment_target_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    project_id integer,
-    parent_transaction_id integer,
+    charge_source_id bigint,
+    payment_target_id bigint,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    project_id bigint,
+    parent_transaction_id bigint,
     status_detail character varying,
     fee_in_cents integer DEFAULT 0 NOT NULL,
     date timestamp without time zone,
@@ -4753,13 +5048,13 @@ ALTER SEQUENCE public.transactions_id_seq OWNED BY public.transactions.id;
 --
 
 CREATE TABLE public.turnkey_pages (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     title character varying,
     url character varying,
     description text,
     cost character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     header_text character varying
 );
 
@@ -4788,7 +5083,7 @@ ALTER SEQUENCE public.turnkey_pages_id_seq OWNED BY public.turnkey_pages.id;
 --
 
 CREATE TABLE public.turnkey_solutions (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     title character varying,
     turnkey_page_id integer,
     range character varying,
@@ -4797,8 +5092,8 @@ CREATE TABLE public.turnkey_solutions (
     industries_enabled boolean,
     jurisdictions_enabled boolean,
     hours_enabled boolean,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     info_dot character varying,
     accounts_enabled boolean DEFAULT false
 );
@@ -4847,18 +5142,18 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 --
 
 CREATE TABLE public.work_experiences (
-    id integer NOT NULL,
-    specialist_id integer,
+    id bigint NOT NULL,
+    specialist_id bigint,
     company character varying,
     job_title character varying,
     location character varying,
-    "from" date,
-    "to" date,
+    start_date date,
+    end_date date,
     current boolean DEFAULT false NOT NULL,
     compliance boolean DEFAULT false NOT NULL,
     description character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -4903,13 +5198,6 @@ ALTER TABLE ONLY public.annual_review_employees ALTER COLUMN id SET DEFAULT next
 
 
 --
--- Name: annual_reviews id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.annual_reviews ALTER COLUMN id SET DEFAULT nextval('public.annual_reviews_id_seq'::regclass);
-
-
---
 -- Name: answers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4945,13 +5233,6 @@ ALTER TABLE ONLY public.bank_accounts ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- Name: business_changes id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.business_changes ALTER COLUMN id SET DEFAULT nextval('public.business_changes_id_seq'::regclass);
-
-
---
 -- Name: businesses id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4966,6 +5247,13 @@ ALTER TABLE ONLY public.charges ALTER COLUMN id SET DEFAULT nextval('public.char
 
 
 --
+-- Name: combined_policies id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.combined_policies ALTER COLUMN id SET DEFAULT nextval('public.combined_policies_id_seq'::regclass);
+
+
+--
 -- Name: compliance_categories id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -4977,6 +5265,20 @@ ALTER TABLE ONLY public.compliance_categories ALTER COLUMN id SET DEFAULT nextva
 --
 
 ALTER TABLE ONLY public.compliance_policies ALTER COLUMN id SET DEFAULT nextval('public.compliance_policies_id_seq'::regclass);
+
+
+--
+-- Name: compliance_policies_risks id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.compliance_policies_risks ALTER COLUMN id SET DEFAULT nextval('public.compliance_policies_risks_id_seq'::regclass);
+
+
+--
+-- Name: compliance_policy_configurations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.compliance_policy_configurations ALTER COLUMN id SET DEFAULT nextval('public.compliance_policy_configurations_id_seq'::regclass);
 
 
 --
@@ -5015,6 +5317,34 @@ ALTER TABLE ONLY public.email_threads ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
+-- Name: exam_auditors id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.exam_auditors ALTER COLUMN id SET DEFAULT nextval('public.exam_auditors_id_seq'::regclass);
+
+
+--
+-- Name: exam_request_files id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.exam_request_files ALTER COLUMN id SET DEFAULT nextval('public.exam_request_files_id_seq'::regclass);
+
+
+--
+-- Name: exam_requests id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.exam_requests ALTER COLUMN id SET DEFAULT nextval('public.exam_requests_id_seq'::regclass);
+
+
+--
+-- Name: exams id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.exams ALTER COLUMN id SET DEFAULT nextval('public.exams_id_seq'::regclass);
+
+
+--
 -- Name: favorites id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -5040,13 +5370,6 @@ ALTER TABLE ONLY public.file_docs ALTER COLUMN id SET DEFAULT nextval('public.fi
 --
 
 ALTER TABLE ONLY public.file_folders ALTER COLUMN id SET DEFAULT nextval('public.file_folders_id_seq'::regclass);
-
-
---
--- Name: findings id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.findings ALTER COLUMN id SET DEFAULT nextval('public.findings_id_seq'::regclass);
 
 
 --
@@ -5092,6 +5415,13 @@ ALTER TABLE ONLY public.industries ALTER COLUMN id SET DEFAULT nextval('public.i
 
 
 --
+-- Name: invoices id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invoices ALTER COLUMN id SET DEFAULT nextval('public.invoices_id_seq'::regclass);
+
+
+--
 -- Name: job_applications id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -5103,6 +5433,20 @@ ALTER TABLE ONLY public.job_applications ALTER COLUMN id SET DEFAULT nextval('pu
 --
 
 ALTER TABLE ONLY public.jurisdictions ALTER COLUMN id SET DEFAULT nextval('public.jurisdictions_id_seq'::regclass);
+
+
+--
+-- Name: local_projects id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.local_projects ALTER COLUMN id SET DEFAULT nextval('public.local_projects_id_seq'::regclass);
+
+
+--
+-- Name: local_projects_specialists id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.local_projects_specialists ALTER COLUMN id SET DEFAULT nextval('public.local_projects_specialists_id_seq'::regclass);
 
 
 --
@@ -5152,6 +5496,13 @@ ALTER TABLE ONLY public.ported_businesses ALTER COLUMN id SET DEFAULT nextval('p
 --
 
 ALTER TABLE ONLY public.ported_subscriptions ALTER COLUMN id SET DEFAULT nextval('public.ported_subscriptions_id_seq'::regclass);
+
+
+--
+-- Name: potential_businesses id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.potential_businesses ALTER COLUMN id SET DEFAULT nextval('public.potential_businesses_id_seq'::regclass);
 
 
 --
@@ -5239,10 +5590,24 @@ ALTER TABLE ONLY public.reminders ALTER COLUMN id SET DEFAULT nextval('public.re
 
 
 --
+-- Name: review_categories id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.review_categories ALTER COLUMN id SET DEFAULT nextval('public.review_categories_id_seq'::regclass);
+
+
+--
 -- Name: rewards_tiers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rewards_tiers ALTER COLUMN id SET DEFAULT nextval('public.rewards_tiers_id_seq'::regclass);
+
+
+--
+-- Name: risks id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.risks ALTER COLUMN id SET DEFAULT nextval('public.risks_id_seq'::regclass);
 
 
 --
@@ -5292,6 +5657,13 @@ ALTER TABLE ONLY public.specialist_teams ALTER COLUMN id SET DEFAULT nextval('pu
 --
 
 ALTER TABLE ONLY public.specialists ALTER COLUMN id SET DEFAULT nextval('public.specialists_id_seq'::regclass);
+
+
+--
+-- Name: specialists_business_roles id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specialists_business_roles ALTER COLUMN id SET DEFAULT nextval('public.specialists_business_roles_id_seq'::regclass);
 
 
 --
@@ -5410,14 +5782,6 @@ ALTER TABLE ONLY public.annual_review_employees
 
 
 --
--- Name: annual_reviews annual_reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.annual_reviews
-    ADD CONSTRAINT annual_reviews_pkey PRIMARY KEY (id);
-
-
---
 -- Name: answers answers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5466,14 +5830,6 @@ ALTER TABLE ONLY public.bank_accounts
 
 
 --
--- Name: business_changes business_changes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.business_changes
-    ADD CONSTRAINT business_changes_pkey PRIMARY KEY (id);
-
-
---
 -- Name: businesses businesses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5490,6 +5846,14 @@ ALTER TABLE ONLY public.charges
 
 
 --
+-- Name: combined_policies combined_policies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.combined_policies
+    ADD CONSTRAINT combined_policies_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: compliance_categories compliance_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5503,6 +5867,22 @@ ALTER TABLE ONLY public.compliance_categories
 
 ALTER TABLE ONLY public.compliance_policies
     ADD CONSTRAINT compliance_policies_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: compliance_policies_risks compliance_policies_risks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.compliance_policies_risks
+    ADD CONSTRAINT compliance_policies_risks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: compliance_policy_configurations compliance_policy_configurations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.compliance_policy_configurations
+    ADD CONSTRAINT compliance_policy_configurations_pkey PRIMARY KEY (id);
 
 
 --
@@ -5546,6 +5926,38 @@ ALTER TABLE ONLY public.email_threads
 
 
 --
+-- Name: exam_auditors exam_auditors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.exam_auditors
+    ADD CONSTRAINT exam_auditors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: exam_request_files exam_request_files_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.exam_request_files
+    ADD CONSTRAINT exam_request_files_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: exam_requests exam_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.exam_requests
+    ADD CONSTRAINT exam_requests_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: exams exams_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.exams
+    ADD CONSTRAINT exams_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: favorites favorites_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5575,14 +5987,6 @@ ALTER TABLE ONLY public.file_docs
 
 ALTER TABLE ONLY public.file_folders
     ADD CONSTRAINT file_folders_pkey PRIMARY KEY (id);
-
-
---
--- Name: findings findings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.findings
-    ADD CONSTRAINT findings_pkey PRIMARY KEY (id);
 
 
 --
@@ -5634,6 +6038,14 @@ ALTER TABLE ONLY public.industries
 
 
 --
+-- Name: invoices invoices_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invoices
+    ADD CONSTRAINT invoices_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: job_applications job_applications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5647,6 +6059,22 @@ ALTER TABLE ONLY public.job_applications
 
 ALTER TABLE ONLY public.jurisdictions
     ADD CONSTRAINT jurisdictions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: local_projects local_projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.local_projects
+    ADD CONSTRAINT local_projects_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: local_projects_specialists local_projects_specialists_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.local_projects_specialists
+    ADD CONSTRAINT local_projects_specialists_pkey PRIMARY KEY (id);
 
 
 --
@@ -5703,6 +6131,14 @@ ALTER TABLE ONLY public.ported_businesses
 
 ALTER TABLE ONLY public.ported_subscriptions
     ADD CONSTRAINT ported_subscriptions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: potential_businesses potential_businesses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.potential_businesses
+    ADD CONSTRAINT potential_businesses_pkey PRIMARY KEY (id);
 
 
 --
@@ -5802,11 +6238,35 @@ ALTER TABLE ONLY public.reminders
 
 
 --
+-- Name: review_categories review_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.review_categories
+    ADD CONSTRAINT review_categories_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: rewards_tiers rewards_tiers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rewards_tiers
     ADD CONSTRAINT rewards_tiers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: risks risks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.risks
+    ADD CONSTRAINT risks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
 
 
 --
@@ -5855,6 +6315,14 @@ ALTER TABLE ONLY public.specialist_payment_sources
 
 ALTER TABLE ONLY public.specialist_teams
     ADD CONSTRAINT specialist_teams_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: specialists_business_roles specialists_business_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specialists_business_roles
+    ADD CONSTRAINT specialists_business_roles_pkey PRIMARY KEY (id);
 
 
 --
@@ -6075,6 +6543,20 @@ CREATE INDEX index_charges_on_transaction_id ON public.charges USING btree (tran
 
 
 --
+-- Name: index_compliance_policies_risks_on_compliance_policy_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_compliance_policies_risks_on_compliance_policy_id ON public.compliance_policies_risks USING btree (compliance_policy_id);
+
+
+--
+-- Name: index_compliance_policies_risks_on_risk_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_compliance_policies_risks_on_risk_id ON public.compliance_policies_risks USING btree (risk_id);
+
+
+--
 -- Name: index_cookie_agreements_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6086,13 +6568,6 @@ CREATE INDEX index_cookie_agreements_on_user_id ON public.cookie_agreements USIN
 --
 
 CREATE INDEX index_documents_on_owner_type_and_owner_id ON public.documents USING btree (owner_type, owner_id);
-
-
---
--- Name: index_documents_on_project_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_documents_on_project_id ON public.documents USING btree (project_id);
 
 
 --
@@ -6128,6 +6603,13 @@ CREATE INDEX index_email_threads_on_specialist_id ON public.email_threads USING 
 --
 
 CREATE UNIQUE INDEX index_email_threads_on_thread_key ON public.email_threads USING btree (thread_key);
+
+
+--
+-- Name: index_exams_on_share_uuid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_exams_on_share_uuid ON public.exams USING btree (share_uuid);
 
 
 --
@@ -6173,6 +6655,20 @@ CREATE UNIQUE INDEX index_industries_projects_on_industry_id_and_project_id ON p
 
 
 --
+-- Name: index_invoices_on_business_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_invoices_on_business_id ON public.invoices USING btree (business_id);
+
+
+--
+-- Name: index_invoices_on_specialist_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_invoices_on_specialist_id ON public.invoices USING btree (specialist_id);
+
+
+--
 -- Name: index_job_applications_on_project_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6205,6 +6701,20 @@ CREATE UNIQUE INDEX index_jurisdictions_on_name ON public.jurisdictions USING bt
 --
 
 CREATE UNIQUE INDEX index_jurisdictions_projects_on_jurisdiction_id_and_project_id ON public.jurisdictions_projects USING btree (jurisdiction_id, project_id);
+
+
+--
+-- Name: index_local_projects_specialists_on_local_project_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_local_projects_specialists_on_local_project_id ON public.local_projects_specialists USING btree (local_project_id);
+
+
+--
+-- Name: index_local_projects_specialists_on_specialist_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_local_projects_specialists_on_specialist_id ON public.local_projects_specialists USING btree (specialist_id);
 
 
 --
@@ -6303,6 +6813,13 @@ CREATE INDEX index_ported_businesses_on_business_id ON public.ported_businesses 
 --
 
 CREATE INDEX index_ported_subscriptions_on_specialist_id ON public.ported_subscriptions USING btree (specialist_id);
+
+
+--
+-- Name: index_potential_businesses_on_crd_number; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_potential_businesses_on_crd_number ON public.potential_businesses USING btree (crd_number);
 
 
 --
@@ -6509,13 +7026,6 @@ CREATE INDEX index_projects_on_payment_schedule ON public.projects USING btree (
 
 
 --
--- Name: index_projects_on_point; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_projects_on_point ON public.projects USING gist (point);
-
-
---
 -- Name: index_projects_on_pricing_type; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6614,6 +7124,13 @@ CREATE UNIQUE INDEX index_referrals_on_referrable_id_and_referrable_type ON publ
 
 
 --
+-- Name: index_risks_on_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_risks_on_name ON public.risks USING btree (name);
+
+
+--
 -- Name: index_seats_on_business_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6625,6 +7142,13 @@ CREATE INDEX index_seats_on_business_id ON public.seats USING btree (business_id
 --
 
 CREATE INDEX index_seats_on_team_member_id ON public.seats USING btree (team_member_id);
+
+
+--
+-- Name: index_settings_on_target_type_and_target_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_settings_on_target_type_and_target_id ON public.settings USING btree (target_type, target_id);
 
 
 --
@@ -6649,6 +7173,13 @@ CREATE UNIQUE INDEX index_skills_specialists_on_skill_id_and_specialist_id ON pu
 
 
 --
+-- Name: index_specialist_invitations_on_specialist_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_specialist_invitations_on_specialist_id ON public.specialist_invitations USING btree (specialist_id);
+
+
+--
 -- Name: index_specialist_invitations_on_specialist_team_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6660,6 +7191,13 @@ CREATE INDEX index_specialist_invitations_on_specialist_team_id ON public.specia
 --
 
 CREATE INDEX index_specialist_invitations_on_team_id ON public.specialist_invitations USING btree (team_id);
+
+
+--
+-- Name: index_specialist_invitations_on_team_member_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_specialist_invitations_on_team_member_id ON public.specialist_invitations USING btree (team_member_id);
 
 
 --
@@ -6681,6 +7219,20 @@ CREATE INDEX index_specialist_payment_sources_on_specialist_id ON public.special
 --
 
 CREATE INDEX index_specialist_teams_on_manager_id ON public.specialist_teams USING btree (manager_id);
+
+
+--
+-- Name: index_specialists_business_roles_on_business_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_specialists_business_roles_on_business_id ON public.specialists_business_roles USING btree (business_id);
+
+
+--
+-- Name: index_specialists_business_roles_on_specialist_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_specialists_business_roles_on_specialist_id ON public.specialists_business_roles USING btree (specialist_id);
 
 
 --
@@ -6712,17 +7264,17 @@ CREATE INDEX index_specialists_on_last_name ON public.specialists USING btree (l
 
 
 --
--- Name: index_specialists_on_point; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_specialists_on_point ON public.specialists USING gist (point);
-
-
---
 -- Name: index_specialists_on_ratings_average; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_specialists_on_ratings_average ON public.specialists USING btree (ratings_average);
+
+
+--
+-- Name: index_specialists_on_team_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_specialists_on_team_id ON public.specialists USING btree (team_id);
 
 
 --
@@ -6758,6 +7310,20 @@ CREATE INDEX index_subscription_charges_on_forum_subscription_id ON public.subsc
 --
 
 CREATE INDEX index_subscriptions_on_kind_of ON public.subscriptions USING btree (kind_of);
+
+
+--
+-- Name: index_subscriptions_on_specialist_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_subscriptions_on_specialist_id ON public.subscriptions USING btree (specialist_id);
+
+
+--
+-- Name: index_subscriptions_on_specialist_payment_source_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_subscriptions_on_specialist_payment_source_id ON public.subscriptions USING btree (specialist_payment_source_id);
 
 
 --
@@ -6929,10 +7495,10 @@ CREATE INDEX index_work_experiences_on_current ON public.work_experiences USING 
 
 
 --
--- Name: index_work_experiences_on_from; Type: INDEX; Schema: public; Owner: -
+-- Name: index_work_experiences_on_end_date; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_work_experiences_on_from ON public.work_experiences USING btree ("from");
+CREATE INDEX index_work_experiences_on_end_date ON public.work_experiences USING btree (end_date);
 
 
 --
@@ -6943,10 +7509,10 @@ CREATE INDEX index_work_experiences_on_specialist_id ON public.work_experiences 
 
 
 --
--- Name: index_work_experiences_on_to; Type: INDEX; Schema: public; Owner: -
+-- Name: index_work_experiences_on_start_date; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_work_experiences_on_to ON public.work_experiences USING btree ("to");
+CREATE INDEX index_work_experiences_on_start_date ON public.work_experiences USING btree (start_date);
 
 
 --
@@ -6964,13 +7530,6 @@ CREATE UNIQUE INDEX jurisdictions_specialists_unique ON public.jurisdictions_spe
 
 
 --
--- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING btree (version);
-
-
---
 -- Name: projects calculate_budget; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -6978,24 +7537,18 @@ CREATE TRIGGER calculate_budget BEFORE INSERT OR UPDATE ON public.projects FOR E
 
 
 --
--- Name: projects trigger_projects_on_lat_lng; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER trigger_projects_on_lat_lng BEFORE INSERT OR UPDATE OF lat, lng ON public.projects FOR EACH ROW EXECUTE PROCEDURE public.set_point_from_lat_lng();
-
-
---
--- Name: specialists trigger_specialists_on_lat_lng; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER trigger_specialists_on_lat_lng BEFORE INSERT OR UPDATE OF lat, lng ON public.specialists FOR EACH ROW EXECUTE PROCEDURE public.set_point_from_lat_lng();
-
-
---
 -- Name: projects tsvectorupdate; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON public.projects FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger('tsv', 'pg_catalog.english', 'title', 'description');
+
+
+--
+-- Name: local_projects_specialists fk_rails_05ae228387; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.local_projects_specialists
+    ADD CONSTRAINT fk_rails_05ae228387 FOREIGN KEY (local_project_id) REFERENCES public.local_projects(id);
 
 
 --
@@ -7007,11 +7560,35 @@ ALTER TABLE ONLY public.cookie_agreements
 
 
 --
+-- Name: local_projects_specialists fk_rails_2cd11c2911; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.local_projects_specialists
+    ADD CONSTRAINT fk_rails_2cd11c2911 FOREIGN KEY (specialist_id) REFERENCES public.specialists(id);
+
+
+--
+-- Name: subscriptions fk_rails_61927ae2df; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subscriptions
+    ADD CONSTRAINT fk_rails_61927ae2df FOREIGN KEY (specialist_payment_source_id) REFERENCES public.specialist_payment_sources(id);
+
+
+--
 -- Name: tos_agreements fk_rails_6e25fd106a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.tos_agreements
     ADD CONSTRAINT fk_rails_6e25fd106a FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: specialists_business_roles fk_rails_77436698dd; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specialists_business_roles
+    ADD CONSTRAINT fk_rails_77436698dd FOREIGN KEY (specialist_id) REFERENCES public.specialists(id);
 
 
 --
@@ -7031,657 +7608,462 @@ ALTER TABLE ONLY public.project_issues
 
 
 --
+-- Name: specialists_business_roles fk_rails_a4e1c0f49f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specialists_business_roles
+    ADD CONSTRAINT fk_rails_a4e1c0f49f FOREIGN KEY (business_id) REFERENCES public.businesses(id);
+
+
+--
+-- Name: compliance_policies_risks fk_rails_c295f383a5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.compliance_policies_risks
+    ADD CONSTRAINT fk_rails_c295f383a5 FOREIGN KEY (risk_id) REFERENCES public.risks(id);
+
+
+--
+-- Name: subscriptions fk_rails_dafea693de; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subscriptions
+    ADD CONSTRAINT fk_rails_dafea693de FOREIGN KEY (specialist_id) REFERENCES public.specialists(id);
+
+
+--
+-- Name: compliance_policies_risks fk_rails_ec44012ae5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.compliance_policies_risks
+    ADD CONSTRAINT fk_rails_ec44012ae5 FOREIGN KEY (compliance_policy_id) REFERENCES public.compliance_policies(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public, tiger;
-
-INSERT INTO schema_migrations (version) VALUES ('20160603200743');
-
-INSERT INTO schema_migrations (version) VALUES ('20160606215415');
-
-INSERT INTO schema_migrations (version) VALUES ('20160606230043');
-
-INSERT INTO schema_migrations (version) VALUES ('20160607025107');
-
-INSERT INTO schema_migrations (version) VALUES ('20160607205707');
-
-INSERT INTO schema_migrations (version) VALUES ('20160611004308');
-
-INSERT INTO schema_migrations (version) VALUES ('20160614211137');
-
-INSERT INTO schema_migrations (version) VALUES ('20160616013430');
-
-INSERT INTO schema_migrations (version) VALUES ('20160616155048');
-
-INSERT INTO schema_migrations (version) VALUES ('20160616211257');
-
-INSERT INTO schema_migrations (version) VALUES ('20160620220131');
-
-INSERT INTO schema_migrations (version) VALUES ('20160621014832');
-
-INSERT INTO schema_migrations (version) VALUES ('20160621181454');
-
-INSERT INTO schema_migrations (version) VALUES ('20160623211024');
-
-INSERT INTO schema_migrations (version) VALUES ('20160721011122');
-
-INSERT INTO schema_migrations (version) VALUES ('20160722233234');
-
-INSERT INTO schema_migrations (version) VALUES ('20160802183502');
-
-INSERT INTO schema_migrations (version) VALUES ('20160802190058');
-
-INSERT INTO schema_migrations (version) VALUES ('20160802200651');
-
-INSERT INTO schema_migrations (version) VALUES ('20160802202615');
-
-INSERT INTO schema_migrations (version) VALUES ('20160802210000');
-
-INSERT INTO schema_migrations (version) VALUES ('20160802213145');
-
-INSERT INTO schema_migrations (version) VALUES ('20160806190620');
-
-INSERT INTO schema_migrations (version) VALUES ('20160807224348');
-
-INSERT INTO schema_migrations (version) VALUES ('20160808122359');
-
-INSERT INTO schema_migrations (version) VALUES ('20160808161529');
-
-INSERT INTO schema_migrations (version) VALUES ('20160808163055');
-
-INSERT INTO schema_migrations (version) VALUES ('20160808172557');
-
-INSERT INTO schema_migrations (version) VALUES ('20160809161615');
-
-INSERT INTO schema_migrations (version) VALUES ('20160810005559');
-
-INSERT INTO schema_migrations (version) VALUES ('20160810021451');
-
-INSERT INTO schema_migrations (version) VALUES ('20160812150543');
-
-INSERT INTO schema_migrations (version) VALUES ('20160815145734');
-
-INSERT INTO schema_migrations (version) VALUES ('20160815191902');
-
-INSERT INTO schema_migrations (version) VALUES ('20160816192820');
-
-INSERT INTO schema_migrations (version) VALUES ('20160816195801');
-
-INSERT INTO schema_migrations (version) VALUES ('20160820222822');
-
-INSERT INTO schema_migrations (version) VALUES ('20160820222901');
-
-INSERT INTO schema_migrations (version) VALUES ('20160824202048');
-
-INSERT INTO schema_migrations (version) VALUES ('20160826174241');
-
-INSERT INTO schema_migrations (version) VALUES ('20160830172251');
-
-INSERT INTO schema_migrations (version) VALUES ('20160830180941');
-
-INSERT INTO schema_migrations (version) VALUES ('20160830194700');
-
-INSERT INTO schema_migrations (version) VALUES ('20160831005700');
-
-INSERT INTO schema_migrations (version) VALUES ('20160831170413');
-
-INSERT INTO schema_migrations (version) VALUES ('20160831202556');
-
-INSERT INTO schema_migrations (version) VALUES ('20160901060934');
-
-INSERT INTO schema_migrations (version) VALUES ('20160901175940');
-
-INSERT INTO schema_migrations (version) VALUES ('20160905191421');
-
-INSERT INTO schema_migrations (version) VALUES ('20160906170404');
-
-INSERT INTO schema_migrations (version) VALUES ('20160907162030');
-
-INSERT INTO schema_migrations (version) VALUES ('20160908143324');
-
-INSERT INTO schema_migrations (version) VALUES ('20160908170540');
-
-INSERT INTO schema_migrations (version) VALUES ('20160909053710');
-
-INSERT INTO schema_migrations (version) VALUES ('20160909170311');
-
-INSERT INTO schema_migrations (version) VALUES ('20160909170614');
-
-INSERT INTO schema_migrations (version) VALUES ('20160913025529');
-
-INSERT INTO schema_migrations (version) VALUES ('20160913030250');
-
-INSERT INTO schema_migrations (version) VALUES ('20160914160717');
-
-INSERT INTO schema_migrations (version) VALUES ('20160916041708');
-
-INSERT INTO schema_migrations (version) VALUES ('20160920034425');
-
-INSERT INTO schema_migrations (version) VALUES ('20160929002205');
-
-INSERT INTO schema_migrations (version) VALUES ('20160929181728');
-
-INSERT INTO schema_migrations (version) VALUES ('20161004031506');
-
-INSERT INTO schema_migrations (version) VALUES ('20161005031450');
-
-INSERT INTO schema_migrations (version) VALUES ('20161005041957');
-
-INSERT INTO schema_migrations (version) VALUES ('20161005193709');
-
-INSERT INTO schema_migrations (version) VALUES ('20161005195837');
-
-INSERT INTO schema_migrations (version) VALUES ('20161006060606');
-
-INSERT INTO schema_migrations (version) VALUES ('20161006192238');
-
-INSERT INTO schema_migrations (version) VALUES ('20161010150831');
-
-INSERT INTO schema_migrations (version) VALUES ('20161013042100');
-
-INSERT INTO schema_migrations (version) VALUES ('20161013153825');
-
-INSERT INTO schema_migrations (version) VALUES ('20161013154701');
-
-INSERT INTO schema_migrations (version) VALUES ('20161014194840');
-
-INSERT INTO schema_migrations (version) VALUES ('20161014195149');
-
-INSERT INTO schema_migrations (version) VALUES ('20161014231410');
-
-INSERT INTO schema_migrations (version) VALUES ('20161018182637');
-
-INSERT INTO schema_migrations (version) VALUES ('20161018200158');
-
-INSERT INTO schema_migrations (version) VALUES ('20161018231053');
-
-INSERT INTO schema_migrations (version) VALUES ('20161019231647');
-
-INSERT INTO schema_migrations (version) VALUES ('20161019233541');
-
-INSERT INTO schema_migrations (version) VALUES ('20161019233916');
-
-INSERT INTO schema_migrations (version) VALUES ('20161020003125');
-
-INSERT INTO schema_migrations (version) VALUES ('20161020003532');
-
-INSERT INTO schema_migrations (version) VALUES ('20161020004927');
-
-INSERT INTO schema_migrations (version) VALUES ('20161020060113');
-
-INSERT INTO schema_migrations (version) VALUES ('20161021013658');
-
-INSERT INTO schema_migrations (version) VALUES ('20161021014432');
-
-INSERT INTO schema_migrations (version) VALUES ('20161026162641');
-
-INSERT INTO schema_migrations (version) VALUES ('20161026171857');
-
-INSERT INTO schema_migrations (version) VALUES ('20161027163457');
-
-INSERT INTO schema_migrations (version) VALUES ('20161104010221');
-
-INSERT INTO schema_migrations (version) VALUES ('20161105034339');
-
-INSERT INTO schema_migrations (version) VALUES ('20161107203304');
-
-INSERT INTO schema_migrations (version) VALUES ('20161130201113');
-
-INSERT INTO schema_migrations (version) VALUES ('20161204011945');
-
-INSERT INTO schema_migrations (version) VALUES ('20161204020457');
-
-INSERT INTO schema_migrations (version) VALUES ('20161207193307');
-
-INSERT INTO schema_migrations (version) VALUES ('20161216191410');
-
-INSERT INTO schema_migrations (version) VALUES ('20161216194421');
-
-INSERT INTO schema_migrations (version) VALUES ('20170109234629');
-
-INSERT INTO schema_migrations (version) VALUES ('20170110003441');
-
-INSERT INTO schema_migrations (version) VALUES ('20170110004317');
-
-INSERT INTO schema_migrations (version) VALUES ('20170111205323');
-
-INSERT INTO schema_migrations (version) VALUES ('20170111220646');
-
-INSERT INTO schema_migrations (version) VALUES ('20170118003355');
-
-INSERT INTO schema_migrations (version) VALUES ('20170118012655');
-
-INSERT INTO schema_migrations (version) VALUES ('20170120205317');
-
-INSERT INTO schema_migrations (version) VALUES ('20170120222804');
-
-INSERT INTO schema_migrations (version) VALUES ('20170121204351');
-
-INSERT INTO schema_migrations (version) VALUES ('20170124102558');
-
-INSERT INTO schema_migrations (version) VALUES ('20170128182414');
-
-INSERT INTO schema_migrations (version) VALUES ('20170201033003');
-
-INSERT INTO schema_migrations (version) VALUES ('20170205030444');
-
-INSERT INTO schema_migrations (version) VALUES ('20170206020010');
-
-INSERT INTO schema_migrations (version) VALUES ('20170208044644');
-
-INSERT INTO schema_migrations (version) VALUES ('20170208045428');
-
-INSERT INTO schema_migrations (version) VALUES ('20170208211820');
-
-INSERT INTO schema_migrations (version) VALUES ('20170306232008');
-
-INSERT INTO schema_migrations (version) VALUES ('20170307203302');
-
-INSERT INTO schema_migrations (version) VALUES ('20170314025240');
-
-INSERT INTO schema_migrations (version) VALUES ('20170314145501');
-
-INSERT INTO schema_migrations (version) VALUES ('20170314145531');
-
-INSERT INTO schema_migrations (version) VALUES ('20170321022610');
-
-INSERT INTO schema_migrations (version) VALUES ('20170321030955');
-
-INSERT INTO schema_migrations (version) VALUES ('20170410233330');
-
-INSERT INTO schema_migrations (version) VALUES ('20170415185854');
-
-INSERT INTO schema_migrations (version) VALUES ('20170506204523');
-
-INSERT INTO schema_migrations (version) VALUES ('20170508190146');
-
-INSERT INTO schema_migrations (version) VALUES ('20170508231021');
-
-INSERT INTO schema_migrations (version) VALUES ('20170720153724');
-
-INSERT INTO schema_migrations (version) VALUES ('20170727084631');
-
-INSERT INTO schema_migrations (version) VALUES ('20170919140223');
-
-INSERT INTO schema_migrations (version) VALUES ('20170919163901');
-
-INSERT INTO schema_migrations (version) VALUES ('20170919200413');
-
-INSERT INTO schema_migrations (version) VALUES ('20180323075021');
-
-INSERT INTO schema_migrations (version) VALUES ('20180531123213');
-
-INSERT INTO schema_migrations (version) VALUES ('20180531132555');
-
-INSERT INTO schema_migrations (version) VALUES ('20180605145214');
-
-INSERT INTO schema_migrations (version) VALUES ('20180609010335');
-
-INSERT INTO schema_migrations (version) VALUES ('20180614160822');
-
-INSERT INTO schema_migrations (version) VALUES ('20180622004759');
-
-INSERT INTO schema_migrations (version) VALUES ('20180712053404');
-
-INSERT INTO schema_migrations (version) VALUES ('20180717152210');
-
-INSERT INTO schema_migrations (version) VALUES ('20180728192204');
-
-INSERT INTO schema_migrations (version) VALUES ('20180728213813');
-
-INSERT INTO schema_migrations (version) VALUES ('20180729032945');
-
-INSERT INTO schema_migrations (version) VALUES ('20180729172500');
-
-INSERT INTO schema_migrations (version) VALUES ('20180807032531');
-
-INSERT INTO schema_migrations (version) VALUES ('20180808042020');
-
-INSERT INTO schema_migrations (version) VALUES ('20180809033224');
-
-INSERT INTO schema_migrations (version) VALUES ('20180809052509');
-
-INSERT INTO schema_migrations (version) VALUES ('20180811003234');
-
-INSERT INTO schema_migrations (version) VALUES ('20180811025719');
-
-INSERT INTO schema_migrations (version) VALUES ('20180811063154');
-
-INSERT INTO schema_migrations (version) VALUES ('20180811063955');
-
-INSERT INTO schema_migrations (version) VALUES ('20180819092322');
-
-INSERT INTO schema_migrations (version) VALUES ('20180827045947');
-
-INSERT INTO schema_migrations (version) VALUES ('20180827051141');
-
-INSERT INTO schema_migrations (version) VALUES ('20180827191112');
-
-INSERT INTO schema_migrations (version) VALUES ('20180908030634');
-
-INSERT INTO schema_migrations (version) VALUES ('20180911180555');
-
-INSERT INTO schema_migrations (version) VALUES ('20180911182144');
-
-INSERT INTO schema_migrations (version) VALUES ('20180914165337');
-
-INSERT INTO schema_migrations (version) VALUES ('20181026024940');
-
-INSERT INTO schema_migrations (version) VALUES ('20181026212530');
-
-INSERT INTO schema_migrations (version) VALUES ('20181028010350');
-
-INSERT INTO schema_migrations (version) VALUES ('20181028023519');
-
-INSERT INTO schema_migrations (version) VALUES ('20181028102912');
-
-INSERT INTO schema_migrations (version) VALUES ('20181102164606');
-
-INSERT INTO schema_migrations (version) VALUES ('20181110001445');
-
-INSERT INTO schema_migrations (version) VALUES ('20181111001648');
-
-INSERT INTO schema_migrations (version) VALUES ('20181112100355');
-
-INSERT INTO schema_migrations (version) VALUES ('20181118233812');
-
-INSERT INTO schema_migrations (version) VALUES ('20181123042811');
-
-INSERT INTO schema_migrations (version) VALUES ('20181124133815');
-
-INSERT INTO schema_migrations (version) VALUES ('20181124135819');
-
-INSERT INTO schema_migrations (version) VALUES ('20181204204949');
-
-INSERT INTO schema_migrations (version) VALUES ('20181204223503');
-
-INSERT INTO schema_migrations (version) VALUES ('20181204224111');
-
-INSERT INTO schema_migrations (version) VALUES ('20181205190733');
-
-INSERT INTO schema_migrations (version) VALUES ('20181206190337');
-
-INSERT INTO schema_migrations (version) VALUES ('20181206193340');
-
-INSERT INTO schema_migrations (version) VALUES ('20181206194641');
-
-INSERT INTO schema_migrations (version) VALUES ('20181206194651');
-
-INSERT INTO schema_migrations (version) VALUES ('20181206201151');
-
-INSERT INTO schema_migrations (version) VALUES ('20181207154323');
-
-INSERT INTO schema_migrations (version) VALUES ('20181213163257');
-
-INSERT INTO schema_migrations (version) VALUES ('20181213180722');
-
-INSERT INTO schema_migrations (version) VALUES ('20181217094718');
-
-INSERT INTO schema_migrations (version) VALUES ('20181217113715');
-
-INSERT INTO schema_migrations (version) VALUES ('20181217114759');
-
-INSERT INTO schema_migrations (version) VALUES ('20181218181633');
-
-INSERT INTO schema_migrations (version) VALUES ('20181218185020');
-
-INSERT INTO schema_migrations (version) VALUES ('20181219174332');
-
-INSERT INTO schema_migrations (version) VALUES ('20181221144557');
-
-INSERT INTO schema_migrations (version) VALUES ('20181221165209');
-
-INSERT INTO schema_migrations (version) VALUES ('20190107142827');
-
-INSERT INTO schema_migrations (version) VALUES ('20190111052406');
-
-INSERT INTO schema_migrations (version) VALUES ('20190111081217');
-
-INSERT INTO schema_migrations (version) VALUES ('20190113223605');
-
-INSERT INTO schema_migrations (version) VALUES ('20190117163709');
-
-INSERT INTO schema_migrations (version) VALUES ('20190117194225');
-
-INSERT INTO schema_migrations (version) VALUES ('20190127161134');
-
-INSERT INTO schema_migrations (version) VALUES ('20190226184824');
-
-INSERT INTO schema_migrations (version) VALUES ('20190410191210');
-
-INSERT INTO schema_migrations (version) VALUES ('20190613005026');
-
-INSERT INTO schema_migrations (version) VALUES ('20190719004511');
-
-INSERT INTO schema_migrations (version) VALUES ('20190723185902');
-
-INSERT INTO schema_migrations (version) VALUES ('20190725045730');
-
-INSERT INTO schema_migrations (version) VALUES ('20190804164816');
-
-INSERT INTO schema_migrations (version) VALUES ('20190806212346');
-
-INSERT INTO schema_migrations (version) VALUES ('20190806214013');
-
-INSERT INTO schema_migrations (version) VALUES ('20190827194645');
-
-INSERT INTO schema_migrations (version) VALUES ('20190912145221');
-
-INSERT INTO schema_migrations (version) VALUES ('20190929215310');
-
-INSERT INTO schema_migrations (version) VALUES ('20191013070720');
-
-INSERT INTO schema_migrations (version) VALUES ('20191028010601');
-
-INSERT INTO schema_migrations (version) VALUES ('20191028033710');
-
-INSERT INTO schema_migrations (version) VALUES ('20191028035845');
-
-INSERT INTO schema_migrations (version) VALUES ('20191028040525');
-
-INSERT INTO schema_migrations (version) VALUES ('20191028054616');
-
-INSERT INTO schema_migrations (version) VALUES ('20191101200437');
-
-INSERT INTO schema_migrations (version) VALUES ('20191106180256');
-
-INSERT INTO schema_migrations (version) VALUES ('20191107010504');
-
-INSERT INTO schema_migrations (version) VALUES ('20191119063004');
-
-INSERT INTO schema_migrations (version) VALUES ('20191119080112');
-
-INSERT INTO schema_migrations (version) VALUES ('20191120121410');
-
-INSERT INTO schema_migrations (version) VALUES ('20191205023843');
-
-INSERT INTO schema_migrations (version) VALUES ('20191205203522');
-
-INSERT INTO schema_migrations (version) VALUES ('20191205235626');
-
-INSERT INTO schema_migrations (version) VALUES ('20191206010659');
-
-INSERT INTO schema_migrations (version) VALUES ('20191208014625');
-
-INSERT INTO schema_migrations (version) VALUES ('20191208014754');
-
-INSERT INTO schema_migrations (version) VALUES ('20191208014928');
-
-INSERT INTO schema_migrations (version) VALUES ('20191208015014');
-
-INSERT INTO schema_migrations (version) VALUES ('20191208015712');
-
-INSERT INTO schema_migrations (version) VALUES ('20191208015810');
-
-INSERT INTO schema_migrations (version) VALUES ('20191209010949');
-
-INSERT INTO schema_migrations (version) VALUES ('20191219200231');
-
-INSERT INTO schema_migrations (version) VALUES ('20191219201057');
-
-INSERT INTO schema_migrations (version) VALUES ('20191221035118');
-
-INSERT INTO schema_migrations (version) VALUES ('20191221040705');
-
-INSERT INTO schema_migrations (version) VALUES ('20200113034256');
-
-INSERT INTO schema_migrations (version) VALUES ('20200114210331');
-
-INSERT INTO schema_migrations (version) VALUES ('20200117080343');
-
-INSERT INTO schema_migrations (version) VALUES ('20200117095549');
-
-INSERT INTO schema_migrations (version) VALUES ('20200118000622');
-
-INSERT INTO schema_migrations (version) VALUES ('20200118201501');
-
-INSERT INTO schema_migrations (version) VALUES ('20200119192255');
-
-INSERT INTO schema_migrations (version) VALUES ('20200131171456');
-
-INSERT INTO schema_migrations (version) VALUES ('20200221232045');
-
-INSERT INTO schema_migrations (version) VALUES ('20200222224002');
-
-INSERT INTO schema_migrations (version) VALUES ('20200223204523');
-
-INSERT INTO schema_migrations (version) VALUES ('20200225070555');
-
-INSERT INTO schema_migrations (version) VALUES ('20200229052054');
-
-INSERT INTO schema_migrations (version) VALUES ('20200229053148');
-
-INSERT INTO schema_migrations (version) VALUES ('20200229114848');
-
-INSERT INTO schema_migrations (version) VALUES ('20200301120149');
-
-INSERT INTO schema_migrations (version) VALUES ('20200305092313');
-
-INSERT INTO schema_migrations (version) VALUES ('20200305192127');
-
-INSERT INTO schema_migrations (version) VALUES ('20200310192546');
-
-INSERT INTO schema_migrations (version) VALUES ('20200317092334');
-
-INSERT INTO schema_migrations (version) VALUES ('20200405173634');
-
-INSERT INTO schema_migrations (version) VALUES ('20200406000415');
-
-INSERT INTO schema_migrations (version) VALUES ('20200407165401');
-
-INSERT INTO schema_migrations (version) VALUES ('20200407183907');
-
-INSERT INTO schema_migrations (version) VALUES ('20200410005704');
-
-INSERT INTO schema_migrations (version) VALUES ('20200410021818');
-
-INSERT INTO schema_migrations (version) VALUES ('20200417022050');
-
-INSERT INTO schema_migrations (version) VALUES ('20200420060723');
-
-INSERT INTO schema_migrations (version) VALUES ('20200426013206');
-
-INSERT INTO schema_migrations (version) VALUES ('20200426033608');
-
-INSERT INTO schema_migrations (version) VALUES ('20200426092251');
-
-INSERT INTO schema_migrations (version) VALUES ('20200506095205');
-
-INSERT INTO schema_migrations (version) VALUES ('20200513204030');
-
-INSERT INTO schema_migrations (version) VALUES ('20200525022434');
-
-INSERT INTO schema_migrations (version) VALUES ('20200602133029');
-
-INSERT INTO schema_migrations (version) VALUES ('20200603162452');
-
-INSERT INTO schema_migrations (version) VALUES ('20200604180231');
-
-INSERT INTO schema_migrations (version) VALUES ('20200613233942');
-
-INSERT INTO schema_migrations (version) VALUES ('20200613235248');
-
-INSERT INTO schema_migrations (version) VALUES ('20200615212030');
-
-INSERT INTO schema_migrations (version) VALUES ('20200615222549');
-
-INSERT INTO schema_migrations (version) VALUES ('20200616003446');
-
-INSERT INTO schema_migrations (version) VALUES ('20200616103242');
-
-INSERT INTO schema_migrations (version) VALUES ('20200617023543');
-
-INSERT INTO schema_migrations (version) VALUES ('20200624064838');
-
-INSERT INTO schema_migrations (version) VALUES ('20200626125809');
-
-INSERT INTO schema_migrations (version) VALUES ('20200629164722');
-
-INSERT INTO schema_migrations (version) VALUES ('20200630113358');
-
-INSERT INTO schema_migrations (version) VALUES ('20200630141818');
-
-INSERT INTO schema_migrations (version) VALUES ('20200630161825');
-
-INSERT INTO schema_migrations (version) VALUES ('20200630192522');
-
-INSERT INTO schema_migrations (version) VALUES ('20200630205225');
-
-INSERT INTO schema_migrations (version) VALUES ('20200630220333');
-
-INSERT INTO schema_migrations (version) VALUES ('20200630223715');
-
-INSERT INTO schema_migrations (version) VALUES ('20200701133723');
-
-INSERT INTO schema_migrations (version) VALUES ('20200705150209');
-
-INSERT INTO schema_migrations (version) VALUES ('20200715003410');
-
-INSERT INTO schema_migrations (version) VALUES ('20200715034355');
-
-INSERT INTO schema_migrations (version) VALUES ('20200719214711');
-
-INSERT INTO schema_migrations (version) VALUES ('20200722151132');
-
-INSERT INTO schema_migrations (version) VALUES ('20200722221907');
-
-INSERT INTO schema_migrations (version) VALUES ('20200722233313');
-
-INSERT INTO schema_migrations (version) VALUES ('20200723011130');
-
-INSERT INTO schema_migrations (version) VALUES ('20200723030449');
-
-INSERT INTO schema_migrations (version) VALUES ('20200828043028');
-
-INSERT INTO schema_migrations (version) VALUES ('20200903144149');
-
-INSERT INTO schema_migrations (version) VALUES ('20200908062614');
-
-INSERT INTO schema_migrations (version) VALUES ('20200911062229');
-
-INSERT INTO schema_migrations (version) VALUES ('20200914113651');
-
-INSERT INTO schema_migrations (version) VALUES ('20200914144201');
-
-INSERT INTO schema_migrations (version) VALUES ('20200916052649');
-
-INSERT INTO schema_migrations (version) VALUES ('20200918212506');
-
-INSERT INTO schema_migrations (version) VALUES ('20200922124235');
-
-INSERT INTO schema_migrations (version) VALUES ('20200923045825');
-
-INSERT INTO schema_migrations (version) VALUES ('20200923060320');
-
-INSERT INTO schema_migrations (version) VALUES ('20200925050217');
-
-INSERT INTO schema_migrations (version) VALUES ('20200929162556');
-
-INSERT INTO schema_migrations (version) VALUES ('20201007134635');
-
-INSERT INTO schema_migrations (version) VALUES ('20201110132337');
-
-INSERT INTO schema_migrations (version) VALUES ('20201210160135');
+SET search_path TO "$user", public;
+
+INSERT INTO "schema_migrations" (version) VALUES
+('20160603200743'),
+('20160606215415'),
+('20160606230043'),
+('20160607025107'),
+('20160607205707'),
+('20160611004308'),
+('20160614211137'),
+('20160616013430'),
+('20160616155048'),
+('20160616211257'),
+('20160620220131'),
+('20160621014832'),
+('20160621181454'),
+('20160623211024'),
+('20160721011122'),
+('20160722233234'),
+('20160802183502'),
+('20160802190058'),
+('20160802200651'),
+('20160802202615'),
+('20160802210000'),
+('20160802213145'),
+('20160806190620'),
+('20160807224348'),
+('20160808122359'),
+('20160808161529'),
+('20160808163055'),
+('20160808172557'),
+('20160809161615'),
+('20160810005559'),
+('20160810021451'),
+('20160812150543'),
+('20160815145734'),
+('20160815191902'),
+('20160816192820'),
+('20160816195801'),
+('20160820222822'),
+('20160820222901'),
+('20160824202048'),
+('20160826174241'),
+('20160830172251'),
+('20160830180941'),
+('20160830194700'),
+('20160831005700'),
+('20160831170413'),
+('20160831202556'),
+('20160901060934'),
+('20160901175940'),
+('20160905191421'),
+('20160906170404'),
+('20160907162030'),
+('20160908143324'),
+('20160908170540'),
+('20160909053710'),
+('20160909170311'),
+('20160909170614'),
+('20160913025529'),
+('20160913030250'),
+('20160914160717'),
+('20160916041708'),
+('20160920034425'),
+('20160929002205'),
+('20160929181728'),
+('20161004031506'),
+('20161005031450'),
+('20161005041957'),
+('20161005193709'),
+('20161005195837'),
+('20161006060606'),
+('20161006192238'),
+('20161010150831'),
+('20161013042100'),
+('20161013153825'),
+('20161013154701'),
+('20161014194840'),
+('20161014195149'),
+('20161014231410'),
+('20161018182637'),
+('20161018200158'),
+('20161018231053'),
+('20161019231647'),
+('20161019233541'),
+('20161019233916'),
+('20161020003125'),
+('20161020003532'),
+('20161020004927'),
+('20161020060113'),
+('20161021013658'),
+('20161021014432'),
+('20161026162641'),
+('20161026171857'),
+('20161027163457'),
+('20161104010221'),
+('20161105034339'),
+('20161107203304'),
+('20161130201113'),
+('20161204011945'),
+('20161204020457'),
+('20161207193307'),
+('20161216191410'),
+('20161216194421'),
+('20170109234629'),
+('20170110003441'),
+('20170110004317'),
+('20170111205323'),
+('20170111220646'),
+('20170118003355'),
+('20170118012655'),
+('20170120205317'),
+('20170120222804'),
+('20170121204351'),
+('20170124102558'),
+('20170128182414'),
+('20170201033003'),
+('20170205030444'),
+('20170206020010'),
+('20170208044644'),
+('20170208045428'),
+('20170208211820'),
+('20170306232008'),
+('20170307203302'),
+('20170314025240'),
+('20170314145501'),
+('20170314145531'),
+('20170321022610'),
+('20170321030955'),
+('20170410233330'),
+('20170415185854'),
+('20170506204523'),
+('20170508190146'),
+('20170508231021'),
+('20170720153724'),
+('20170727084631'),
+('20170919140223'),
+('20170919163901'),
+('20170919200413'),
+('20180323075021'),
+('20180531123213'),
+('20180531132555'),
+('20180605145214'),
+('20180609010335'),
+('20180614160822'),
+('20180622004759'),
+('20180712053404'),
+('20180717152210'),
+('20180728192204'),
+('20180728213813'),
+('20180729032945'),
+('20180729172500'),
+('20180807032531'),
+('20180808042020'),
+('20180809033224'),
+('20180809052509'),
+('20180811003234'),
+('20180811025719'),
+('20180811063154'),
+('20180811063955'),
+('20180819092322'),
+('20180827045947'),
+('20180827051141'),
+('20180827191112'),
+('20180908030634'),
+('20180911180555'),
+('20180911182144'),
+('20180914165337'),
+('20181026024940'),
+('20181026212530'),
+('20181028010350'),
+('20181028023519'),
+('20181028102912'),
+('20181102164606'),
+('20181110001445'),
+('20181111001648'),
+('20181112100355'),
+('20181118233812'),
+('20181123042811'),
+('20181124133815'),
+('20181124135819'),
+('20181204204949'),
+('20181204223503'),
+('20181204224111'),
+('20181205190733'),
+('20181206190337'),
+('20181206193340'),
+('20181206194641'),
+('20181206194651'),
+('20181206201151'),
+('20181207154323'),
+('20181213163257'),
+('20181213180722'),
+('20181217094718'),
+('20181217113715'),
+('20181217114759'),
+('20181218181633'),
+('20181218185020'),
+('20181219174332'),
+('20181221144557'),
+('20181221165209'),
+('20190107142827'),
+('20190111052406'),
+('20190111081217'),
+('20190113223605'),
+('20190117163709'),
+('20190117194225'),
+('20190127161134'),
+('20190226184824'),
+('20190410191210'),
+('20190613005026'),
+('20190719004511'),
+('20190723185902'),
+('20190725045730'),
+('20190804164816'),
+('20190806212346'),
+('20190806214013'),
+('20190827194645'),
+('20190912145221'),
+('20190929215310'),
+('20191013070720'),
+('20191028010601'),
+('20191028033710'),
+('20191028035845'),
+('20191028040525'),
+('20191028054616'),
+('20191101200437'),
+('20191106180256'),
+('20191107010504'),
+('20191119063004'),
+('20191119080112'),
+('20191120121410'),
+('20191205023843'),
+('20191205203522'),
+('20191205235626'),
+('20191206010659'),
+('20191208014625'),
+('20191208014754'),
+('20191208014928'),
+('20191208015014'),
+('20191208015712'),
+('20191208015810'),
+('20191209010949'),
+('20191219200231'),
+('20191219201057'),
+('20191221035118'),
+('20191221040705'),
+('20200113034256'),
+('20200114210331'),
+('20200117080343'),
+('20200117095549'),
+('20200118000622'),
+('20200118201501'),
+('20200119192255'),
+('20200131171456'),
+('20200221232045'),
+('20200222224002'),
+('20200223204523'),
+('20200225070555'),
+('20200229052054'),
+('20200229053148'),
+('20200229114848'),
+('20200301120149'),
+('20200305092313'),
+('20200305192127'),
+('20200310192546'),
+('20200317092334'),
+('20200405173634'),
+('20200406000415'),
+('20200407165401'),
+('20200407183907'),
+('20200410005704'),
+('20200410021818'),
+('20200417022050'),
+('20200420060723'),
+('20200426013206'),
+('20200426033608'),
+('20200426092251'),
+('20200506095205'),
+('20200513204030'),
+('20200525022434'),
+('20200602133029'),
+('20200603162452'),
+('20200604180231'),
+('20200613233942'),
+('20200613235248'),
+('20200615212030'),
+('20200615222549'),
+('20200616003446'),
+('20200616103242'),
+('20200617023543'),
+('20200624064838'),
+('20200626125809'),
+('20200629164722'),
+('20200630113358'),
+('20200630141818'),
+('20200630161825'),
+('20200630192522'),
+('20200630205225'),
+('20200630220333'),
+('20200630223715'),
+('20200701133723'),
+('20200705150209'),
+('20200715003410'),
+('20200715034355'),
+('20200719214711'),
+('20200722151132'),
+('20200722221907'),
+('20200722233313'),
+('20200723011130'),
+('20200723030449'),
+('20200828043028'),
+('20200903144149'),
+('20200908062614'),
+('20200911062229'),
+('20200914113651'),
+('20200914144201'),
+('20200916052649'),
+('20200918212506'),
+('20200922124235'),
+('20200923045825'),
+('20200923060320'),
+('20200929162556'),
+('20201007134635'),
+('20201110132337'),
+('20201210160135'),
+('20201225213003'),
+('20210118192309'),
+('20210128050645'),
+('20210203192622'),
+('20210205083649'),
+('20210210173529'),
+('20210211082102'),
+('20210211121353'),
+('20210211201513'),
+('20210216123812'),
+('20210219194005'),
+('20210222204415'),
+('20210222204529'),
+('20210226200129'),
+('20210226200705'),
+('20210226201238'),
+('20210226220020'),
+('20210226220403'),
+('20210226223208'),
+('20210301091555'),
+('20210306222201'),
+('20210309155436'),
+('20210309175424'),
+('20210311181533'),
+('20210311184609'),
+('20210311184928'),
+('20210312165913'),
+('20210315233431'),
+('20210316121459'),
+('20210317135216'),
+('20210320105303'),
+('20210321120504'),
+('20210323154622'),
+('20210323174434'),
+('20210323180114'),
+('20210323180130'),
+('20210326130422'),
+('20210329160613'),
+('20210329192005'),
+('20210331224316'),
+('20210401163159'),
+('20210401163637'),
+('20210401192628'),
+('20210404131222'),
+('20210407003049'),
+('20210408131105'),
+('20210410142233'),
+('20210415142648'),
+('20210423114454'),
+('20210502165601'),
+('20210505154804'),
+('20210508134939'),
+('20210516095619'),
+('20210518154715'),
+('20210527230840'),
+('20210527232059'),
+('20210528030325'),
+('20210528030543'),
+('20210528182423'),
+('20210531233721'),
+('20210601234719'),
+('20210621221058'),
+('20210623234110'),
+('20210627144137'),
+('20210630220835'),
+('20210708084524'),
+('20210821000146'),
+('20210823211705'),
+('20210824095936'),
+('20210824171605'),
+('20210824180007'),
+('20210824182507'),
+('20210825181853'),
+('20210826205423'),
+('20210829184005'),
+('20210830171338'),
+('20210902170517'),
+('20210903160434'),
+('20210903165008'),
+('20210907144837'),
+('20210907191719'),
+('20210912233759'),
+('20210913004031'),
+('20210914144033'),
+('20210915162525'),
+('20210915184549'),
+('20210915191451'),
+('20210916024312'),
+('20210916110317'),
+('20210922164840'),
+('20210923010408'),
+('20210924010455'),
+('20210925145059'),
+('20210925231223'),
+('20210927215950'),
+('20210929204307');
 
 

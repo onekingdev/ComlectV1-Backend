@@ -3,48 +3,43 @@
 class CompliancePolicy < ActiveRecord::Base
   acts_as_list
   belongs_to :business
-  has_many :compliance_policy_docs, dependent: :destroy
-  accepts_nested_attributes_for :compliance_policy_docs
-  # validates :compliance_policy_docs, presence: true
-  validates :title, presence: true, if: :section_blank?
-  validates :section, inclusion: { in: I18n.translate('compliance_manual_sections').keys.map(&:to_s) }, if: :section_present?
-  validate :section_business_uniqueness, if: :section_present?
-
+  has_many :reminders, as: :linkable
+  has_many :published_versions, -> { order(created_at: :desc) }, class_name: 'CompliancePolicy', foreign_key: :src_id
+  has_and_belongs_to_many :risks
+  belongs_to :source_version, class_name: 'CompliancePolicy', foreign_key: :src_id, optional: true
+  validates :name, presence: true
   include PdfUploader[:pdf]
+  before_destroy { risks.clear }
 
-  before_save :wipe_title
+  scope :root, -> { where(src_id: nil).order('position') }
 
-  delegate :blank?, to: :section, prefix: true
+  enum status: {
+    draft: 'draft',
+    published: 'published'
+  }
 
-  delegate :present?, to: :section, prefix: true
+  after_commit :update_position, on: :create
 
-  def section_or_title
-    section.blank? ? title : I18n.translate('compliance_manual_sections')[section.to_sym]
+  def self.root_published
+    policies_collection = []
+    root.where(archived: false).each do |cpolicy|
+      policies_collection.push(cpolicy.published_versions.first) if cpolicy.published_versions.present?
+    end
+    policies_collection
   end
 
-  def set_last_upload_date
-    update(last_uploaded: compliance_policy_docs.order(:created_at).collect(&:created_at).first)
+  def versions
+    return published_versions if src_id.nil?
+    source_version.published_versions
   end
 
-  def section_to_sym
-    section.blank? ? nil : section.to_sym
-  end
-
-  def calculate_docs
-    update(docs_count: compliance_policy_docs.where.not(pdf_data: nil).count)
-  end
-
-  def outdated?
-    compliance_policy_docs.where('created_at > ?', Time.zone.today - 1.year).none?
+  def published?
+    status == 'published'
   end
 
   private
 
-  def wipe_title
-    self.title = '' if section.present?
-  end
-
-  def section_business_uniqueness
-    errors.add(:section, :section_taken) if business.compliance_policies.where(section: section).where.not(id: id).count.positive?
+  def update_position
+    update(position: id)
   end
 end

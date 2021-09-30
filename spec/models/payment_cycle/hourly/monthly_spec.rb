@@ -3,8 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe PaymentCycle::Hourly::Monthly, type: :model do
-  include TimesheetSpecHelper
-
   describe 'an hourly project with monthly pay' do
     let(:business) { create(:business, :with_payment_profile) }
     let(:specialist) { create(:specialist) }
@@ -18,7 +16,9 @@ RSpec.describe PaymentCycle::Hourly::Monthly, type: :model do
           starts_on: Date.new(2016, 1, 1),
           ends_on: Date.new(2016, 6, 7),
           hourly_rate: 100,
-          estimated_hours: 50
+          estimated_hours: 50,
+          role_details: 'role_details',
+          upper_hourly_rate: 100
         )
 
         @job_application = create(
@@ -28,7 +28,7 @@ RSpec.describe PaymentCycle::Hourly::Monthly, type: :model do
         )
 
         Project::Form.find(@project.id).post!
-        JobApplication::Accept.(@job_application)
+        JobApplication::Accept.call(@job_application)
       end
     end
 
@@ -83,7 +83,7 @@ RSpec.describe PaymentCycle::Hourly::Monthly, type: :model do
             charge.process_after.in_time_zone(business.tz).to_i
           ).to eq(@project.business.tz.local(2016, 2, 2).end_of_day.to_i)
           expect(charge.business_fee_in_cents).to eq(0) # we calculate it in transaction
-          expect(charge.specialist_fee_in_cents).to eq(charge.amount_in_cents * Charge::COMPLECT_FEE_PCT)
+          expect(charge.specialist_fee_in_cents).to be_zero
         end
       end
 
@@ -149,7 +149,7 @@ RSpec.describe PaymentCycle::Hourly::Monthly, type: :model do
           Timecop.freeze(business.tz.local(2016, 6, 7, 0, 15)) do
             log_timesheet @project, hours: 5
             ScheduleChargesJob.new.perform(@project.id)
-            request = ProjectExtension::Request.process!(@project, Date.new(2016, 6, 15))
+            request = ProjectExtension::Request.process!(@project, ends_on: Date.new(2016, 6, 15))
             request.confirm!
           end
         end

@@ -1,0 +1,32 @@
+# frozen_string_literal: true
+
+class Business::AnnualReportsPolicy < ApplicationPolicy
+  # allow only 1 / year
+  def index?
+    team?
+  end
+
+  def show?
+    team?
+  end
+
+  def create?
+    business? || (annual_report_available? && team?)
+  end
+
+  def download?
+    team?
+  end
+
+  def update?
+    team?
+  end
+
+  def destroy?
+    team?
+  end
+
+  def clone?
+    (annual_report_available? && team?) || business?
+  end
+end

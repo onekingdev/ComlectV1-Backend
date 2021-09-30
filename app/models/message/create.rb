@@ -4,14 +4,24 @@ class Message::Create < Draper::Decorator
   decorates Message
   delegate_all
 
-  def self.call(project, attributes)
-    # rubocop:disable Metrics/LineLength
-    return if project.pending? && attributes[:sender].is_a?(Specialist) && project.messages.business_specialist(project.business_id, attributes[:sender].id).blank?
-    # rubocop:enable Metrics/LineLength
-    new(project.messages.create(attributes)).tap do |message|
-      # Notification::Deliver.got_project_message!(message) if message.persisted?
+  def self.call(project, attributes, sender, recipient)
+    if project.nil?
+      if sender.class.name.include?('Specialist') && recipient.class.name.include?('Business')
+        if Message.business_specialist(recipient.id, sender.id).direct.count.positive? ||
+           sender.applied_projects.collect(&:business_id).include?(recipient.id)
+          create_msg(attributes)
+        end
+      else
+        create_msg(attributes)
+      end
+    elsif recipient.nil?
+      create_msg(attributes.merge(thread: project))
     end
   end
 
   delegate :message, to: :model
+
+  def self.create_msg(attributes)
+    Message.create(attributes)
+  end
 end

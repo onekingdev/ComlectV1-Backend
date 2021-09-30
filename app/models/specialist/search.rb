@@ -9,11 +9,11 @@ class Specialist::Search
   MAX_LOCATION_RANGE = 100
 
   attr_accessor :sort_by, :keyword, :jurisdiction_ids, :industry_ids, :rating, :experience, :regulator, :location,
-                :lat, :lng, :location_range, :page, :per
+                :lat, :lng, :location_range, :page, :per, :min_hourly_rate
 
   def initialize(attributes = HashWithIndifferentAccess.new)
     self.page = 1
-    self.per = 12
+    self.per = 1000
     attributes.each do |attr, value|
       public_send "#{attr}=", value.presence
     end
@@ -27,12 +27,13 @@ class Specialist::Search
 
   def results
     return @results if @results
-    @results = Specialist.preload_associations.public_profiles.distinct
+    @results = Specialist.preload_association.public_profiles.distinct
     @results = search(@results)
     @results = filter_industry(@results)
     @results = filter_jurisdiction(@results)
     @results = filter_rating(@results)
     @results = filter_experience(@results)
+    @results = filter_hourly_rate(@results)
     @results = filter_regulator(@results)
     @results = filter_location(@results)
     @results = sort(@results)
@@ -48,10 +49,6 @@ class Specialist::Search
       'specialists.first_name',
       'specialists.last_name',
       'specialists.certifications',
-      'work_experiences.description',
-      'work_experiences.company',
-      'work_experiences.job_title',
-      'education_histories.institution',
       'skills.name'
     ]
 
@@ -74,10 +71,19 @@ class Specialist::Search
   end
 
   def filter_experience(records)
-    min, max = experience.to_s.split(';').map(&:to_i)
-    return records if experience.blank? || (min == MIN_EXPERIENCE && max == MAX_EXPERIENCE)
-    max = nil if max == MAX_EXPERIENCE
-    records.experience_between(min, max)
+    return records if experience.blank?
+    conditions = experience.each_with_index.map do |_checkbox, i|
+      "experience BETWEEN :from_#{i} AND :to_#{i}"
+    end.join(' OR ')
+    records.where(conditions, compile_params(experience))
+  end
+
+  def filter_hourly_rate(records)
+    return records if min_hourly_rate.blank?
+    conditions = min_hourly_rate.each_with_index.map do |_checkbox, i|
+      "min_hourly_rate BETWEEN :from_#{i} AND :to_#{i}"
+    end.join(' OR ')
+    records.where(conditions, compile_params(min_hourly_rate))
   end
 
   def filter_regulator(records)
@@ -124,9 +130,15 @@ class Specialist::Search
   end
 
   def additional_search_joins(records)
-    records = records.joins('LEFT JOIN work_experiences ON specialists.id = work_experiences.specialist_id')
-    records = records.joins('LEFT JOIN education_histories ON specialists.id = education_histories.specialist_id')
     inner_query = 'skills_specialists LEFT JOIN skills on skills_specialists.skill_id = skills.id'
     records.joins("LEFT JOIN (#{inner_query}) on skills_specialists.specialist_id = specialists.id")
+  end
+
+  def compile_params(input_arr)
+    input_arr.each_with_index.each_with_object({}) do |(checkbox, i), hash|
+      from, to = checkbox.split(',')
+      hash[:"from_#{i}"] = from
+      hash[:"to_#{i}"] = to
+    end
   end
 end

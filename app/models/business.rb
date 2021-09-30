@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
 require 'validators/url_validator'
-# rubocop:disable Metrics/ClassLength
 class Business < ApplicationRecord
   belongs_to :user
 
-  has_and_belongs_to_many :jurisdictions
-  has_and_belongs_to_many :industries
+  has_and_belongs_to_many :jurisdictions, optional: true
+  has_and_belongs_to_many :industries, optional: true
+  has_one :combined_policy
+  has_many :exams
+  has_many :risks
   has_many :forum_questions
-  has_many :projects, dependent: :destroy
+  has_many :local_projects
+  has_many :projects
   has_many :job_applications, through: :projects
   has_many :charges, through: :projects
   has_many :transactions, through: :projects
@@ -25,10 +28,11 @@ class Business < ApplicationRecord
   }, through: :projects, source: :ratings
   has_many :email_threads, dependent: :destroy
   has_many :compliance_policies
-  has_many :annual_reviews
+  has_many :compliance_policy_risks
+  has_many :compliance_policy_sections
   has_many :annual_reports
-  has_many :teams
-  has_many :viewable_teams, -> { where(display: true) }, class_name: 'Team'
+  has_one :team
+  has_many :team_members, through: :team
   has_many :active_projects, -> { where(status: statuses[:published]).where.not(specialist_id: nil) }, class_name: 'Project'
   has_many :active_specialists, through: :active_projects, class_name: 'Specialist', source: :specialist
   has_many :outdated_compliance_policies, -> { where('last_uploaded < ?', Time.zone.today - 1.year) }, class_name: 'CompliancePolicy'
@@ -49,15 +53,47 @@ class Business < ApplicationRecord
   has_many :referral_tokens, as: :referrer
   has_many :reminders, as: :remindable
   has_many :audit_comments
+  has_many :invoices
+  has_one :compliance_policy_configuration, dependent: :destroy
 
   has_settings do |s|
-    s.key :notifications, defaults: {
-      marketing_emails: true,
-      got_rated: true,
+    s.key :in_app_notifications, defaults: {
+      task_created: true,
+      task_assigned: true,
+      task_file_uploaded: true,
+      task_new_comment: true,
+      task_completed: true,
+      task_overdue: true,
+      project_new_bid: true,
+      project_message: true,
+      project_overdue: true,
       project_ended: true,
+      project_completed: true,
+      got_rated: true,
       got_message: true,
       new_forum_answers: true,
       new_forum_comments: true
+    }
+    s.key :email_notifications, defaults: {
+      task_created: true,
+      task_assigned: true,
+      task_file_uploaded: true,
+      task_new_comment: true,
+      task_completed: true,
+      task_overdue: true,
+      project_new_bid: true,
+      project_message: true,
+      project_overdue: true,
+      project_ended: true,
+      project_completed: true,
+      got_rated: true,
+      got_message: true,
+      new_forum_question: true,
+      new_forum_comments: true
+    }
+    s.key :email_updates, defaults: {
+      monthly_newsletter: true,
+      promos_and_events: true
     }
   end
 
@@ -69,16 +105,15 @@ class Business < ApplicationRecord
   serialize :cco
 
   after_create :add_as_employee
+  after_save :update_username_if_blank
 
   def spawn_compliance_policies
-    # rubocop:disable Style/GuardClause
     unless compliance_policies_spawned
       update(compliance_policies_spawned: true)
       I18n.t(:compliance_manual_sections).map(&:to_a).map(&:last).each do |section|
         compliance_policies.create(title: section)
       end
     end
-    # rubocop:enable Style/GuardClause
   end
 
   def add_as_employee
@@ -91,6 +126,14 @@ class Business < ApplicationRecord
       team_member.save
       assign_team(team_member)
     end
+  end
+
+  def plan
+    team_tiers = %w[team_tier_monthly team_tier_annual]
+    business_tiers = %w[business_tier_monthly business_tier_annual]
+    return 'team' if subscriptions.active.where(plan: team_tiers).present?
+    return 'business' if subscriptions.active.where(plan: business_tiers).present?
+    'free'
   end
 
   STEP_THREE = [
@@ -120,21 +163,6 @@ class Business < ApplicationRecord
       'The biggest risk is not taking any risk'
     ]
   ].freeze
-  # rubocop:disable Metrics/LineLength
-  QUIZ = [
-    [:sec_or_crd],
-    [:office_state],
-    [:branch_offices],
-    [:client_account_cnt],
-    [:client_types, %i[less_1mm accredited_investors qualified_purchasers institutional_investors pooled_investment]],
-    [:aum],
-    [:cco, %i[yes no dedicated]],
-    [:already_covered, %i[code_of_ethics privacy custody portfolio trading proxy valuation marketing regulatory books planning compliance other]],
-    [:review_plan, %i[no basic deluxe premium]],
-    [:annual_compliance, %i[yes no]],
-    [:finish]
-  ].freeze
-  # rubocop:enable Metrics/LineLength
 
   def compliance_manual_needs_update?
     missing_compliance_policies.count.positive? || outdated_compliance_policies.any?
@@ -146,17 +174,6 @@ class Business < ApplicationRecord
 
   def reminders_this_year
     reminders.where('remind_at > ?', Time.now.in_time_zone(time_zone).beginning_of_year)
-  end
-
-  def questionarrie_percentage
-    score = 0
-    total = Business::QUIZ.count - 1
-    total -= 3 if business_stages.present? && (business_stages.include? 'startup')
-    Business::QUIZ.map(&:first).each do |q|
-      score += 1 if (q != :finish) && !public_send(q).nil?
-    end
-    result = (100.0 * score / total).to_i
-    result > 100 ? 100 : result
   end
 
   def annual_review_percentage
@@ -234,39 +251,51 @@ class Business < ApplicationRecord
   end
 
   def assign_team(team_member)
-    team = teams.find_or_create_by(name: 'Misc', display: false)
+    team = team.presence || Team.create(business: Business.last, name: 'Misc', display: true)
     team_member.team_id = team.id
     team_member.save
   end
 
   alias communicable_projects projects
+  alias_attribute :first_name, :contact_first_name
+  alias_attribute :last_name, :contact_last_name
 
   default_scope -> { joins("INNER JOIN users ON users.id = businesses.user_id AND users.deleted = 'f'") }
 
   include ImageUploader[:logo]
+  include ImageUploader[:photo]
 
   EMPLOYEE_OPTIONS = %w[<10 11-50 51-100 100+].freeze
   RISK_TOLERANCE_OPTIONS = [nil, '', 'Bare minimum', 'Best efforts', 'Best business practices', 'Gold standard'].freeze
 
-  validates :contact_first_name, :contact_last_name, presence: true
-  validates :business_name, :industries, :employees, presence: true
-  validates :country, :city, :state, :time_zone, presence: true
   validates :description, length: { maximum: 750 }
-  validates :employees, inclusion: { in: EMPLOYEE_OPTIONS }
-  validates :risk_tolerance, inclusion: { in: RISK_TOLERANCE_OPTIONS }
-  validates :linkedin_link, allow_blank: true, url: true
   validates :website, allow_blank: true, url: true
-  # validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :username, uniqueness: true
-  # validates :client_account_cnt, presence: true
+  validates :linkedin_link, allow_blank: true, url: true
+  validates :username, uniqueness: true, allow_blank: true
+  validates :contact_first_name, :contact_last_name, presence: true
+  validates :risk_tolerance, inclusion: { in: RISK_TOLERANCE_OPTIONS }, if: -> { account_created }
+
+  validates :business_name, :industries, :jurisdiction_ids,
+    :time_zone, :address_1, :city, :state, :zipcode,
+    presence: true, if: -> { account_created }
+
+  validate if: -> { time_zone.present? } do
+    errors.add :time_zone unless ActiveSupport::TimeZone.all.collect(&:name).include?(time_zone)
+  end
+
+  # validate :tos_invalid?
+  # validate :cookie_agreement_invalid?
+
   # validates :total_assets, presence: true
+  # validates :client_account_cnt, presence: true
+  # validates :employees, inclusion: { in: EMPLOYEE_OPTIONS }
+  # validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   accepts_nested_attributes_for :user
   accepts_nested_attributes_for :tos_agreement
   accepts_nested_attributes_for :cookie_agreement
 
-  validate :tos_invalid?
-  validate :cookie_agreement_invalid?
+  attr_accessor :sub_industry_ids
 
   delegate :suspended?, to: :user
 
@@ -313,19 +342,6 @@ class Business < ApplicationRecord
     end
   end
 
-  def personalized?
-    current_question = 0
-    quiz_copy = QUIZ.dup
-    unless business_stages.nil?
-      quiz_copy.delete_if { |s| %i[sec_or_crd already_covered annual_compliance].include? s[0] } if business_stages.include? 'startup'
-      quiz_copy.each_with_index do |q, i|
-        current_question = i
-        break if q[0] == :finish || __send__(q[0]).nil?
-      end
-    end
-    quiz_copy[current_question][0] == :finish
-  end
-
   def only_pooled_investment?
     (!client_types.nil? && (client_types - ['pooled_investment']).count.zero?)
   end
@@ -345,13 +361,11 @@ class Business < ApplicationRecord
     assigned_team_members.each do |employee|
       user = User.find_by(email: employee.email)
       specialist = user.specialist if user.present?
-      employee_array << [specialist.full_name, specialist.id] if specialist.present?
+      employee_array << specialist if specialist.present?
     end
     employee_array
   end
 
-  # rubocop:disable Metrics/CyclomaticComplexity
-  # rubocop:disable Metrics/PerceivedComplexity
   def gap_analysis_est
     basic = 450
     deluxe = 1000
@@ -409,19 +423,18 @@ class Business < ApplicationRecord
     end
     [basic, deluxe, premium]
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
-  # rubocop:enable Metrics/PerceivedComplexity
 
   def generate_username
-    src = business_name.split(' ').map(&:capitalize).join('')
+    src = business_name&.split(' ')&.map(&:capitalize)&.join('')
+    src = 'businessuser' if src.nil?
     generated = src.delete(' ').gsub(/[^0-9a-z ]/i, '')
     while Business.find_by_sql(['SELECT * from businesses WHERE username = ?', generated]).count.positive?
       ext_num = generated.scan(/\d/).join('')
       generated = if !ext_num.empty?
-                    "#{src}#{ext_num.to_i + 1}"
-                  else
-                    "#{src}1"
-                  end
+        "#{src}#{ext_num.to_i + 1}"
+      else
+        "#{src}1"
+      end
     end
     generated
   end
@@ -479,7 +492,7 @@ class Business < ApplicationRecord
 
   def subscription?
     if forum_subscription && !forum_subscription.suspended
-      forum_subscription[:level]
+      forum_subscription.read_attribute_before_type_cast(:level)
     else
       0
     end
@@ -497,7 +510,7 @@ class Business < ApplicationRecord
 
   def payment_source_type
     payment_source = payment_sources.find_by(primary: true) || payment_sources.first
-    payment_source&.type == 'PaymentSource::ACH' ? :ach : :card
+    payment_source&.type == 'PaymentSource::Ach' ? :ach : :card
   end
 
   def generate_folders_tree(except_id)
@@ -512,13 +525,21 @@ class Business < ApplicationRecord
     options
   end
 
-  def create_annual_review_folder_if_none
-    annual_review_folder = file_folders.where(name: 'Annual Review')
-    if annual_review_folder.blank?
-      FileFolder.create(business_id: id, name: 'Annual Review', locked: true)
-    else
-      annual_review_folder.first
-    end
+  def available_seat
+    seats.available.first
+  end
+
+  def specialist?
+    false
+  end
+
+  def business?
+    true
+  end
+
+  private
+
+  def update_username_if_blank
+    update_column('username', generate_username) if username.blank?
   end
 end
-# rubocop:enable Metrics/ClassLength

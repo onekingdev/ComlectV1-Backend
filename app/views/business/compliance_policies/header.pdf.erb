@@ -5,46 +5,67 @@
             font-family: 'Canela';
             src: url('<%= Rails.root.join("public", "fonts", "Canela-Medium.otf") %>') format('opentype');
         }
+
+        @font-face {
+            font-family: 'Canela Bold';
+            src: url('<%= Rails.root.join("public", "fonts", "Canela-Bold.otf") %>') format('opentype');
+        }
+        @font-face {
+            font-family: 'Canela Black';
+            src: url('<%= Rails.root.join("public", "fonts", "Canela-Black.otf") %>') format('opentype');
+        }
+
+        @font-face {
+            font-family: 'open sans bold';
+            src: url('<%= Rails.root.join("public", "fonts", "OpenSans-Bold.ttf") %>') format('opentype');
+        }
+
+        @font-face {
+            font-family: 'open sans regular';
+            src: url('<%= Rails.root.join("public", "fonts", "OpenSans-Regular.ttf") %>') format('opentype');
+        }
       body, html, table {
-        font-size: 120px;
-        padding: 0;
-        margin: 0;
-        font-family: Canela, arial, Sans-Serif, serif;
+        font-size: 12px;
+        padding: 0px;
+        margin: 0px;
+        width: 273mm;
+        overflow: hidden;
+        font-family: "Open Sans";
       }
 
-      p { page-break-inside: avoid; }
-
-      ul, ol {
-        margin-left: 230px;
-        margin-bottom: 100px;
+      p { page-break-inside: avoid; font-size: 12px; word-wrap: break-word; }
+      .page {
+        page-break-before:always;
+        width: 273mm;
+        position: relative;
+        clear: both;
       }
-      li {
-        padding-bottom: 50px;
-        page-break-inside: avoid;
-      }
-
-      table, td {
-        border-collapse: collapse;
-        border: 1px solid #000;
-        page-break-inside: avoid;
-      }
-
-      td {
-        padding: 20px;
-      }
-
-      h1 { font-size: 40px;}
-      p { font-size: 20px;}
     </style>
     <meta charset="UTF-8">
   </head>
   <body>
-    <center>
-      <p> </p>
-      <h1 style="margin-top: 450px;"><%= business.business_name %></h1>
-      <h1>Compliance Manual</h1>
-      <p>Last updated: <%= last_updated.strftime('%b %-d, %Y') %></p>
-    </center>
-    <p style="margin-top: 400px;">This compliance manual is the private property of <%= business.business_name %> and should not be distributed or shared without the consent of the Chief Compliance Officer. It is deemed to supersede any alternate version and/or policies and procedures. </p>
-  </body>
+    <div class="container page">
+      <center style="padding-top: 300px;">
+        <h3><%= image_tag(logo, height: "300px") if logo.present? %></h3>
+        <br/>
+        <br/>
+        <h1 style="padding-bottom: 0px; margin-bottom: 0px;"><big><%= cpolicy.business.name %></big></h1>
+        <h2 style="padding-top: 0px; margin-top: 0px; font-size: 22px;">Compliance Manual</h2>
+        <h3 style="font-weight: 400;">Last updated: <%= last_updated.strftime("%B %d, %Y") %></h3>
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+        <% if cpconf.address %>
+          <p><%= cpolicy.business.zipcode %> <%= cpolicy.business.address_1 %> <%= cpolicy.business.address_2 %> <%= cpolicy.business.apartment %></p>
+        <% end %>
+        <% if cpconf.phone %>
+          <p><%= cpolicy.business.contact_phone %></p>
+        <% end %>
+        <% if cpconf.email %>
+          <p><%= cpolicy.business.user.email %></p>
+        <% end %>
+      </center>
+      <div style="position: fixed; bottom: 0px; width: 100%;">
+        <div><%= cpconf.body if cpconf.disclosure %></div>
+      </div>
+    </div>
+  </body> 
 </html>

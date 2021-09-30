@@ -13,17 +13,14 @@ class JobApplication::Form < JobApplication
   validate -> { errors.add :prerequisites, :no_regulator }, unless: :regulator?
   validate -> { errors.add :prerequisites, :no_payment_info }, unless: :payment_info? if Rails.env.production? || Rails.env.staging?
 
-  RFP_FIELDS = %i[message key_deliverables pricing_type].freeze
+  RFP_FIELDS = %i[key_deliverables pricing_type].freeze
   validates(*RFP_FIELDS, presence: true, if: :rfp?)
+  validates :role_details, presence: true
   validates(:starts_on, presence: true, if: :rfp?)
   validates(:ends_on, presence: true, if: :rfp?)
-  validates :hourly_rate, presence: true, if: :hourly_pricing?
+  validates :hourly_rate, :hourly_payment_schedule, presence: true, if: :hourly_pricing?
   validates :estimated_hours, presence: true, if: :hourly_pricing?
-  validates :fixed_budget, presence: true, if: :fixed_pricing?
-  validates :hourly_payment_schedule, :hourly_rate,
-            presence: true, if: -> { hourly_pricing? && payment_schedule.blank? }
-  validates :fixed_payment_schedule, :fixed_budget,
-            presence: true, if: -> { fixed_pricing? && payment_schedule.blank? }
+  validates :fixed_budget, :fixed_payment_schedule, presence: true, if: :fixed_pricing?
   validate if: -> { starts_on.present? } do
     errors.add :starts_on, :past if starts_on.in_time_zone(project.business.tz).to_date < project.business.tz.today
   end
@@ -38,9 +35,9 @@ class JobApplication::Form < JobApplication
     application = new(params.merge(specialist: specialist, project: project))
 
     if application.save && !application.draft?
-      Favorite.remove! specialist, project
+      Favorite.remove!(specialist, project)
       Notification::Deliver.project_application!(application) if project.interview?
-      JobApplication::Accept.(application) if project.auto_match?
+      JobApplication::Accept.call(application) if project.auto_match?
     end
 
     application
@@ -70,7 +67,7 @@ class JobApplication::Form < JobApplication
   end
 
   def enough_experience?
-    exp = Specialist.by_experience.find(specialist.id).years_of_experience.to_f
+    exp = Specialist.by_experience.find(specialist.id).experience
     exp >= project.minimum_experience
   end
 
@@ -85,6 +82,7 @@ class JobApplication::Form < JobApplication
   end
 
   def assign_pricing_type_fields
+    self.payment_schedule = nil
     if hourly_pricing?
       self.fixed_budget = nil
       self.payment_schedule = hourly_payment_schedule
@@ -95,6 +93,9 @@ class JobApplication::Form < JobApplication
     true
   end
 
+  # something strange here
+  # we have these methods as `attr_accessor`
+  # rubocop:disable Lint/DuplicateMethods
   def hourly_payment_schedule
     @hourly_payment_schedule || payment_schedule
   end
@@ -102,4 +103,5 @@ class JobApplication::Form < JobApplication
   def fixed_payment_schedule
     @fixed_payment_schedule || payment_schedule
   end
+  # rubocop:enable Lint/DuplicateMethods
 end

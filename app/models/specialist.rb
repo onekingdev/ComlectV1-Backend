@@ -1,20 +1,18 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 class Specialist < ApplicationRecord
   belongs_to :user, autosave: true
-  belongs_to :team, foreign_key: :specialist_team_id
+  belongs_to :team, foreign_key: :team_id, optional: true
 
-  belongs_to :rewards_tier
+  belongs_to :rewards_tier, optional: true
+  has_many :work_experiences, dependent: :destroy
 
   # before_save :calculate_years_of_experience
   has_many :ported_businesses
-  has_and_belongs_to_many :industries
-  has_and_belongs_to_many :jurisdictions
-  has_and_belongs_to_many :skills
+  has_and_belongs_to_many :industries, optional: true
+  has_and_belongs_to_many :jurisdictions, optional: true
+  has_and_belongs_to_many :skills, optional: true
   has_one :managed_team, class_name: 'Team', foreign_key: :manager_id
-  has_many :work_experiences, dependent: :destroy
-  has_many :education_histories, dependent: :delete_all
   has_many :favorites, as: :owner, dependent: :destroy
   has_many :favorited_by, as: :favorited, dependent: :destroy, class_name: 'Favorite'
   has_many :favorited_projects, class_name: 'Project', through: :favorites, source: :favorited, source_type: 'Project'
@@ -37,28 +35,75 @@ class Specialist < ApplicationRecord
   has_many :payments, -> { for_rfp_or_one_off_projects }, through: :projects, source: :charges
   has_many :transactions, through: :projects
   has_many :active_projects, -> { where(status: statuses[:published]).where.not(specialist_id: nil) }, class_name: 'Project'
-  has_many :manageable_businesses, through: :active_projects, class_name: 'Business', source: :business
   has_one :referral, as: :referrable
   has_many :referral_tokens, as: :referrer
   has_many :specialist_invitations, class_name: 'Specialist::Invitation'
-  # rubocop:disable Metrics/LineLength
   has_many :manageable_ria_businesses, -> { joins(:industries).where("industries.name = 'Investment Adviser'").where(ria_dashboard: true) }, through: :active_projects, class_name: 'Business', source: :business
-  # rubocop:enable Metrics/LineLength
+
   has_many :ported_subscriptions
   has_many :ported_businesses
   has_many :payment_sources, class_name: 'Specialist::PaymentSource'
   has_many :reminders, as: :remindable
+  has_and_belongs_to_many :local_projects
+  has_many :specialists_business_roles
+  has_many :manageable_businesses, through: :specialists_business_roles, class_name: 'Business', source: :business
+  has_many :subscriptions, foreign_key: :specialist_id
+  has_many :invoices
+
+  validate if: -> { time_zone.present? } do
+    errors.add :time_zone unless ActiveSupport::TimeZone.all.collect(&:name).include?(time_zone)
+  end
 
   has_settings do |s|
-    s.key :notifications, defaults: {
-      marketing_emails: true,
-      got_rated: true,
-      not_hired: true,
+    s.key :in_app_notifications, defaults: {
+      task_created: true,
+      task_assigned: true,
+      task_file_uploaded: true,
+      task_new_comment: true,
+      task_completed: true,
+      task_overdue: true,
       project_ended: true,
+      got_rated: true,
       got_message: true,
+      not_hired: true,
       new_forum_question: true,
       new_forum_comments: true
     }
+    s.key :email_notifications, defaults: {
+      task_created: true,
+      task_assigned: true,
+      task_file_uploaded: true,
+      task_new_comment: true,
+      task_completed: true,
+      task_overdue: true,
+      project_ended: true,
+      got_rated: true,
+      got_message: true,
+      not_hired: true,
+      new_forum_question: true,
+      new_forum_comments: true
+    }
+    s.key :email_updates, defaults: {
+      monthly_newsletter: true,
+      promos_and_events: true
+    }
+  end
+
+  SEAT_ROLES = %w[basic admin trusted].freeze
+
+  enum seat_role: {
+    basic: 0,
+    admin: 1,
+    trusted: 2
+  }
+
+  enum name_setting: {
+    full_name: 0,
+    first_name_first_letter: 1
+  }
+
+  validate if: -> { seat? } do
+    errors.add :seat_role unless SEAT_ROLES.include?(seat_role) || seat_role.nil?
   end
 
   serialize :sub_industries
@@ -128,6 +173,11 @@ class Specialist < ApplicationRecord
     full_name
   end
 
+  def role_basic?(business = nil)
+    return basic? if seat?
+    specialists_business_roles.where(business_id: business.id, role: 'basic').present?
+  end
+
   def apply_quiz(cookies)
     step1_c = cookies[:complect_s_step1].split('-').map(&:to_i)
     self.sub_industries = []
@@ -170,44 +220,41 @@ class Specialist < ApplicationRecord
 
   has_one :tos_agreement, through: :user
   has_one :cookie_agreement, through: :user
-  accepts_nested_attributes_for :education_histories, :work_experiences
   accepts_nested_attributes_for :tos_agreement
   accepts_nested_attributes_for :cookie_agreement
-  validate :tos_invalid?
-  validate :cookie_agreement_invalid?
-  validates :username, uniqueness: true
+  accepts_nested_attributes_for :user
+  # validate :tos_invalid?
+  # validate :cookie_agreement_invalid?
+  validates :username, uniqueness: true, allow_blank: true
   validates :call_booked, presence: true, on: :signup
-  validates :resume, presence: true, on: :signup
+
+  validates :former_regulator, inclusion: { in: [true, false] }
+  validates :specialist_other, presence: true, if: :former_regulator?
+
+  validates :jurisdiction_ids, :time_zone, :industry_ids,
+    :experience, presence: true, on: :onboarding
 
   default_scope -> { joins("INNER JOIN users ON users.id = specialists.user_id AND users.deleted = 'f'") }
 
-  scope :preload_associations, -> {
+  scope :preload_association, -> {
     preload(
       :user,
-      :work_experiences,
-      :education_histories,
       :industries,
       :jurisdictions,
       :skills
     )
   }
 
-  scope :join_experience, -> {
-    joins(:work_experiences)
-      .where(work_experiences: { compliance: true })
-      .group(:id)
-  }
-
   scope :experience_between, ->(min, max) {
     if max
-      where('years_of_experience BETWEEN ? AND ?', min, max)
+      where('experience BETWEEN ? AND ?', min, max)
     else
-      where('years_of_experience >= ?', min)
+      where('experience >= ?', min)
     end
   }
 
   scope :by_experience, ->(dir = :desc) {
-    order("years_of_experience #{dir}")
+    order("experience #{dir}")
   }
 
   scope :by_distance, ->(lat, lng) do
@@ -236,6 +283,7 @@ class Specialist < ApplicationRecord
   delegate :suspended?, to: :user
 
   after_commit :generate_referral_token, on: :create
+  after_save :update_username_if_blank
 
   def to_param
     username
@@ -243,14 +291,15 @@ class Specialist < ApplicationRecord
 
   def generate_username
     src = "#{first_name&.capitalize}#{last_name[0]&.capitalize}"
+    src = 'specialistuser' if src.nil?
     generated = src.gsub(/[^0-9a-z ]/i, '') # yes
     while Specialist.find_by_sql(['SELECT * from specialists WHERE username = ?', generated]).count.positive?
       ext_num = generated.scan(/\d/).join('')
       generated = if !ext_num.empty?
-                    "#{src}#{ext_num.to_i + 1}"
-                  else
-                    "#{src}1"
-                  end
+        "#{src}#{ext_num.to_i + 1}"
+      else
+        "#{src}1"
+      end
     end
     generated.delete(' ')
   end
@@ -268,20 +317,8 @@ class Specialist < ApplicationRecord
   end
 
   def ratings_combined
-    (ratings_received.preload_associations + forum_ratings).sort_by(&:created_at).reverse
+    (ratings_received.preload_association + forum_ratings).sort_by(&:created_at).reverse
   end
-
-  # def years_of_experience
-  #  return @_years_of_experience if @_years_of_experience
-  #  @_years_of_experience = (calculate_years_of_experience / 365.0).round
-  # end
-
-  # def calculate_years_of_experience
-  #   yrs = work_experiences.compliance.map do |exp|
-  #     exp.from ? ((exp.to || Time.zone.today) - exp.from).to_f : 0.0
-  #   end.reduce(:+) || 0.0
-  #   self.years_of_experience = (yrs / 365.0).round
-  # end
 
   def messages
     Message.where("
@@ -316,7 +353,12 @@ class Specialist < ApplicationRecord
   end
 
   def manager
-    team&.manager || self
+    team&.business || self
+  end
+
+  def plan
+    return 'specialist_pro' if subscriptions.active.where(plan: 'specialist_pro').present?
+    'free'
   end
 
   def public?
@@ -341,11 +383,7 @@ class Specialist < ApplicationRecord
 
   def seat?(business = nil)
     return specialist_invitations.where.not(team_id: nil).exists? if business.nil?
-
-    teams_ids = business.teams.pluck(:id)
-    return unless teams_ids
-
-    specialist_invitations.exists?(team_id: teams_ids)
+    specialist_invitations.exists?(team_id: business.team.id)
   end
 
   def businesses_to_manage
@@ -372,7 +410,6 @@ class Specialist < ApplicationRecord
     GenerateReferralTokensJob.perform_later(self)
   end
 
-  # rubocop:disable Style/GuardClause
   def calc_forum_upvotes
     if user.upvotes > forum_upvotes_for_review
       update(forum_upvotes_for_review: user.upvotes)
@@ -382,7 +419,6 @@ class Specialist < ApplicationRecord
       end
     end
   end
-  # rubocop:enable Style/GuardClause
 
   def stripe_customer
     payment_sources.where.not(stripe_customer_id: nil).first&.stripe_customer_id
@@ -391,5 +427,18 @@ class Specialist < ApplicationRecord
   def default_payment_source
     payment_sources.find_by(primary: true)
   end
+
+  def specialist?
+    true
+  end
+
+  def business?
+    false
+  end
+
+  private
+
+  def update_username_if_blank
+    update_column('username', generate_username) if username.blank?
+  end
 end
-# rubocop:enable Metrics/ClassLength

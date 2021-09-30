@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 require 'validators/email_validator'
+require 'otp/mailer'
 
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable, #:confirmable,
+  devise :database_authenticatable, :registerable, :confirmable,
          :recoverable, :rememberable, :trackable, :validatable
 
   has_one :business, dependent: :destroy
@@ -21,12 +22,14 @@ class User < ApplicationRecord
   has_one :cookie_agreement, dependent: :destroy
 
   validates :email, presence: true
-  validates :email, email: true, if: 'email.present?'
+  validates :email, email: true, if: :email_present?
+
+  delegate :present?, to: :email, prefix: true
 
   accepts_nested_attributes_for :tos_agreement
   accepts_nested_attributes_for :cookie_agreement
 
-  scope :inactive, -> {
+  scope :inactive, lambda {
     where('last_sign_in_at < ?', Time.zone.now - 90.days)
       .where(inactive_for_period: false, suspended: false)
   }
@@ -34,6 +37,29 @@ class User < ApplicationRecord
   default_scope -> { where(deleted: false) }
 
   serialize :muted_projects
+
+  OTP_DIGITS = 6
+  include OTP::ActiveRecord
+
+  def email_otp
+    VerificationMailer.send_otp(email, otp).deliver_later
+    # self, {
+    #  template_id: ENV.fetch('POSTMARK_TEMPLATE_ID'),
+    #  template_model: { subject: "Verify your login", message_html: render_to_string('otp/mailer/otp.html.slim') }
+    # }).deliver
+  end
+
+  def verify_otp(otp)
+    return true if Rails.env.development?
+    return nil if !valid? || !persisted? || otp_secret.blank?
+
+    otp_digits = self.class.const_get(:OTP_DIGITS)
+    hotp = ROTP::HOTP.new(otp_secret, digits: otp_digits)
+    transaction do
+      otp_status = hotp.verify(otp.to_s, otp_counter)
+      otp_status
+    end
+  end
 
   def business_or_specialist
     business || specialist
@@ -99,7 +125,7 @@ class User < ApplicationRecord
   def freeze_specialist_account!
     create_dummy_issue specialist_projects.active, specialist
     # Withdraw active job applications
-    specialist.job_applications.pending.each { |application| JobApplication::Delete.(application) }
+    specialist.job_applications.pending.each { |application| JobApplication::Delete.call(application) }
     # And just delete all applications which weren't accepted to avoid sending notifications
     specialist.job_applications.not_accepted.delete_all
     specialist.update_attribute :visibility, Specialist.visibilities[:is_private]
@@ -139,5 +165,17 @@ class User < ApplicationRecord
       agreement_date: Time.zone.now,
       ip_address: ip_address
     )
+  end
+
+  def hide_local_project(project_id)
+    update(hidden_local_projects: (hidden_local_projects | [project_id]))
+  end
+
+  def show_local_project(project_id)
+    update(hidden_local_projects: (hidden_local_projects - [project_id]))
+  end
+
+  def send_confirmation_notification?
+    false
   end
 end

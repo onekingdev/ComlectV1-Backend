@@ -6,6 +6,7 @@
 #
 # Ignore local config.
 /.env.local
+/.env
 
 # Ignore bundler config.
 /.bundle
@@ -14,6 +15,9 @@
 /log/*
 !/log/.keep
 /tmp
+
+# Ignore local Postgres files
+/postgres/*
 
 # Ignore locally uploaded files
 /public/uploads
@@ -29,4 +33,5 @@ yarn-error.log*
 .idea
 yarn.lock
 .vscode
-
+.history
+coverage

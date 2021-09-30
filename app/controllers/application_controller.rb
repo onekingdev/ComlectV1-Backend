@@ -4,13 +4,12 @@ class ApplicationController < ActionController::Base
   before_action :store_user_location!, if: :storable_location?
   before_action :lock_specialist, if: :current_specialist
   include ::Pundit
-  include ::MixpanelHelper
 
   impersonates :user
 
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
-  protect_from_forgery with: :exception
+  protect_from_forgery prepend: true
 
   # Use lambda not symbol so render_403 uses the default message
   # as opposed to getting passed a Pundit::NotAuthorizedError object
@@ -23,18 +22,45 @@ class ApplicationController < ActionController::Base
     ::Notification.clear_by_path! current_user, request.path
   }, if: :user_signed_in?
 
-  before_action :check_unrated_project, if: -> {
-    user_signed_in? && request.get? && !request.xhr? && request.format.symbol == :html
-  }
+  # before_action :check_unrated_project, if: -> {
+  #  user_signed_in? && request.get? && !request.xhr? && request.format.symbol == :html
+  # }
 
   private
+
+  def timezones_array
+    ActiveSupport::TimeZone.all.map(&proc { |tz| [tz.tzinfo.to_s, tz.name] })
+  end
+
+  def sub_industries(specialist)
+    industries = {}
+    Industry.sorted.each do |industry|
+      sub_ind_txt = specialist ? industry.sub_industries_specialist : industry.sub_industries
+      sub_ind_txt.split("\r\n").each_with_index do |sub_ind, i|
+        industries["#{industry.id}_#{i}"] = sub_ind
+      end
+    end
+    industries
+  end
 
   def lock_specialist
     return if current_specialist.dashboard_unlocked
 
     return if (params['controller'] == 'specialists/dashboard') && (params['action'] == 'locked')
+    return if params['controller'] == 'specialists/onboarding'
+    return if params['controller'] == 'api/specialists'
+    return if params['controller'] == 'api/specialist/payment_settings'
+    return if params['controller'] == 'users/sessions'
+    return if params['controller'] == 'api/specialist/upgrade'
+    return if params['controller'] == 'api/skills'
+    return if params['controller'] == 'api/static_collection'
+    return if params['controller'] == 'specialists'
 
-    return redirect_to specialists_locked_path if params['controller'] != 'users/sessions'
+    if request.method == 'DELETE'
+      redirect_to sign_out_api_users_path
+    else
+      redirect_to new_specialist_path
+    end
   end
 
   def storable_location?
@@ -61,15 +87,38 @@ class ApplicationController < ActionController::Base
   end
   helper_method :decorate
 
+  def authorize_action(policy = nil)
+    if current_user.specialist
+      if request.headers['HTTP_BUSINESS_ID']
+        authorize request.headers['HTTP_BUSINESS_ID'].to_i, policy_class: policy if policy
+      else
+        respond_with status: :unprocessable_entity
+      end
+    end
+  end
+
+  def authorize_business_tier(policy = nil)
+    authorize current_business, policy_class: policy if policy
+  end
+
+  def authorize_specialist_tier(policy = nil)
+    authorize current_specialist, policy_class: policy if policy
+  end
+
   def current_business
     return @_current_business if @_current_business
     return unless user_signed_in?
 
-    business = if session[:employee_business_id].present?
-                 ::Business.find_by(id: session[:employee_business_id])
-               else
-                 current_user.business
-               end
+    if current_user.business
+      business = current_user.business
+    elsif current_user.specialist && request.headers['HTTP_BUSINESS_ID']
+      business_role = current_user.specialist.seat? ? current_user.specialist.team : current_user.specialist.specialists_business_roles.find_by(business_id: request.headers['HTTP_BUSINESS_ID'].to_i)
+      if business_role
+        business = business_role.business
+      else
+        respond_with status: :unprocessable_entity
+      end
+    end
     return unless business
 
     define_current_business(business)
@@ -77,13 +126,13 @@ class ApplicationController < ActionController::Base
   helper_method :current_business
 
   def define_current_business(business = nil)
-    @_current_business = ::Business::Decorator.decorate(business || current_user.business)
+    @_current_business = business || current_user.business
   end
 
   def current_specialist
     return @_current_specialist if @_current_specialist
     return nil if !user_signed_in? || current_user.specialist.nil?
-    @_current_specialist = ::Specialist::Decorator.decorate(current_user.specialist)
+    @_current_specialist = current_user.specialist
   end
   helper_method :current_specialist
 
@@ -110,8 +159,16 @@ class ApplicationController < ActionController::Base
     render 'application/js_redirect', status: status
   end
 
+  def require_someone!
+    if user_signed_in? && (current_business || current_specialist)
+      @current_someone = current_business || current_specialist
+    else
+      render 'forbidden', status: :forbidden, locals: { message: 'Only registered users can access this page' }
+    end
+  end
+
   def require_business!
-    return if user_signed_in? && current_business
+    return if user_signed_in? && (current_business || current_specialist)
     return authenticate_user! unless user_signed_in?
 
     render 'forbidden', status: :forbidden, locals: { message: 'Only business accounts can access this page' }
@@ -120,7 +177,7 @@ class ApplicationController < ActionController::Base
   def require_specialist!
     return if user_signed_in? && current_specialist
     return authenticate_user! unless user_signed_in?
-    render 'forbidden', status: :forbidden, locals: { message: 'Only specialist accounts can access this page' }
+    respond_with error: 'Only specialist accounts can access this page'
   end
 
   def employee?
