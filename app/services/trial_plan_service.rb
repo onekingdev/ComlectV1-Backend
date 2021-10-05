@@ -42,7 +42,11 @@ class TrialPlanService < ApplicationService
     subscriptions = source.subscriptions.active
 
     subscriptions.each do |subscription|
-      next if subscription.plan == 'free'
+      if subscription.plan == 'free'
+        subscription.update(status: 'canceled')
+        next
+      end
+
       cancel(subscription)
     end
   end
