@@ -4,7 +4,7 @@ class Message::Create < Draper::Decorator
   decorates Message
   delegate_all
 
-  def self.call(project, attributes, sender, recipient)
+  def self.call(project, attributes, recipient)
     if project.nil?
       create_msg(attributes)
     elsif recipient.nil?
